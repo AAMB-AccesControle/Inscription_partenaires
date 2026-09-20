@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convention & Dossier Partenaire - AAMB JTB 2026 Besançon</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; color: #333; padding: 20px; }
+        .container { max-width: 950px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 1.8em; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 0.95em; }
+        .content { padding: 30px; }
+        
+        .section-block { background: #fafafa; border: 1px solid #e1e4e8; border-left: 5px solid #2a5298; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        .section-block h3 { color: #2a5298; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9em; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95em; }
+        
+        .info-box { background: #e8f4fd; border-left: 4px solid #2196F3; padding: 12px; font-size: 0.9em; margin-bottom: 15px; border-radius: 4px; }
+        .price-tag { font-weight: bold; color: #2a5298; }
+        
+        .total-box { background: #2a5298; color: white; padding: 20px; border-radius: 8px; text-align: right; font-size: 1.3em; font-weight: bold; margin-top: 20px; }
+        
+        .qcm-item { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .ans-grid { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-top: 8px; }
+        
+        .btn { background: #2a5298; color: white; padding: 14px 30px; border: none; border-radius: 6px; font-size: 1.1em; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; transition: 0.2s; }
+        .btn:hover { background: #1e3c72; }
+        
+        .hidden { display: none; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2a5298; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>44èmes Journées Techniques Biomédicales AAMB</h1>
+        <p>18 et 19 Novembre 2026 - Micropolis, Besançon</p>
+        <p><strong>Dossier d'Inscription & Convention de Partenariat</strong></p>
+    </div>
+
+    <div class="content">
+        <form id="partnerForm" onsubmit="event.preventDefault(); submitForm();">
+            
+            <!-- 1. IDENTIFICATION -->
+            <div class="section-block">
+                <h3>1. Coordonnées de l'Entreprise</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Raison Sociale / Société *</label>
+                        <input type="text" id="company" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom & Prénom du Responsable *</label>
+                        <input type="text" id="contactName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail de contact *</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone *</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Adresse Postale Complète *</label>
+                    <textarea id="address" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Logo de la société (pour affichage/support)</label>
+                    <input type="file" id="logoUpload" accept="image/*">
+                </div>
+            </div>
+
+            <!-- 2. EMPLACEMENT & PRESTATIONS -->
+            <div class="section-block">
+                <h3>2. Réservation Stand & Repas</h3>
+                <div class="info-box">
+                    Un emplacement de 3m x 2m comprend : Table, 2 chaises, Wifi, Alimentation 230V, <strong>4 repas de midi</strong> et <strong>1 soirée de Gala</strong>.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nombre d'emplacements (3m x 2m)</label>
+                        <select id="stands" onchange="calculateTotal()">
+                            <option value="1">1 Emplacement (6m²)</option>
+                            <option value="2">2 Emplacements accolés (12m²)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Repas Sup. Mercredi 18 Nov. (36 €/repas)</label>
+                        <input type="number" id="mealsJ1" min="0" value="0" onchange="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>Repas Sup. Jeudi 19 Nov. (36 €/repas)</label>
+                        <input type="number" id="mealsJ2" min="0" value="0" onchange="calculateTotal()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Régimes alimentaires spécifiques (Nombre et détails)</label>
+                    <input type="text" id="specialDiets" placeholder="Ex: 1 végétarien, 1 sans gluten...">
+                </div>
+            </div>
+
+            <!-- 3. SOIRÉES ET SPONSORING -->
+            <div class="section-block">
+                <h3>3. Soirées, Pauses & Parrainage</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Soirée du Terroir - 18 Nov. (33 € / pers)</label>
+                        <input type="number" id="terroirCount" min="0" value="0" onchange="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>Soirée de Gala Sup. - 19 Nov. (65 € / pers)</label>
+                        <input type="number" id="galaExtra" min="0" value="0" onchange="calculateTotal()">
+                    </div>
+                </div>
+                <hr style="margin: 15px 0;">
+                <p><strong>Soutien & Participation optionnels :</strong></p>
+                <div class="form-grid" style="margin-top: 10px;">
+                    <div class="form-group">
+                        <label>Soutien Financier Pauses Cafés (€)</label>
+                        <input type="number" id="pauseSupport" min="0" value="0" onchange="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>Participation Soirée Terroir (€)</label>
+                        <input type="number" id="terroirSupport" min="0" value="0" onchange="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>Participation Soirée de Gala (€)</label>
+                        <input type="number" id="galaSupport" min="0" value="0" onchange="calculateTotal()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. ATELIERS & LOGISTIQUE -->
+            <div class="section-block">
+                <h3>4. Options Logistiques & Ateliers</h3>
+                <div class="form-group">
+                    <label><input type="checkbox" id="workshopInterest"> Souhaite animer un Atelier Technique (45 min, sur validation du comité)</label>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="bagInsertion"> Insertion de documentations dans les sacoches des congressistes (Livraison avant le 5 Nov.)</label>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="suppliesSupply"> Fourniture de Sacoches, Stylos ou Blocs-notes pour les congressistes (200 ex.)</label>
+                </div>
+                <div class="form-group">
+                    <label>Lot(s) fourni(s) pour la soirée de Gala (Description & valeur estimée)</label>
+                    <input type="text" id="prizeSupport" placeholder="Ex: 1 Tablette tactile (valeur ~200€)">
+                </div>
+            </div>
+
+            <!-- 5. QUESTIONNAIRE DE CONNAISSANCES -->
+            <div class="section-block">
+                <h3>5. Questionnaire de Évaluation des Connaissances (QCM)</h3>
+                <div class="info-box">
+                    Veuillez proposer <strong>4 questions QCM</strong> sur vos équipements/solutions pour stimuler le passage des congressistes sur votre stand.
+                </div>
+                <div id="qcmContainer"></div>
+            </div>
+
+            <!-- TOTAL ET SOUMISSION -->
+            <div class="total-box">
+                Montant total estimé : <span id="totalDisplay">0</span> €
+            </div>
+
+            <button type="submit" class="btn">Valider et Envoyer mon Inscription</button>
+        </form>
+
+        <!-- ECRAN DE CHARGEMENT -->
+        <div id="loadingSection" class="hidden" style="text-align: center; padding: 40px;">
+            <div class="spinner"></div>
+            <h3>Enregistrement de votre dossier en cours...</h3>
+            <p>Veuillez patienter pendant le transfert des données et du logo.</p>
+        </div>
+
+        <!-- CONFIRMATION -->
+        <div id="successSection" class="hidden" style="text-align: center; padding: 40px; background: #e8f8f5; border-radius: 8px;">
+            <h2 style="color: #27ae60;">✓ Inscription Enregistrée avec Succès !</h2>
+            <p style="margin: 15px 0;">Un e-mail de confirmation contenant le détail de votre commande et les références bancaires vous a été envoyé.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/VOTRE_SCRIPT_ID/exec';
+
+    // Génération automatique des 4 blocs de QCM
+    window.onload = function() {
+        const container = document.getElementById('qcmContainer');
+        for (let i = 1; i <= 4; i++) {
+            let html = `
+                <div class="qcm-item">
+                    <label><strong>Question ${i} *</strong></label>
+                    <input type="text" class="q-title" id="q${i}_title" placeholder="Saisissez la question..." required>
+                    <div style="margin-top: 8px;">
+            `;
+            for (let j = 1; j <= 3; j++) {
+                html += `
+                    <div class="ans-grid">
+                        <input type="text" id="q${i}_a${j}" placeholder="Proposition ${j}" required>
+                        <label><input type="checkbox" id="q${i}_c${j}"> Bonne réponse</label>
+                    </div>
+                `;
+            }
+            html += `</div></div>`;
+            container.innerHTML += html;
+        }
+        calculateTotal();
+    };
+
+    function calculateTotal() {
+        let total = 0;
+        const mealsJ1 = parseInt(document.getElementById('mealsJ1').value) || 0;
+        const mealsJ2 = parseInt(document.getElementById('mealsJ2').value) || 0;
+        const terroir = parseInt(document.getElementById('terroirCount').value) || 0;
+        const galaExtra = parseInt(document.getElementById('galaExtra').value) || 0;
+
+        const pauseSup = parseFloat(document.getElementById('pauseSupport').value) || 0;
+        const terroirSup = parseFloat(document.getElementById('terroirSupport').value) || 0;
+        const galaSup = parseFloat(document.getElementById('galaSupport').value) || 0;
+
+        total += (mealsJ1 + mealsJ2) * 36;
+        total += terroir * 33;
+        total += galaExtra * 65;
+        total += pauseSup + terroirSup + galaSup;
+
+        document.getElementById('totalDisplay').innerText = total;
+        return total;
+    }
+
+    async function submitForm() {
+        document.getElementById('partnerForm').classList.add('hidden');
+        document.getElementById('loadingSection').classList.remove('hidden');
+
+        // Récupération du QCM
+        const qcmData = [];
+        for (let i = 1; i <= 4; i++) {
+            const qObj = {
+                question: document.getElementById(`q${i}_title`).value,
+                answers: []
+            };
+            for (let j = 1; j <= 3; j++) {
+                qObj.answers.push({
+                    text: document.getElementById(`q${i}_a${j}`).value,
+                    isCorrect: document.getElementById(`q${i}_c${j}`).checked
+                });
+            }
+            qcmData.push(qObj);
+        }
+
+        // Fichier Logo en Base64
+        const logoInput = document.getElementById('logoUpload');
+        let logoFile = null;
+        if (logoInput.files.length > 0) {
+            const file = logoInput.files[0];
+            const base64 = await fileToBase64(file);
+            logoFile = { name: file.name, type: file.type, base64: base64 };
+        }
+
+        const payload = {
+            token: 'BESANCON2026_' + Date.now().toString(36).toUpperCase(),
+            company: document.getElementById('company').value,
+            contactName: document.getElementById('contactName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            address: document.getElementById('address').value,
+            stands: document.getElementById('stands').value,
+            mealsJ1: document.getElementById('mealsJ1').value,
+            mealsJ2: document.getElementById('mealsJ2').value,
+            specialDiets: document.getElementById('specialDiets').value,
+            terroirCount: document.getElementById('terroirCount').value,
+            galaExtra: document.getElementById('galaExtra').value,
+            pauseSupport: document.getElementById('pauseSupport').value,
+            terroirSupport: document.getElementById('terroirSupport').value,
+            galaSupport: document.getElementById('galaSupport').value,
+            workshopInterest: document.getElementById('workshopInterest').checked,
+            bagInsertion: document.getElementById('bagInsertion').checked,
+            suppliesSupply: document.getElementById('suppliesSupply').checked,
+            prizeSupport: document.getElementById('prizeSupport').value,
+            qcm: qcmData,
+            logoFile: logoFile,
+            totalAmount: calculateTotal()
+        };
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(payload)
+            });
+            
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('successSection').classList.remove('hidden');
+        } catch (err) {
+            alert("Erreur lors de l'envoi : " + err.message);
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('partnerForm').classList.remove('hidden');
+        }
+    }
+
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+</script>
+</body>
+</html>
