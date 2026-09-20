@@ -1,0 +1,15 @@
+{
+  "name": "Inscription Partenaire AAMB 2026",
+  "short_name": "Inscrip. AAMB",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2a5298",
+  "icons": [
+    {
+      "src": "logo-aamb.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
