@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convention & Dossier Partenaire - AAMB JTB 2026 Besançon</title>
+    <title>Inscriptions Partenaires - AAMB JTB 2026 Besançon</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2a5298">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; color: #333; padding: 20px; }
@@ -22,12 +24,11 @@
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95em; }
         
         .info-box { background: #e8f4fd; border-left: 4px solid #2196F3; padding: 12px; font-size: 0.9em; margin-bottom: 15px; border-radius: 4px; }
-        .price-tag { font-weight: bold; color: #2a5298; }
+        
+        .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 5px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 0.9em; }
         
         .total-box { background: #2a5298; color: white; padding: 20px; border-radius: 8px; text-align: right; font-size: 1.3em; font-weight: bold; margin-top: 20px; }
-        
-        .qcm-item { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-        .ans-grid { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-top: 8px; }
         
         .btn { background: #2a5298; color: white; padding: 14px 30px; border: none; border-radius: 6px; font-size: 1.1em; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; transition: 0.2s; }
         .btn:hover { background: #1e3c72; }
@@ -41,9 +42,9 @@
 
 <div class="container">
     <div class="header">
-        <h1>44èmes Journées Techniques Biomédicales AAMB v0.01</h1>
+        <h1>44èmes Journées Techniques Biomédicales AAMB v0.02</h1>
         <p>18 et 19 Novembre 2026 - Micropolis, Besançon</p>
-        <p><strong>Dossier d'Inscription & Convention de Partenariat</strong></p>
+        <p><strong>Dossier d'Inscription Partenaire</strong></p>
     </div>
 
     <div class="content">
@@ -58,11 +59,11 @@
                         <input type="text" id="company" required>
                     </div>
                     <div class="form-group">
-                        <label>Nom & Prénom du Responsable *</label>
+                        <label>Nom & Prénom du Responsable / Contact *</label>
                         <input type="text" id="contactName" required>
                     </div>
                     <div class="form-group">
-                        <label>E-mail de contact *</label>
+                        <label>Adresse E-mail *</label>
                         <input type="email" id="email" required>
                     </div>
                     <div class="form-group">
@@ -75,16 +76,44 @@
                     <textarea id="address" rows="2" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Logo de la société (pour affichage/support)</label>
+                    <label>Logo de l'entreprise (JPG, PNG)</label>
                     <input type="file" id="logoUpload" accept="image/*">
                 </div>
             </div>
 
-            <!-- 2. EMPLACEMENT & PRESTATIONS -->
+            <!-- 2. ACTIVITÉS & SECTEURS -->
             <div class="section-block">
-                <h3>2. Réservation Stand & Repas</h3>
+                <h3>2. Domaine d'Activité & Secteur Médical</h3>
+                <div class="form-group">
+                    <label>Domaine d'activité :</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="checkbox" name="activity" value="Fabricant/Constructeur"> Fabricant/Constructeur</label>
+                        <label class="checkbox-item"><input type="checkbox" name="activity" value="Distributeur"> Distributeur</label>
+                        <label class="checkbox-item"><input type="checkbox" name="activity" value="Maintenance"> Maintenance</label>
+                        <label class="checkbox-item"><input type="checkbox" name="activity" value="Contrôle"> Contrôle</label>
+                        <label class="checkbox-item"><input type="checkbox" name="activity" value="Service"> Service</label>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Secteurs médicaux concernés :</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="checkbox" name="sector" value="Endoscopie"> Endoscopie</label>
+                        <label class="checkbox-item"><input type="checkbox" name="sector" value="Perfusion"> Perfusion</label>
+                        <label class="checkbox-item"><input type="checkbox" name="sector" value="Ventilation"> Ventilation</label>
+                        <label class="checkbox-item"><input type="checkbox" name="sector" value="Imagerie Médicale"> Imagerie Médicale</label>
+                        <label class="checkbox-item"><input type="checkbox" name="sector" value="Désinfection/Stérilisation"> Désinfection/Stérilisation</label>
+                        <label class="checkbox-item"><input type="checkbox" name="sector" value="Monitorage"> Monitorage</label>
+                        <label class="checkbox-item"><input type="checkbox" name="sector" value="Tous secteurs"> Tous secteurs</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. RÉSERVATION STAND & OPTION REMISE -->
+            <div class="section-block">
+                <h3>3. Emplacement Stand & Repas</h3>
                 <div class="info-box">
-                    Un emplacement de 3m x 2m comprend : Table, 2 chaises, Wifi, Alimentation 230V, <strong>4 repas de midi</strong> et <strong>1 soirée de Gala</strong>.
+                    Chaque emplacement (3m x 2m) à 1 800 € comprend : 1 table, 2 chaises, Wifi, Alimentation 230V, <strong>4 repas de midi</strong> et <strong>1 soirée de Gala</strong>.<br>
+                    🎁 <em>Réduction anticipée de 200 € appliquée pour toute inscription enregistrée avant le 1er avril 2026.</em>
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
@@ -92,6 +121,13 @@
                         <select id="stands" onchange="calculateTotal()">
                             <option value="1">1 Emplacement (6m²)</option>
                             <option value="2">2 Emplacements accolés (12m²)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date de validation de l'inscription</label>
+                        <select id="earlyBird" onchange="calculateTotal()">
+                            <option value="no">Inscrit après le 1er avril 2026</option>
+                            <option value="yes">Inscrit avant le 1er avril 2026 (-200€)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -104,14 +140,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Régimes alimentaires spécifiques (Nombre et détails)</label>
-                    <input type="text" id="specialDiets" placeholder="Ex: 1 végétarien, 1 sans gluten...">
+                    <label>Noms et Prénoms pour les Badges Nominatifs (limités à 2 visiteurs courte durée)</label>
+                    <textarea id="badgesList" rows="2" placeholder="Nom Prénom 1, Nom Prénom 2..."></textarea>
                 </div>
             </div>
 
-            <!-- 3. SOIRÉES ET SPONSORING -->
+            <!-- 4. SOIRÉES ET SPONSORING -->
             <div class="section-block">
-                <h3>3. Soirées, Pauses & Parrainage</h3>
+                <h3>4. Soirées, Pauses & Parrainage</h3>
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Soirée du Terroir - 18 Nov. (33 € / pers)</label>
@@ -123,7 +159,7 @@
                     </div>
                 </div>
                 <hr style="margin: 15px 0;">
-                <p><strong>Soutien & Participation optionnels :</strong></p>
+                <p><strong>Soutien & Parrainage optionnels :</strong></p>
                 <div class="form-grid" style="margin-top: 10px;">
                     <div class="form-group">
                         <label>Soutien Financier Pauses Cafés (€)</label>
@@ -140,97 +176,56 @@
                 </div>
             </div>
 
-            <!-- 4. ATELIERS & LOGISTIQUE -->
-            <div class="section-block">
-                <h3>4. Options Logistiques & Ateliers</h3>
-                <div class="form-group">
-                    <label><input type="checkbox" id="workshopInterest"> Souhaite animer un Atelier Technique (45 min, sur validation du comité)</label>
-                </div>
-                <div class="form-group">
-                    <label><input type="checkbox" id="bagInsertion"> Insertion de documentations dans les sacoches des congressistes (Livraison avant le 5 Nov.)</label>
-                </div>
-                <div class="form-group">
-                    <label><input type="checkbox" id="suppliesSupply"> Fourniture de Sacoches, Stylos ou Blocs-notes pour les congressistes (200 ex.)</label>
-                </div>
-                <div class="form-group">
-                    <label>Lot(s) fourni(s) pour la soirée de Gala (Description & valeur estimée)</label>
-                    <input type="text" id="prizeSupport" placeholder="Ex: 1 Tablette tactile (valeur ~200€)">
-                </div>
-            </div>
-
-            <!-- 5. QUESTIONNAIRE DE CONNAISSANCES -->
-            <div class="section-block">
-                <h3>5. Questionnaire de Évaluation des Connaissances (QCM)</h3>
-                <div class="info-box">
-                    Veuillez proposer <strong>4 questions QCM</strong> sur vos équipements/solutions pour stimuler le passage des congressistes sur votre stand.
-                </div>
-                <div id="qcmContainer"></div>
-            </div>
-
             <!-- TOTAL ET SOUMISSION -->
             <div class="total-box">
-                Montant total estimé : <span id="totalDisplay">0</span> €
+                Montant total estimé : <span id="totalDisplay">1800</span> €
             </div>
 
-            <button type="submit" class="btn">Valider et Envoyer mon Inscription</button>
+            <button type="submit" class="btn">Valider et Obtenir mon Bon de Commande (PDF)</button>
         </form>
 
         <!-- ECRAN DE CHARGEMENT -->
         <div id="loadingSection" class="hidden" style="text-align: center; padding: 40px;">
             <div class="spinner"></div>
-            <h3>Enregistrement de votre dossier en cours...</h3>
-            <p>Veuillez patienter pendant le transfert des données et du logo.</p>
+            <h3>Génération du Bon de Commande PDF en cours...</h3>
+            <p>Veuillez patienter pendant le traitement et l'envoi de l'e-mail.</p>
         </div>
 
         <!-- CONFIRMATION -->
         <div id="successSection" class="hidden" style="text-align: center; padding: 40px; background: #e8f8f5; border-radius: 8px;">
-            <h2 style="color: #27ae60;">✓ Inscription Enregistrée avec Succès !</h2>
-            <p style="margin: 15px 0;">Un e-mail de confirmation contenant le détail de votre commande et les références bancaires vous a été envoyé.</p>
+            <h2 style="color: #27ae60;">✓ Réservation validée !</h2>
+            <p style="margin: 15px 0;">Le <strong>Bon de commande récapitulatif (PDF)</strong> a été généré et envoyé par e-mail à votre adresse. Merci de nous le retourner signé avec votre règlement.</p>
         </div>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQUm6M2Letw1O78SPKOK9a1THQoOXv4CuuwyWXWSzHRyBPUb89gxxLszEz5qAeM012/exec';
-
-    // Génération automatique des 4 blocs de QCM
-    window.onload = function() {
-        const container = document.getElementById('qcmContainer');
-        for (let i = 1; i <= 4; i++) {
-            let html = `
-                <div class="qcm-item">
-                    <label><strong>Question ${i} *</strong></label>
-                    <input type="text" class="q-title" id="q${i}_title" placeholder="Saisissez la question..." required>
-                    <div style="margin-top: 8px;">
-            `;
-            for (let j = 1; j <= 3; j++) {
-                html += `
-                    <div class="ans-grid">
-                        <input type="text" id="q${i}_a${j}" placeholder="Proposition ${j}" required>
-                        <label><input type="checkbox" id="q${i}_c${j}"> Bonne réponse</label>
-                    </div>
-                `;
-            }
-            html += `</div></div>`;
-            container.innerHTML += html;
-        }
-        calculateTotal();
-    };
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8QMm78qTx4QIGwhErKKrWTW_vgNSgiay0gOVzLZL2GkvUYFJIAyFhq2uoMmVbfM8h/exec';
 
     function calculateTotal() {
         let total = 0;
+        const stands = parseInt(document.getElementById('stands').value) || 1;
+        const isEarly = document.getElementById('earlyBird').value === 'yes';
+        
+        // Prix du stand
+        total += stands * 1800;
+        if (isEarly) total -= 200;
+
+        // Repas sup
         const mealsJ1 = parseInt(document.getElementById('mealsJ1').value) || 0;
         const mealsJ2 = parseInt(document.getElementById('mealsJ2').value) || 0;
+        total += (mealsJ1 + mealsJ2) * 36;
+
+        // Soirées
         const terroir = parseInt(document.getElementById('terroirCount').value) || 0;
         const galaExtra = parseInt(document.getElementById('galaExtra').value) || 0;
+        total += terroir * 33;
+        total += galaExtra * 65;
 
+        // Soutiens
         const pauseSup = parseFloat(document.getElementById('pauseSupport').value) || 0;
         const terroirSup = parseFloat(document.getElementById('terroirSupport').value) || 0;
         const galaSup = parseFloat(document.getElementById('galaSupport').value) || 0;
-
-        total += (mealsJ1 + mealsJ2) * 36;
-        total += terroir * 33;
-        total += galaExtra * 65;
         total += pauseSup + terroirSup + galaSup;
 
         document.getElementById('totalDisplay').innerText = total;
@@ -241,23 +236,7 @@
         document.getElementById('partnerForm').classList.add('hidden');
         document.getElementById('loadingSection').classList.remove('hidden');
 
-        // Récupération du QCM
-        const qcmData = [];
-        for (let i = 1; i <= 4; i++) {
-            const qObj = {
-                question: document.getElementById(`q${i}_title`).value,
-                answers: []
-            };
-            for (let j = 1; j <= 3; j++) {
-                qObj.answers.push({
-                    text: document.getElementById(`q${i}_a${j}`).value,
-                    isCorrect: document.getElementById(`q${i}_c${j}`).checked
-                });
-            }
-            qcmData.push(qObj);
-        }
-
-        // Fichier Logo en Base64
+        // Fichier Logo
         const logoInput = document.getElementById('logoUpload');
         let logoFile = null;
         if (logoInput.files.length > 0) {
@@ -274,19 +253,15 @@
             phone: document.getElementById('phone').value,
             address: document.getElementById('address').value,
             stands: document.getElementById('stands').value,
+            earlyBird: document.getElementById('earlyBird').value === 'yes',
             mealsJ1: document.getElementById('mealsJ1').value,
             mealsJ2: document.getElementById('mealsJ2').value,
-            specialDiets: document.getElementById('specialDiets').value,
+            badgesList: document.getElementById('badgesList').value,
             terroirCount: document.getElementById('terroirCount').value,
             galaExtra: document.getElementById('galaExtra').value,
             pauseSupport: document.getElementById('pauseSupport').value,
             terroirSupport: document.getElementById('terroirSupport').value,
             galaSupport: document.getElementById('galaSupport').value,
-            workshopInterest: document.getElementById('workshopInterest').checked,
-            bagInsertion: document.getElementById('bagInsertion').checked,
-            suppliesSupply: document.getElementById('suppliesSupply').checked,
-            prizeSupport: document.getElementById('prizeSupport').value,
-            qcm: qcmData,
             logoFile: logoFile,
             totalAmount: calculateTotal()
         };
@@ -315,6 +290,10 @@
             reader.onload = () => resolve(reader.result);
             reader.onerror = error => reject(error);
         });
+    }
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
     }
 </script>
 </body>
