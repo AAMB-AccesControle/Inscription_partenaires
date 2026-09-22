@@ -1097,7 +1097,7 @@
             data.sectors = sectorsValues;
             
             try {
-                const response = await fetch('YOUR_APPS_SCRIPT_URL', {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbwdHLemXxMQLvGHVdPbTOVGdhOJDot0v6aF_Dcx7hfZ19kx2knHlEkbLOqwwyTa_dWUPA/exec', {
                     method: 'POST',
                     body: JSON.stringify({
                         ...data,
