@@ -291,7 +291,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.24</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.25</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.1.0</p>
         </div>
@@ -1126,12 +1126,9 @@
             });
         }
         
-        // Charger les données si token dans l'URL (Mode Édition)
+        // Charger les données si un token est présent dans l'URL (mode édition)
         window.addEventListener('load', async function() {
-            console.log("📄 Page chargée");
-            
-            generateRepresentatives();
-            generateOtherPeople();
+            console.log("🔄 Page chargée");
             
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
@@ -1145,8 +1142,8 @@
                     const data = await response.json();
                     
                     if (data.error) {
-                        console.error("Erreur:", data.error);
-                        alert("Erreur: " + data.error);
+                        console.error("❌ Erreur:", data.error);
+                        alert('Erreur: ' + data.error);
                         return;
                     }
                     
@@ -1159,26 +1156,48 @@
                             if (input.type === 'radio') {
                                 const radio = document.querySelector(`input[name="${key}"][value="${data[key]}"]`);
                                 if (radio) radio.checked = true;
-                            } else if (input.type !== 'file') {
+                            } else if (input.tagName === 'SELECT' || input.tagName === 'TEXTAREA') {
+                                input.value = data[key];
+                            } else if (input.type !== 'file' && input.type !== 'checkbox') {
                                 input.value = data[key];
                             }
                         }
                     });
                     
-                    // Cases à cocher (quality et sectors)
-                    if (data.quality && typeof data.quality === 'string') {
-                        data.quality.split(', ').forEach(val => {
-                            const cb = document.querySelector(`input[name="quality"][value="${val}"]`);
-                            if (cb) cb.checked = true;
+                    // Cases à cocher pour quality et sectors
+                    console.log("🔍 Données brutes quality:", data.quality, typeof data.quality);
+                    console.log("🔍 Données brutes sectors:", data.sectors, typeof data.sectors);
+        
+                    // Fonction pour cocher les cases
+                    function restoreCheckboxes(fieldName, fieldValue) {
+                        if (!fieldValue) return;
+                        
+                        let values = [];
+                        if (Array.isArray(fieldValue)) {
+                            values = fieldValue;
+                        } else if (typeof fieldValue === 'string') {
+                            // Essaye plusieurs séparateurs
+                            values = fieldValue.includes('||') ? fieldValue.split('||') : 
+                                     fieldValue.includes(', ') ? fieldValue.split(', ') : 
+                                     fieldValue.split(',');
+                        }
+                        
+                        console.log(`✅ ${fieldName} - Valeurs à restaurer:`, values);
+                        
+                        values.forEach(val => {
+                            val = val.trim(); // Enlève les espaces
+                            const cb = document.querySelector(`input[name="${fieldName}"][value="${val}"]`);
+                            if (cb) {
+                                cb.checked = true;
+                                console.log(`  ✓ Coché: ${val}`);
+                            } else {
+                                console.log(`  ⚠️ Non trouvé: ${val}`);
+                            }
                         });
                     }
-                    
-                    if (data.sectors && typeof data.sectors === 'string') {
-                        data.sectors.split(', ').forEach(val => {
-                            const cb = document.querySelector(`input[name="sectors"][value="${val}"]`);
-                            if (cb) cb.checked = true;
-                        });
-                    }
+        
+                    restoreCheckboxes('quality', data.quality);
+                    restoreCheckboxes('sectors', data.sectors);
                     
                     // Changer le bouton de validation
                     const btn = document.querySelector('#section5 .btn-primary');
@@ -1188,6 +1207,7 @@
                     
                 } catch (err) {
                     console.error("❌ Erreur chargement:", err);
+                    alert("Erreur lors du chargement des données");
                 }
             }
         });
