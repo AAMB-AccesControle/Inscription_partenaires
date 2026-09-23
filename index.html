@@ -189,6 +189,57 @@
             margin-bottom: 20px;
         }
         .success-message h2 { color: #1e3a5f; margin-bottom: 15px; }
+        
+        /* 🎯 ÉCRAN DE CHARGEMENT */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 58, 95, 0.98);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+        #loadingOverlay.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 25px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .loading-subtext {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+        .loading-error {
+            color: #ff6b6b;
+            font-size: 16px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            max-width: 80%;
+        }
+        
         @media (max-width: 768px) {
             .form-container { padding: 20px; }
             .inline-fields { grid-template-columns: 1fr; }
@@ -197,10 +248,18 @@
     </style>
 </head>
 <body>
+    <!-- 🎯 ÉCRAN DE CHARGEMENT -->
+    <div id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Chargement de votre formulaire...</div>
+        <div class="loading-subtext">Veuillez patienter quelques instants</div>
+        <div class="loading-error" id="loadingError"></div>
+    </div>
+
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.33</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.34</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.0</p>
         </div>
@@ -213,7 +272,7 @@
             <form id="partnerForm">
                 <!-- SECTION 1: INFORMATIONS GENERALES -->
                 <div class="section active" id="section1">
-                    <h2 class="section-title"> Informations Générales</h2>
+                    <h2 class="section-title">📋 Informations Générales</h2>
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Identité de la Société</div>
@@ -397,7 +456,7 @@
                 
                 <!-- SECTION 2: EMPLACEMENTS ET LOGISTIQUE -->
                 <div class="section" id="section2">
-                    <h2 class="section-title">📍 Emplacements et Logistique</h2>
+                    <h2 class="section-title"> Emplacements et Logistique</h2>
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Emplacements</div>
@@ -672,7 +731,7 @@
                 
                 <!-- SECTION 5: DOCUMENTS, FOURNITURES ET SERVICES -->
                 <div class="section" id="section5">
-                    <h2 class="section-title">📄 Documents, Fournitures et Services</h2>
+                    <h2 class="section-title"> Documents, Fournitures et Services</h2>
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Documents Publicitaires</div>
@@ -946,7 +1005,7 @@
         }
         
         async function submitForm() {
-            console.log(" submitForm démarré");
+            console.log("🚀 submitForm démarré");
             
             const currentSection = document.getElementById('section5');
             const requiredRadios = currentSection.querySelectorAll('input[type="radio"][required]');
@@ -992,7 +1051,7 @@
             submitBtn.disabled = true;
 
             try {
-                console.log("📤 Envoi vers Google Apps Script...");
+                console.log(" Envoi vers Google Apps Script...");
                 
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
@@ -1012,7 +1071,7 @@
                 window.scrollTo(0, 0);
                 
             } catch (error) {
-                console.error(" ERREUR:", error);
+                console.error("❌ ERREUR:", error);
                 alert('Erreur de connexion. Veuillez réessayer.');
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
@@ -1033,9 +1092,7 @@
             generateOtherPeople();
         });
         
-        // Charger les données si un token est présent dans l'URL (mode édition)
-
-        // Charger les données si un token est présent dans l'URL (mode édition)
+        // 🎯 CHARGEMENT DES DONNÉES EN MODE MODIFICATION
         window.addEventListener('load', async function() {
             console.log("🔄 Page chargée");
             
@@ -1050,10 +1107,14 @@
                 const overlay = document.getElementById('loadingOverlay');
                 const loadingError = document.getElementById('loadingError');
                 overlay.classList.add('active');
+                console.log("📡 Overlay affiché");
                 
                 try {
+                    console.log("📡 Appel fetch vers:", `${SCRIPT_URL}?token=${token}`);
                     const response = await fetch(`${SCRIPT_URL}?token=${token}`);
+                    console.log("📥 Réponse reçue:", response.status);
                     const data = await response.json();
+                    console.log("📊 Données:", data);
                     
                     if (data.error) {
                         console.error("❌ Erreur:", data.error);
@@ -1106,13 +1167,15 @@
                     const btn = document.querySelector('#section5 .btn-primary');
                     if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
                     
-                    // ✅ MASQUER L'ÉCRAN DE CHARGEMENT UNE FOIS TOUT CHARGÉ
+                    console.log("✅ Formulaire rempli, masquage de l'overlay dans 500ms");
+                    // ✅ MASQUER L'ÉCRAN DE CHARGEMENT
                     setTimeout(() => {
                         overlay.classList.remove('active');
-                    }, 500); // Petit délai pour que l'utilisateur voie que c'est chargé
+                        console.log("✅ Overlay masqué");
+                    }, 500);
                     
                 } catch (err) {
-                    console.error(" Erreur chargement:", err);
+                    console.error("❌ Erreur chargement:", err);
                     loadingError.textContent = "❌ Erreur lors du chargement des données. Veuillez réessayer.";
                     loadingError.style.display = 'block';
                     setTimeout(() => {
@@ -1125,7 +1188,7 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
                 .then(() => console.log('✅ Service Worker registered'))
-                .catch(err => console.error(' SW error:', err));
+                .catch(err => console.error('❌ SW error:', err));
         }
     </script>
 </body>
