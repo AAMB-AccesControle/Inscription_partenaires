@@ -324,7 +324,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.22</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.23</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.1.0</p>
         </div>
@@ -1097,11 +1097,10 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
         
-        // Form submission
         async function submitForm() {
-            console.log("🔴 TEST: submitForm démarré");
+            console.log("🔴 submitForm démarré");
             
-            // Validation rapide
+            // Validation rapide de la section 5
             const currentSection = document.getElementById('section5');
             const requiredRadios = currentSection.querySelectorAll('input[type="radio"][required]');
             const radioGroups = new Set();
@@ -1114,7 +1113,7 @@
                     return;
                 }
             }
-
+        
             // Récupération des données
             const form = document.getElementById('partnerForm');
             const formData = new FormData(form);
@@ -1126,20 +1125,21 @@
             
             // Ajout des métadonnées
             data.timestamp = new Date().toISOString();
-            data.token = generateToken();
+            data.token = window.editToken || generateToken(); // ← MODIFICATION ICI
+            data.action = window.editToken ? 'update' : 'create'; // ← AJOUT ICI
             
-            console.log("📦 Données prêtes à envoyer:", data.companyName);
+            console.log(" Données prêtes:", data.companyName, "Token:", data.token);
             
             // Feedback visuel
             const submitBtn = currentSection.querySelector('.btn-primary');
             const originalText = submitBtn.innerText;
             submitBtn.innerText = 'Envoi en cours...';
             submitBtn.disabled = true;
-
+        
             try {
                 console.log("📤 Envoi vers Google Apps Script...");
                 
-                await fetch('https://script.google.com/macros/s/AKfycbwRTmuBWCd-FdCfcm7lzKvBGlZ2Ee_iu69_PqQYUpUzQ2P0J1C6fVlUABYdRcIbLE40/exec', {
+                await fetch('https://script.google.com/macros/s/AKfycbz1ts6AlrEkut_ZeZLc1SEsn4b5DKDIgwm94pV6J99kltEzaOrflrsS2ij1XaRDGVLG/exec', {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: {
@@ -1148,7 +1148,7 @@
                     body: JSON.stringify(data)
                 });
                 
-                console.log("✅ Envoi terminé (mode no-cors)");
+                console.log("✅ Envoi terminé");
                 
                 // Afficher le message de succès
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -1204,7 +1204,7 @@
               console.log(" Mode édition activé - Token:", token);
               
               try {
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbz1ts6AlrEkut_ZeZLc1SEsn4b5DKDIgwm94pV6J99kltEzaOrflrsS2ij1XaRDGVLG/exec';
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbwRTmuBWCd-FdCfcm7lzKvBGlZ2Ee_iu69_PqQYUpUzQ2P0J1C6fVlUABYdRcIbLE40/exec';
                 const response = await fetch(`${scriptUrl}?token=${token}`);
                 const data = await response.json();
                 
@@ -1276,6 +1276,69 @@
             
             // ... (le reste du code reste identique)
           }
+            
+            // Charger les données si token dans l'URL
+            window.addEventListener('load', async function() {
+                console.log(" Page chargée");
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
+                
+                if (token) {
+                    console.log(" Token trouvé:", token);
+                    window.editToken = token;
+                    
+                    try {
+                        const scriptUrl = 'https://script.google.com/macros/s/AKfycbz1ts6AlrEkut_ZeZLc1SEsn4b5DKDIgwm94pV6J99kltEzaOrflrsS2ij1XaRDGVLG/exec';
+                        const response = await fetch(`${scriptUrl}?token=${token}`);
+                        const data = await response.json();
+                        
+                        if (data.error) {
+                            console.error("Erreur:", data.error);
+                            return;
+                        }
+                        
+                        console.log("✅ Données chargées:", data.companyName);
+                        
+                        // Remplir les champs
+                        Object.keys(data).forEach(key => {
+                            const input = document.querySelector(`[name="${key}"]`);
+                            if (input && data[key]) {
+                                if (input.type === 'radio') {
+                                    const radio = document.querySelector(`input[name="${key}"][value="${data[key]}"]`);
+                                    if (radio) radio.checked = true;
+                                } else if (input.type !== 'file') {
+                                    input.value = data[key];
+                                }
+                            }
+                        });
+                        
+                        // Cases à cocher
+                        if (data.quality && typeof data.quality === 'string') {
+                            data.quality.split(', ').forEach(val => {
+                                const cb = document.querySelector(`input[name="quality"][value="${val}"]`);
+                                if (cb) cb.checked = true;
+                            });
+                        }
+                        
+                        if (data.sectors && typeof data.sectors === 'string') {
+                            data.sectors.split(', ').forEach(val => {
+                                const cb = document.querySelector(`input[name="sectors"][value="${val}"]`);
+                                if (cb) cb.checked = true;
+                            });
+                        }
+                        
+                        // Changer le bouton
+                        const btn = document.querySelector('#section5 .btn-primary');
+                        if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
+                        
+                        alert("✅ Formulaire chargé en mode modification");
+                        
+                    } catch (err) {
+                        console.error("❌ Erreur chargement:", err);
+                    }
+                }
+            });
         </script>
     </body>
 </html>
