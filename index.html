@@ -324,7 +324,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.16</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.17</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.1.0</p>
         </div>
@@ -1005,6 +1005,11 @@
         // Generate representative fields
         function generateRepresentatives() {
             const container = document.getElementById('representativesContainer');
+            if (!container) {
+                console.error("❌ representativesContainer introuvable !");
+                return;
+            }
+            container.innerHTML = '';
             for (let i = 1; i <= 5; i++) {
                 const div = document.createElement('div');
                 div.className = 'person-group';
@@ -1027,11 +1032,17 @@
                 `;
                 container.appendChild(div);
             }
+            console.log("✅ Représentants générés");
         }
         
         // Generate other people fields
         function generateOtherPeople() {
             const container = document.getElementById('otherPeopleContainer');
+            if (!container) {
+                console.error("❌ otherPeopleContainer introuvable !");
+                return;
+            }
+            container.innerHTML = '';
             for (let i = 1; i <= 10; i++) {
                 const div = document.createElement('div');
                 div.className = 'form-group';
@@ -1041,10 +1052,13 @@
                 `;
                 container.appendChild(div);
             }
+            console.log("✅ Autres personnes générées");
         }
         
         // Navigation
         function nextSection(current) {
+            console.log(`➡️ Passage à la section ${current + 1}`);
+            
             // Validate current section
             const currentSection = document.getElementById(`section${current}`);
             const requiredFields = currentSection.querySelectorAll('[required]');
@@ -1071,6 +1085,7 @@
         }
         
         function previousSection(current) {
+            console.log(`⬅️ Retour à la section ${current - 1}`);
             document.getElementById(`section${current}`).classList.remove('active');
             document.getElementById(`section${current - 1}`).classList.add('active');
             updateProgressBar(current - 1);
@@ -1082,6 +1097,7 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
         
+        // Form submission
         async function submitForm() {
             console.log("🔴 TEST: submitForm démarré");
             
@@ -1098,7 +1114,7 @@
                     return;
                 }
             }
-        
+
             // Récupération des données
             const form = document.getElementById('partnerForm');
             const formData = new FormData(form);
@@ -1119,11 +1135,10 @@
             const originalText = submitBtn.innerText;
             submitBtn.innerText = 'Envoi en cours...';
             submitBtn.disabled = true;
-        
+
             try {
-                console.log(" Envoi vers Google Apps Script...");
+                console.log("📤 Envoi vers Google Apps Script...");
                 
-                // ENVOI AVEC MODE NO-CORS
                 await fetch('https://script.google.com/macros/s/AKfycbz1ts6AlrEkut_ZeZLc1SEsn4b5DKDIgwm94pV6J99kltEzaOrflrsS2ij1XaRDGVLG/exec', {
                     method: 'POST',
                     mode: 'no-cors',
@@ -1151,51 +1166,6 @@
                 submitBtn.disabled = false;
             }
         }
-
-            // 2. Récupération des données
-            const form = document.getElementById('partnerForm');
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            // Gestion des cases à cocher multiples
-            data.quality = formData.getAll('quality');
-            data.sectors = formData.getAll('sectors');
-            
-            // Ajout des métadonnées
-            data.timestamp = new Date().toISOString();
-            data.token = generateToken();
-            
-            // 3. Feedback visuel (bouton désactivé pendant l'envoi)
-            const submitBtn = currentSection.querySelector('.btn-primary');
-            const originalText = submitBtn.innerText;
-            submitBtn.innerText = 'Envoi en cours...';
-            submitBtn.disabled = true;
-
-            try {
-                // 4. ENVOI SÉCURISÉ VERS GOOGLE APPS SCRIPT
-                await fetch('https://script.google.com/macros/s/AKfycbyuEqpBRvR_v97Je-EZiFIviPpK4EtESpEM9KiNFQd9eaO6L8P2cYobsiZ5JI8b35Ut/exec', {
-                    method: 'POST',
-                    mode: 'no-cors',          // ← INDISPENSABLE pour éviter le blocage CORS
-                    headers: {
-                        'Content-Type': 'text/plain' // ← INDISPENSABLE pour éviter la requête préflight
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                // Si on arrive ici, l'envoi a réussi (le mode no-cors ne renvoie pas de réponse lisible, mais l'absence d'erreur signifie que c'est parti)
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                document.querySelector('.buttons').style.display = 'none';
-                document.querySelector('.progress-bar').style.display = 'none';
-                document.getElementById('successMessage').classList.add('show');
-                window.scrollTo(0, 0);
-                
-            } catch (error) {
-                console.error("Erreur d'envoi:", error);
-                alert('Erreur de connexion. Veuillez vérifier votre connexion internet et réessayer.');
-                submitBtn.innerText = originalText;
-                submitBtn.disabled = false;
-            }
-        }
         
         function generateToken() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -1205,8 +1175,11 @@
             });
         }
         
-        // Initialize
+        // Initialize when DOM is ready
+        console.log(" Script chargé, attente du DOM...");
+        
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("✅ DOM chargé ! Génération des champs...");
             generateRepresentatives();
             generateOtherPeople();
         });
@@ -1214,8 +1187,10 @@
         // Service Worker registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('Service Worker registered'));
+                .then(() => console.log('✅ Service Worker registered'))
+                .catch(err => console.error('❌ SW error:', err));
         }
     </script>
+    
 </body>
 </html>
