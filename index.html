@@ -5,21 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire Partenaire - AAMB JTB 2026</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#1e3a5f">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -28,47 +22,22 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
         }
-        
         .header {
             background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        
-        .header img {
-            max-width: 150px;
-            margin-bottom: 15px;
-        }
-        
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .header .subtitle {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .form-container {
-            padding: 40px;
-        }
-        
-        .section {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-        
-        .section.active {
-            display: block;
-        }
-        
+        .header img { max-width: 150px; margin-bottom: 15px; }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header .subtitle { font-size: 14px; opacity: 0.9; }
+        .form-container { padding: 40px; }
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
         .section-title {
             color: #1e3a5f;
             font-size: 24px;
@@ -76,11 +45,7 @@
             padding-bottom: 10px;
             border-bottom: 3px solid #667eea;
         }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
+        .form-group { margin-bottom: 20px; }
         label {
             display: block;
             color: #333;
@@ -88,18 +53,9 @@
             margin-bottom: 8px;
             font-size: 14px;
         }
-        
-        .required::after {
-            content: " *";
-            color: #e74c3c;
-        }
-        
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="number"],
-        select,
-        textarea {
+        .required::after { content: " *"; color: #e74c3c; }
+        input[type="text"], input[type="email"], input[type="tel"],
+        input[type="number"], select, textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #ddd;
@@ -108,27 +64,17 @@
             transition: border-color 0.3s;
             font-family: inherit;
         }
-        
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="tel"]:focus,
-        input[type="number"]:focus,
-        select:focus,
-        textarea:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
-        
-        .checkbox-group,
-        .radio-group {
+        .checkbox-group, .radio-group {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             margin-top: 8px;
         }
-        
-        .checkbox-item,
-        .radio-item {
+        .checkbox-item, .radio-item {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -139,20 +85,16 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        
-        .checkbox-item:hover,
-        .radio-item:hover {
+        .checkbox-item:hover, .radio-item:hover {
             border-color: #667eea;
             background: #eef2f7;
         }
-        
         .checkbox-item input[type="checkbox"],
         .radio-item input[type="radio"] {
             width: 18px;
             height: 18px;
             cursor: pointer;
         }
-        
         .sub-section {
             background: #f8f9fa;
             padding: 20px;
@@ -160,14 +102,12 @@
             margin-bottom: 20px;
             border-left: 4px solid #667eea;
         }
-        
         .sub-section-title {
             color: #2d5a87;
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 15px;
         }
-        
         .person-group {
             background: white;
             padding: 15px;
@@ -175,20 +115,17 @@
             margin-bottom: 10px;
             border: 1px solid #ddd;
         }
-        
         .person-title {
             font-weight: 600;
             color: #667eea;
             margin-bottom: 10px;
             font-size: 14px;
         }
-        
         .inline-fields {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
-        
         .price-info {
             background: #fff3cd;
             border: 1px solid #ffc107;
@@ -198,14 +135,12 @@
             margin-bottom: 15px;
             font-size: 14px;
         }
-        
         .buttons {
             display: flex;
             justify-content: space-between;
             margin-top: 30px;
             gap: 15px;
         }
-        
         button {
             padding: 14px 30px;
             border: none;
@@ -215,26 +150,21 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-        
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
         .progress-bar {
             background: #e9ecef;
             height: 8px;
@@ -242,48 +172,27 @@
             border-radius: 4px;
             overflow: hidden;
         }
-        
         .progress-fill {
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             height: 100%;
             transition: width 0.3s;
         }
-        
         .success-message {
             display: none;
             text-align: center;
             padding: 60px 40px;
         }
-        
-        .success-message.show {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-        
+        .success-message.show { display: block; animation: fadeIn 0.5s; }
         .success-icon {
             font-size: 80px;
             color: #28a745;
             margin-bottom: 20px;
         }
-        
-        .success-message h2 {
-            color: #1e3a5f;
-            margin-bottom: 15px;
-        }
-        
+        .success-message h2 { color: #1e3a5f; margin-bottom: 15px; }
         @media (max-width: 768px) {
-            .form-container {
-                padding: 20px;
-            }
-            
-            .inline-fields {
-                grid-template-columns: 1fr;
-            }
-            
-            .checkbox-group,
-            .radio-group {
-                flex-direction: column;
-            }
+            .form-container { padding: 20px; }
+            .inline-fields { grid-template-columns: 1fr; }
+            .checkbox-group, .radio-group { flex-direction: column; }
         }
     </style>
 </head>
@@ -291,9 +200,9 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.25</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.27</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
-            <p class="subtitle">v.1.0</p>
+            <p class="subtitle">v.2.0</p>
         </div>
         
         <div class="form-container">
@@ -318,23 +227,23 @@
                             <label class="required">Qualité</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="quality" value="Fabricant/Constructeur">
+                                    <input type="checkbox" name="quality_fabricant" value="Oui">
                                     <span>Fabricant/Constructeur</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="quality" value="Distributeur">
+                                    <input type="checkbox" name="quality_distributeur" value="Oui">
                                     <span>Distributeur</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="quality" value="Maintenance & Contrôle">
+                                    <input type="checkbox" name="quality_maintenance" value="Oui">
                                     <span>Maintenance & Contrôle</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="quality" value="Service">
+                                    <input type="checkbox" name="quality_service" value="Oui">
                                     <span>Service</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="quality" value="Autre">
+                                    <input type="checkbox" name="quality_autre" value="Oui">
                                     <span>Autre</span>
                                 </label>
                             </div>
@@ -344,83 +253,83 @@
                             <label class="required">Secteurs d'activités</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Endoscopie">
+                                    <input type="checkbox" name="sector_endoscopie" value="Oui">
                                     <span>Endoscopie</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Perfusion">
+                                    <input type="checkbox" name="sector_perfusion" value="Oui">
                                     <span>Perfusion</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Ventilation">
+                                    <input type="checkbox" name="sector_ventilation" value="Oui">
                                     <span>Ventilation</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Réchauffement patient">
+                                    <input type="checkbox" name="sector_rechauffement" value="Oui">
                                     <span>Réchauffement patient</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Imagerie Médicale">
+                                    <input type="checkbox" name="sector_imagerie" value="Oui">
                                     <span>Imagerie Médicale</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Désinfection/Stérilisation">
+                                    <input type="checkbox" name="sector_desinfection" value="Oui">
                                     <span>Désinfection/Stérilisation</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Exploration fonctionnelle">
+                                    <input type="checkbox" name="sector_exploration" value="Oui">
                                     <span>Exploration fonctionnelle</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Laboratoire">
+                                    <input type="checkbox" name="sector_laboratoire" value="Oui">
                                     <span>Laboratoire</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Métrologie">
+                                    <input type="checkbox" name="sector_metrologie" value="Oui">
                                     <span>Métrologie</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Batterie">
+                                    <input type="checkbox" name="sector_batterie" value="Oui">
                                     <span>Batterie</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Odontologie">
+                                    <input type="checkbox" name="sector_odontologie" value="Oui">
                                     <span>Odontologie</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Optique/lampes">
+                                    <input type="checkbox" name="sector_optique" value="Oui">
                                     <span>Optique/lampes</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Accessoires/Câbles/Consommables/Etiquetage">
+                                    <input type="checkbox" name="sector_accessoires" value="Oui">
                                     <span>Accessoires/Câbles/Consommables/Etiquetage</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Monitorage">
+                                    <input type="checkbox" name="sector_monitorage" value="Oui">
                                     <span>Monitorage</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Instrumentation de chirurgie">
+                                    <input type="checkbox" name="sector_instrumentation" value="Oui">
                                     <span>Instrumentation de chirurgie</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Appareils de mesures">
+                                    <input type="checkbox" name="sector_appareils" value="Oui">
                                     <span>Appareils de mesures</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Humanitaire">
+                                    <input type="checkbox" name="sector_humanitaire" value="Oui">
                                     <span>Humanitaire</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Maintenances">
+                                    <input type="checkbox" name="sector_maintenances" value="Oui">
                                     <span>Maintenances</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Bras/Table opératoire/Scialytique">
+                                    <input type="checkbox" name="sector_bras" value="Oui">
                                     <span>Bras/Table opératoire/Scialytique</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sectors" value="Autres">
+                                    <input type="checkbox" name="sector_autres" value="Oui">
                                     <span>Autres</span>
                                 </label>
                             </div>
@@ -704,9 +613,7 @@
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Soirée du Terroir du mercredi 18 novembre 2026</div>
-                        <div class="price-info">
-                            Tarif : 25,00 € TTC/personne
-                        </div>
+                        <div class="price-info">Tarif : 25,00 € TTC/personne</div>
                         <div class="form-group">
                             <label>Nombre de repas souhaité pour la soirée terroir</label>
                             <select name="terroirDinner">
@@ -727,7 +634,6 @@
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Soirée de Gala du jeudi 19 novembre 2026</div>
-                        
                         <div class="form-group">
                             <label>Nombre d'entrées gratuites utilisées (vous en disposez d'1 ou 2 par emplacement réservé)</label>
                             <select name="galaFreeEntries">
@@ -736,7 +642,6 @@
                                 <option value="2">2</option>
                             </select>
                         </div>
-                        
                         <div class="form-group">
                             <label>Nombre d'entrées supplémentaires (60,00 € TTC par personne)</label>
                             <select name="galaExtraEntries">
@@ -791,7 +696,6 @@
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Fournitures</div>
-                        
                         <div class="form-group">
                             <label class="required">Pouvez-vous nous fournir 180 sacoches ?</label>
                             <div class="radio-group">
@@ -805,7 +709,6 @@
                                 </label>
                             </div>
                         </div>
-                        
                         <div class="form-group">
                             <label class="required">Pouvez-vous nous fournir 180 blocs-notes ?</label>
                             <div class="radio-group">
@@ -819,7 +722,6 @@
                                 </label>
                             </div>
                         </div>
-                        
                         <div class="form-group">
                             <label class="required">Pouvez-vous nous fournir 180 stylos ?</label>
                             <div class="radio-group">
@@ -837,7 +739,6 @@
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Contrôle des Connaissances</div>
-                        
                         <div class="form-group">
                             <label class="required">Pouvez-vous nous fournir 5 questions et réponses servant à la réalisation de questionnaires de contrôle de connaissances ?</label>
                             <div class="radio-group">
@@ -851,7 +752,6 @@
                                 </label>
                             </div>
                         </div>
-                        
                         <div class="form-group">
                             <label class="required">Seriez-vous intéressé par la fourniture d'un lot récompensant les stagiaires les plus assidus lors de la soirée de gala ?</label>
                             <div class="radio-group">
@@ -872,7 +772,6 @@
                                 <span>€</span>
                             </div>
                         </div>
-                        
                         <div class="form-group">
                             <label class="required">Seriez-vous intéressé par une participation financière à un lot récompensant les stagiaires les plus assidus ?</label>
                             <div class="radio-group">
@@ -893,7 +792,6 @@
                                 <span>€</span>
                             </div>
                         </div>
-                        
                         <div class="form-group">
                             <label class="required">Réaliserez-vous un jeu sur votre stand ?</label>
                             <div class="radio-group">
@@ -919,7 +817,6 @@
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Atelier</div>
-                        
                         <div class="form-group">
                             <label class="required">Seriez-vous intéressé pour animer un atelier durant les journées ? (15 personnes max)</label>
                             <div class="radio-group">
@@ -965,10 +862,8 @@
     </div>
     
     <script>
-        // ⚠️ REMPLACEZ CETTE URL PAR VOTRE VRAIE URL DE SCRIPT
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRTmuBWCd-FdCfcm7lzKvBGlZ2Ee_iu69_PqQYUpUzQ2P0J1C6fVlUABYdRcIbLE40/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzX6m-OBqu6ln6rsnG1ysGigvPcYt6sbTnOltxjJ6_5DI90SmBiLkD-9-4ZRqE2e-Uz/exec';
         
-        // Generate representative fields
         function generateRepresentatives() {
             const container = document.getElementById('representativesContainer');
             if (!container) return;
@@ -997,7 +892,6 @@
             }
         }
         
-        // Generate other people fields
         function generateOtherPeople() {
             const container = document.getElementById('otherPeopleContainer');
             if (!container) return;
@@ -1013,7 +907,6 @@
             }
         }
         
-        // Navigation
         function nextSection(current) {
             console.log(`➡️ Passage à la section ${current + 1}`);
             const currentSection = document.getElementById(`section${current}`);
@@ -1041,7 +934,6 @@
         }
         
         function previousSection(current) {
-            console.log(`⬅️ Retour à la section ${current - 1}`);
             document.getElementById(`section${current}`).classList.remove('active');
             document.getElementById(`section${current - 1}`).classList.add('active');
             updateProgressBar(current - 1);
@@ -1053,9 +945,8 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
         
-        // Form submission
         async function submitForm() {
-            console.log("🔴 submitForm démarré");
+            console.log(" submitForm démarré");
             
             const currentSection = document.getElementById('section5');
             const requiredRadios = currentSection.querySelectorAll('input[type="radio"][required]');
@@ -1074,8 +965,20 @@
             const formData = new FormData(form);
             const formDataObj = Object.fromEntries(formData.entries());
             
-            formDataObj.quality = formData.getAll('quality');
-            formDataObj.sectors = formData.getAll('sectors');
+            // Récupérer les cases à cocher individuellement
+            const checkboxFields = [
+                'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
+                'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
+                'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire',
+                'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique',
+                'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils',
+                'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'
+            ];
+            
+            checkboxFields.forEach(field => {
+                const cb = document.querySelector(`input[name="${field}"]`);
+                formDataObj[field] = cb && cb.checked ? 'Oui' : '';
+            });
             
             formDataObj.timestamp = new Date().toISOString();
             formDataObj.token = window.editToken || generateToken();
@@ -1094,9 +997,7 @@
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(formDataObj)
                 });
                 
@@ -1111,7 +1012,7 @@
                 window.scrollTo(0, 0);
                 
             } catch (error) {
-                console.error("❌ ERREUR:", error);
+                console.error(" ERREUR:", error);
                 alert('Erreur de connexion. Veuillez réessayer.');
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
@@ -1125,6 +1026,12 @@
                 return v.toString(16);
             });
         }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("✅ DOM chargé ! Génération des champs...");
+            generateRepresentatives();
+            generateOtherPeople();
+        });
         
         // Charger les données si un token est présent dans l'URL (mode édition)
         window.addEventListener('load', async function() {
@@ -1164,40 +1071,25 @@
                         }
                     });
                     
-                    // Cases à cocher pour quality et sectors
-                    console.log("🔍 Données brutes quality:", data.quality, typeof data.quality);
-                    console.log("🔍 Données brutes sectors:", data.sectors, typeof data.sectors);
-        
-                    // Fonction pour cocher les cases
-                    function restoreCheckboxes(fieldName, fieldValue) {
-                        if (!fieldValue) return;
-                        
-                        let values = [];
-                        if (Array.isArray(fieldValue)) {
-                            values = fieldValue;
-                        } else if (typeof fieldValue === 'string') {
-                            // Essaye plusieurs séparateurs
-                            values = fieldValue.includes('||') ? fieldValue.split('||') : 
-                                     fieldValue.includes(', ') ? fieldValue.split(', ') : 
-                                     fieldValue.split(',');
-                        }
-                        
-                        console.log(`✅ ${fieldName} - Valeurs à restaurer:`, values);
-                        
-                        values.forEach(val => {
-                            val = val.trim(); // Enlève les espaces
-                            const cb = document.querySelector(`input[name="${fieldName}"][value="${val}"]`);
+                    // Cases à cocher individuelles (nouveau format)
+                    const checkboxFields = [
+                        'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
+                        'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
+                        'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire',
+                        'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique',
+                        'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils',
+                        'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'
+                    ];
+                    
+                    checkboxFields.forEach(field => {
+                        if (data[field] === 'Oui') {
+                            const cb = document.querySelector(`input[name="${field}"]`);
                             if (cb) {
                                 cb.checked = true;
-                                console.log(`  ✓ Coché: ${val}`);
-                            } else {
-                                console.log(`  ⚠️ Non trouvé: ${val}`);
+                                console.log(`  ✓ Coché: ${field}`);
                             }
-                        });
-                    }
-        
-                    restoreCheckboxes('quality', data.quality);
-                    restoreCheckboxes('sectors', data.sectors);
+                        }
+                    });
                     
                     // Changer le bouton de validation
                     const btn = document.querySelector('#section5 .btn-primary');
@@ -1212,11 +1104,10 @@
             }
         });
         
-        // Service Worker registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
                 .then(() => console.log('✅ Service Worker registered'))
-                .catch(err => console.error('❌ SW error:', err));
+                .catch(err => console.error(' SW error:', err));
         }
     </script>
 </body>
