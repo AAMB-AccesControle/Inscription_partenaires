@@ -324,7 +324,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.15</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.16</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.1.0</p>
         </div>
@@ -1082,23 +1082,75 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
         
-        // Form submission
         async function submitForm() {
-            // 1. Validation rapide de la dernière section
+            console.log("🔴 TEST: submitForm démarré");
+            
+            // Validation rapide
             const currentSection = document.getElementById('section5');
             const requiredRadios = currentSection.querySelectorAll('input[type="radio"][required]');
-            
-            // Vérifier que les groupes de boutons radio ont une sélection
             const radioGroups = new Set();
             requiredRadios.forEach(radio => radioGroups.add(radio.name));
             
             for (const groupName of radioGroups) {
                 const isChecked = currentSection.querySelector(`input[name="${groupName}"]:checked`);
                 if (!isChecked) {
-                    alert('Veuillez répondre à toutes les questions obligatoires (boutons radio).');
+                    alert('Veuillez répondre à toutes les questions obligatoires.');
                     return;
                 }
             }
+        
+            // Récupération des données
+            const form = document.getElementById('partnerForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Gestion des cases à cocher multiples
+            data.quality = formData.getAll('quality');
+            data.sectors = formData.getAll('sectors');
+            
+            // Ajout des métadonnées
+            data.timestamp = new Date().toISOString();
+            data.token = generateToken();
+            
+            console.log("📦 Données prêtes à envoyer:", data.companyName);
+            
+            // Feedback visuel
+            const submitBtn = currentSection.querySelector('.btn-primary');
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = 'Envoi en cours...';
+            submitBtn.disabled = true;
+        
+            try {
+                console.log(" Envoi vers Google Apps Script...");
+                
+                // ENVOI AVEC MODE NO-CORS
+                await fetch('https://script.google.com/macros/s/AKfycbz1ts6AlrEkut_ZeZLc1SEsn4b5DKDIgwm94pV6J99kltEzaOrflrsS2ij1XaRDGVLG/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log("✅ Envoi terminé (mode no-cors)");
+                
+                // Afficher le message de succès
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+                document.querySelector('.buttons').style.display = 'none';
+                document.querySelector('.progress-bar').style.display = 'none';
+                document.getElementById('successMessage').classList.add('show');
+                document.getElementById('successMessage').style.display = 'block';
+                window.scrollTo(0, 0);
+                
+            } catch (error) {
+                console.error("❌ ERREUR:", error);
+                alert('Erreur de connexion. Veuillez réessayer.');
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
+        }
 
             // 2. Récupération des données
             const form = document.getElementById('partnerForm');
