@@ -324,7 +324,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.21</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.22</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.1.0</p>
         </div>
@@ -1190,7 +1190,92 @@
                 .then(() => console.log('✅ Service Worker registered'))
                 .catch(err => console.error('❌ SW error:', err));
         }
-    </script>
-    
-</body>
+
+          // Charger les données si un token est présent dans l'URL
+          window.onload = async function() {
+            // Générer les champs dynamiques
+            generateRepresentatives();
+            generateOtherPeople();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (token) {
+              console.log(" Mode édition activé - Token:", token);
+              
+              try {
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbz1ts6AlrEkut_ZeZLc1SEsn4b5DKDIgwm94pV6J99kltEzaOrflrsS2ij1XaRDGVLG/exec';
+                const response = await fetch(`${scriptUrl}?token=${token}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                  alert('Erreur: ' + data.error);
+                  return;
+                }
+                
+                console.log("✅ Données chargées:", data.companyName);
+                
+                // Remplir les champs texte, email, tel
+                Object.keys(data).forEach(key => {
+                  const input = document.querySelector(`[name="${key}"]`);
+                  if (input) {
+                    if (input.type === 'radio') {
+                      // Pour les boutons radio
+                      const radio = document.querySelector(`input[name="${key}"][value="${data[key]}"]`);
+                      if (radio) radio.checked = true;
+                    } else if (input.type === 'select-one') {
+                      // Pour les select
+                      input.value = data[key];
+                    } else {
+                      // Pour les autres inputs
+                      input.value = data[key];
+                    }
+                  }
+                });
+                
+                // Cocher les cases pour quality et sectors
+                if (data.quality && Array.isArray(data.quality)) {
+                  data.quality.forEach(val => {
+                    const checkbox = document.querySelector(`input[name="quality"][value="${val}"]`);
+                    if (checkbox) checkbox.checked = true;
+                  });
+                }
+                
+                if (data.sectors && Array.isArray(data.sectors)) {
+                  data.sectors.forEach(val => {
+                    const checkbox = document.querySelector(`input[name="sectors"][value="${val}"]`);
+                    if (checkbox) checkbox.checked = true;
+                  });
+                }
+                
+                // Sauvegarder le token pour la soumission
+                window.editToken = token;
+                
+                // Changer le texte du bouton de validation
+                const submitBtn = document.querySelector('#section5 .btn-primary');
+                if (submitBtn) {
+                  submitBtn.innerHTML = '✓ Mettre à jour le formulaire';
+                }
+                
+                alert("✅ Formulaire chargé en mode modification");
+                
+              } catch (err) {
+                console.error("❌ Erreur chargement:", err);
+                alert("Erreur lors du chargement des données");
+              }
+            }
+          };
+          
+          // Modifier la fonction submitForm pour gérer la mise à jour
+          async function submitForm() {
+            // ... (votre code existant) ...
+            
+            // Dans la construction de data, ajoutez :
+            data.token = window.editToken || generateToken();
+            data.action = window.editToken ? 'update' : 'create';
+            
+            // ... (le reste du code reste identique)
+          }
+        </script>
+    </body>
 </html>
