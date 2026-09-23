@@ -200,7 +200,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.32</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.33</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.0</p>
         </div>
@@ -1034,6 +1034,8 @@
         });
         
         // Charger les données si un token est présent dans l'URL (mode édition)
+
+        // Charger les données si un token est présent dans l'URL (mode édition)
         window.addEventListener('load', async function() {
             console.log("🔄 Page chargée");
             
@@ -1044,13 +1046,22 @@
                 console.log("🔑 Token trouvé:", token);
                 window.editToken = token;
                 
+                // 🎯 AFFICHER L'ÉCRAN DE CHARGEMENT
+                const overlay = document.getElementById('loadingOverlay');
+                const loadingError = document.getElementById('loadingError');
+                overlay.classList.add('active');
+                
                 try {
                     const response = await fetch(`${SCRIPT_URL}?token=${token}`);
                     const data = await response.json();
                     
                     if (data.error) {
                         console.error("❌ Erreur:", data.error);
-                        alert('Erreur: ' + data.error);
+                        loadingError.textContent = "❌ " + data.error;
+                        loadingError.style.display = 'block';
+                        setTimeout(() => {
+                            overlay.classList.remove('active');
+                        }, 3000);
                         return;
                     }
                     
@@ -1071,7 +1082,7 @@
                         }
                     });
                     
-                    // Cases à cocher individuelles (nouveau format)
+                    // Cases à cocher individuelles
                     const checkboxFields = [
                         'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
                         'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
@@ -1095,11 +1106,18 @@
                     const btn = document.querySelector('#section5 .btn-primary');
                     if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
                     
-                    alert("✅ Formulaire chargé en mode modification");
+                    // ✅ MASQUER L'ÉCRAN DE CHARGEMENT UNE FOIS TOUT CHARGÉ
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                    }, 500); // Petit délai pour que l'utilisateur voie que c'est chargé
                     
                 } catch (err) {
-                    console.error("❌ Erreur chargement:", err);
-                    alert("Erreur lors du chargement des données");
+                    console.error(" Erreur chargement:", err);
+                    loadingError.textContent = "❌ Erreur lors du chargement des données. Veuillez réessayer.";
+                    loadingError.style.display = 'block';
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                    }, 3000);
                 }
             }
         });
