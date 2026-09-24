@@ -135,6 +135,31 @@
             margin-bottom: 15px;
             font-size: 14px;
         }
+        .price-display {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 16px;
+            margin-left: 15px;
+        }
+        .price-info-red {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 10px;
+            background: #ffe6e6;
+            border-radius: 6px;
+            border-left: 4px solid #e74c3c;
+        }
+        .select-with-price {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .select-with-price select {
+            flex: 1;
+            min-width: 250px;
+        }
         .buttons {
             display: flex;
             justify-content: space-between;
@@ -190,7 +215,7 @@
         }
         .success-message h2 { color: #1e3a5f; margin-bottom: 15px; }
         
-        /* 🎯 ÉCRAN DE CHARGEMENT */
+        /* ÉCRAN DE CHARGEMENT */
         #loadingOverlay {
             display: none;
             position: fixed;
@@ -222,15 +247,8 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .loading-text {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        .loading-subtext {
-            font-size: 15px;
-            opacity: 0.9;
-        }
+        .loading-text { font-size: 22px; font-weight: 600; margin-bottom: 10px; }
+        .loading-subtext { font-size: 15px; opacity: 0.9; }
         .loading-error {
             color: #ff6b6b;
             font-size: 16px;
@@ -240,15 +258,54 @@
             max-width: 80%;
         }
         
+        /* PAGE RÉCAPITULATIVE */
+        .recap-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+        .recap-section h3 {
+            color: #1e3a5f;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .recap-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .recap-item:last-child { border-bottom: none; }
+        .recap-label { color: #555; }
+        .recap-value { font-weight: 600; color: #1e3a5f; }
+        .recap-total {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 20px;
+        }
+        .recap-total-label { font-weight: 600; }
+        .recap-total-value { font-size: 28px; font-weight: bold; }
+        
         @media (max-width: 768px) {
             .form-container { padding: 20px; }
             .inline-fields { grid-template-columns: 1fr; }
             .checkbox-group, .radio-group { flex-direction: column; }
+            .select-with-price { flex-direction: column; align-items: flex-start; }
+            .price-display { margin-left: 0; margin-top: 5px; }
         }
     </style>
 </head>
 <body>
-    <!-- 🎯 ÉCRAN DE CHARGEMENT -->
+    <!-- ÉCRAN DE CHARGEMENT -->
     <div id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">Chargement de votre formulaire...</div>
@@ -259,14 +316,14 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.34</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.31</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
-            <p class="subtitle">v.2.0</p>
+            <p class="subtitle">v.2.1</p>
         </div>
         
         <div class="form-container">
             <div class="progress-bar">
-                <div class="progress-fill" id="progressBar" style="width: 20%"></div>
+                <div class="progress-fill" id="progressBar" style="width: 16.66%"></div>
             </div>
             
             <form id="partnerForm">
@@ -286,12 +343,16 @@
                             <label class="required">Qualité</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="quality_fabricant" value="Oui">
-                                    <span>Fabricant/Constructeur</span>
+                                    <input type="checkbox" name="quality_autre" value="Oui">
+                                    <span>Autre</span>
                                 </label>
                                 <label class="checkbox-item">
                                     <input type="checkbox" name="quality_distributeur" value="Oui">
                                     <span>Distributeur</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="quality_fabricant" value="Oui">
+                                    <span>Fabricant/Constructeur</span>
                                 </label>
                                 <label class="checkbox-item">
                                     <input type="checkbox" name="quality_maintenance" value="Oui">
@@ -301,10 +362,6 @@
                                     <input type="checkbox" name="quality_service" value="Oui">
                                     <span>Service</span>
                                 </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="quality_autre" value="Oui">
-                                    <span>Autre</span>
-                                </label>
                             </div>
                         </div>
                         
@@ -312,44 +369,60 @@
                             <label class="required">Secteurs d'activités</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_endoscopie" value="Oui">
-                                    <span>Endoscopie</span>
+                                    <input type="checkbox" name="sector_accessoires" value="Oui">
+                                    <span>Accessoires/Câbles/Consommables/Etiquetage</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_perfusion" value="Oui">
-                                    <span>Perfusion</span>
+                                    <input type="checkbox" name="sector_appareils" value="Oui">
+                                    <span>Appareils de mesures</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_ventilation" value="Oui">
-                                    <span>Ventilation</span>
+                                    <input type="checkbox" name="sector_batterie" value="Oui">
+                                    <span>Batterie</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_rechauffement" value="Oui">
-                                    <span>Réchauffement patient</span>
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_imagerie" value="Oui">
-                                    <span>Imagerie Médicale</span>
+                                    <input type="checkbox" name="sector_bras" value="Oui">
+                                    <span>Bras/Table opératoire/Scialytique</span>
                                 </label>
                                 <label class="checkbox-item">
                                     <input type="checkbox" name="sector_desinfection" value="Oui">
                                     <span>Désinfection/Stérilisation</span>
                                 </label>
                                 <label class="checkbox-item">
+                                    <input type="checkbox" name="sector_endoscopie" value="Oui">
+                                    <span>Endoscopie</span>
+                                </label>
+                                <label class="checkbox-item">
                                     <input type="checkbox" name="sector_exploration" value="Oui">
                                     <span>Exploration fonctionnelle</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="sector_humanitaire" value="Oui">
+                                    <span>Humanitaire</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="sector_imagerie" value="Oui">
+                                    <span>Imagerie Médicale</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="sector_instrumentation" value="Oui">
+                                    <span>Instrumentation de chirurgie</span>
                                 </label>
                                 <label class="checkbox-item">
                                     <input type="checkbox" name="sector_laboratoire" value="Oui">
                                     <span>Laboratoire</span>
                                 </label>
                                 <label class="checkbox-item">
+                                    <input type="checkbox" name="sector_maintenances" value="Oui">
+                                    <span>Maintenances</span>
+                                </label>
+                                <label class="checkbox-item">
                                     <input type="checkbox" name="sector_metrologie" value="Oui">
                                     <span>Métrologie</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_batterie" value="Oui">
-                                    <span>Batterie</span>
+                                    <input type="checkbox" name="sector_monitorage" value="Oui">
+                                    <span>Monitorage</span>
                                 </label>
                                 <label class="checkbox-item">
                                     <input type="checkbox" name="sector_odontologie" value="Oui">
@@ -360,32 +433,16 @@
                                     <span>Optique/lampes</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_accessoires" value="Oui">
-                                    <span>Accessoires/Câbles/Consommables/Etiquetage</span>
+                                    <input type="checkbox" name="sector_perfusion" value="Oui">
+                                    <span>Perfusion</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_monitorage" value="Oui">
-                                    <span>Monitorage</span>
+                                    <input type="checkbox" name="sector_rechauffement" value="Oui">
+                                    <span>Réchauffement patient</span>
                                 </label>
                                 <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_instrumentation" value="Oui">
-                                    <span>Instrumentation de chirurgie</span>
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_appareils" value="Oui">
-                                    <span>Appareils de mesures</span>
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_humanitaire" value="Oui">
-                                    <span>Humanitaire</span>
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_maintenances" value="Oui">
-                                    <span>Maintenances</span>
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="sector_bras" value="Oui">
-                                    <span>Bras/Table opératoire/Scialytique</span>
+                                    <input type="checkbox" name="sector_ventilation" value="Oui">
+                                    <span>Ventilation</span>
                                 </label>
                                 <label class="checkbox-item">
                                     <input type="checkbox" name="sector_autres" value="Oui">
@@ -456,18 +513,22 @@
                 
                 <!-- SECTION 2: EMPLACEMENTS ET LOGISTIQUE -->
                 <div class="section" id="section2">
-                    <h2 class="section-title"> Emplacements et Logistique</h2>
+                    <h2 class="section-title">📍 Emplacements et Logistique</h2>
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Emplacements</div>
                         <div class="form-group">
                             <label class="required">Nombre d'emplacements contigus</label>
-                            <select name="boothSpaces" required>
-                                <option value="">Sélectionnez...</option>
-                                <option value="0">0</option>
-                                <option value="1 emplacement 3x2m">1 emplacement 3x2m</option>
-                                <option value="2 emplacements 3x2m soit 6x2m">2 emplacements 3x2m soit 6x2m</option>
-                            </select>
+                            <div class="select-with-price">
+                                <select name="boothSpaces" id="boothSpaces" required onchange="updateBoothInfo()">
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="0">0</option>
+                                    <option value="1 emplacement 3x2m">1 emplacement 3x2m</option>
+                                    <option value="2 emplacements 3x2m soit 6x2m">2 emplacements 3x2m soit 6x2m</option>
+                                </select>
+                                <span class="price-display" id="boothPrice"></span>
+                            </div>
+                            <div id="boothInfo" class="price-info-red" style="display: none;"></div>
                         </div>
                     </div>
                     
@@ -500,7 +561,9 @@
                         
                         <div class="form-group">
                             <label class="required">Combien de badges ?</label>
-                            <input type="number" name="badges" min="0" required>
+                            <select name="badges" id="badges" required>
+                                <option value="">Sélectionnez...</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -524,20 +587,20 @@
                             <label class="required">Souhaitez-vous être associé au financement du cocktail de bienvenue ?</label>
                             <div class="radio-group">
                                 <label class="radio-item">
-                                    <input type="radio" name="cocktailParticipation" value="Oui" required>
+                                    <input type="radio" name="cocktailParticipation" value="Oui" required onchange="updateFinancialDisplay()">
                                     <span>Oui</span>
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="cocktailParticipation" value="Non" required>
+                                    <input type="radio" name="cocktailParticipation" value="Non" required onchange="updateFinancialDisplay()">
                                     <span>Non</span>
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Quel montant ?</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" name="cocktailAmount" placeholder="Montant">
-                                <span>€</span>
+                            <div class="select-with-price">
+                                <input type="text" name="cocktailAmount" id="cocktailAmount" placeholder="Montant" oninput="updateFinancialDisplay()">
+                                <span class="price-display" id="cocktailPrice"></span>
                             </div>
                         </div>
                     </div>
@@ -548,20 +611,20 @@
                             <label class="required">Souhaitez-vous être associé au financement d'une pause ?</label>
                             <div class="radio-group">
                                 <label class="radio-item">
-                                    <input type="radio" name="pauseParticipation" value="Oui" required>
+                                    <input type="radio" name="pauseParticipation" value="Oui" required onchange="updateFinancialDisplay()">
                                     <span>Oui</span>
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="pauseParticipation" value="Non" required>
+                                    <input type="radio" name="pauseParticipation" value="Non" required onchange="updateFinancialDisplay()">
                                     <span>Non</span>
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Quel montant ?</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" name="pauseAmount" placeholder="Montant">
-                                <span>€</span>
+                            <div class="select-with-price">
+                                <input type="text" name="pauseAmount" id="pauseAmount" placeholder="Montant" oninput="updateFinancialDisplay()">
+                                <span class="price-display" id="pausePrice"></span>
                             </div>
                         </div>
                     </div>
@@ -572,20 +635,20 @@
                             <label class="required">Souhaitez-vous être associé au financement de la soirée terroir ?</label>
                             <div class="radio-group">
                                 <label class="radio-item">
-                                    <input type="radio" name="terroirParticipation" value="Oui" required>
+                                    <input type="radio" name="terroirParticipation" value="Oui" required onchange="updateFinancialDisplay()">
                                     <span>Oui</span>
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="terroirParticipation" value="Non" required>
+                                    <input type="radio" name="terroirParticipation" value="Non" required onchange="updateFinancialDisplay()">
                                     <span>Non</span>
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Quel montant ?</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" name="terroirAmount" placeholder="Montant">
-                                <span>€</span>
+                            <div class="select-with-price">
+                                <input type="text" name="terroirAmount" id="terroirAmount" placeholder="Montant" oninput="updateFinancialDisplay()">
+                                <span class="price-display" id="terroirPrice"></span>
                             </div>
                         </div>
                     </div>
@@ -596,20 +659,20 @@
                             <label class="required">Souhaitez-vous être associé au financement de la soirée de gala ?</label>
                             <div class="radio-group">
                                 <label class="radio-item">
-                                    <input type="radio" name="galaParticipation" value="Oui" required>
+                                    <input type="radio" name="galaParticipation" value="Oui" required onchange="updateFinancialDisplay()">
                                     <span>Oui</span>
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="galaParticipation" value="Non" required>
+                                    <input type="radio" name="galaParticipation" value="Non" required onchange="updateFinancialDisplay()">
                                     <span>Non</span>
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Quel montant ?</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" name="galaAmount" placeholder="Montant">
-                                <span>€</span>
+                            <div class="select-with-price">
+                                <input type="text" name="galaAmount" id="galaAmount" placeholder="Montant" oninput="updateFinancialDisplay()">
+                                <span class="price-display" id="galaPrice"></span>
                             </div>
                         </div>
                     </div>
@@ -634,39 +697,45 @@
                             Tarif : 35,00 € TTC/repas. Le tarif de l'emplacement comprend 2 repas par jour pour un stand de 3m, 
                             3 repas par jour pour un stand de 4,5m ou 4 repas par jour pour un stand de 6m.
                         </div>
+                        <div id="mealsIncludedInfo" class="price-info-red" style="display: none;"></div>
                         
                         <div class="form-group">
                             <label>Mercredi 18 novembre 2026 - midi (repas supplémentaires)</label>
-                            <select name="lunchWednesday">
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                            </select>
+                            <div class="select-with-price">
+                                <select name="lunchWednesday" id="lunchWednesday" onchange="updateMealsTotal()">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
                         </div>
                         
                         <div class="form-group">
                             <label>Jeudi 19 novembre 2026 - midi (repas supplémentaires)</label>
-                            <select name="lunchThursday">
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                            </select>
+                            <div class="select-with-price">
+                                <select name="lunchThursday" id="lunchThursday" onchange="updateMealsTotal()">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                                <span class="price-display" id="mealsTotalPrice"></span>
+                            </div>
                         </div>
                     </div>
                     
@@ -675,27 +744,30 @@
                         <div class="price-info">Tarif : 25,00 € TTC/personne</div>
                         <div class="form-group">
                             <label>Nombre de repas souhaité pour la soirée terroir</label>
-                            <select name="terroirDinner">
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                            </select>
+                            <div class="select-with-price">
+                                <select name="terroirDinner" id="terroirDinner" onchange="updateTerroirTotal()">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                                <span class="price-display" id="terroirDinnerPrice"></span>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Soirée de Gala du jeudi 19 novembre 2026</div>
                         <div class="form-group">
-                            <label>Nombre d'entrées gratuites utilisées (vous en disposez d'1 ou 2 par emplacement réservé)</label>
-                            <select name="galaFreeEntries">
+                            <label>Nombre d'entrées gratuites utilisées</label>
+                            <select name="galaFreeEntries" id="galaFreeEntries" onchange="updateGalaInfo()">
                                 <option value="0">0</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -703,19 +775,22 @@
                         </div>
                         <div class="form-group">
                             <label>Nombre d'entrées supplémentaires (60,00 € TTC par personne)</label>
-                            <select name="galaExtraEntries">
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                            </select>
+                            <div class="select-with-price">
+                                <select name="galaExtraEntries" id="galaExtraEntries" onchange="updateGalaTotal()">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                                <span class="price-display" id="galaExtraPrice"></span>
+                            </div>
                         </div>
                     </div>
                     
@@ -731,25 +806,28 @@
                 
                 <!-- SECTION 5: DOCUMENTS, FOURNITURES ET SERVICES -->
                 <div class="section" id="section5">
-                    <h2 class="section-title"> Documents, Fournitures et Services</h2>
+                    <h2 class="section-title">📄 Documents, Fournitures et Services</h2>
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Documents Publicitaires</div>
-                        <div class="form-group">
-                            <label class="required">Êtes-vous intéressé par l'insertion de documents publicitaires dans les sacoches ?</label>
-                            <div class="radio-group">
-                                <label class="radio-item">
-                                    <input type="radio" name="adDocuments" value="Oui" required>
-                                    <span>Oui</span>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="adDocuments" value="Non" required>
-                                    <span>Non</span>
-                                </label>
-                            </div>
-                        </div>
                         <div class="price-info">
                             Montant de la prestation : 250,00 € TTC si vous avez un stand sinon 500,00 € TTC si vous n'avez pas de stand
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Êtes-vous intéressé par l'insertion de documents publicitaires dans les sacoches ?</label>
+                            <div class="select-with-price">
+                                <div class="radio-group" style="flex: 1;">
+                                    <label class="radio-item">
+                                        <input type="radio" name="adDocuments" value="Oui" required onchange="updateAdPrice()">
+                                        <span>Oui</span>
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="adDocuments" value="Non" required onchange="updateAdPrice()">
+                                        <span>Non</span>
+                                    </label>
+                                </div>
+                                <span class="price-display" id="adPrice"></span>
+                            </div>
                         </div>
                     </div>
                     
@@ -826,7 +904,7 @@
                         </div>
                         <div class="form-group">
                             <label>Valeur approximative du lot</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
+                            <div class="select-with-price">
                                 <input type="text" name="prizeValue" placeholder="Montant">
                                 <span>€</span>
                             </div>
@@ -835,20 +913,20 @@
                             <label class="required">Seriez-vous intéressé par une participation financière à un lot récompensant les stagiaires les plus assidus ?</label>
                             <div class="radio-group">
                                 <label class="radio-item">
-                                    <input type="radio" name="prizeParticipation" value="Oui" required>
+                                    <input type="radio" name="prizeParticipation" value="Oui" required onchange="updatePrizeParticipation()">
                                     <span>Oui</span>
                                 </label>
                                 <label class="radio-item">
-                                    <input type="radio" name="prizeParticipation" value="Non" required>
+                                    <input type="radio" name="prizeParticipation" value="Non" required onchange="updatePrizeParticipation()">
                                     <span>Non</span>
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Si oui, quel montant ?</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" name="prizeParticipationAmount" placeholder="Montant">
-                                <span>€</span>
+                            <div class="select-with-price">
+                                <input type="text" name="prizeParticipationAmount" id="prizeParticipationAmount" placeholder="Montant" oninput="updatePrizeParticipation()">
+                                <span class="price-display" id="prizeParticipationPrice"></span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -899,6 +977,117 @@
                         <button type="button" class="btn-secondary" onclick="previousSection(5)">
                             ← Retour aux repas
                         </button>
+                        <button type="button" class="btn-primary" onclick="nextSection(5)">
+                            Continuer vers le Récapitulatif →
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- SECTION 6: RÉCAPITULATIF -->
+                <div class="section" id="section6">
+                    <h2 class="section-title">📊 Récapitulatif de votre inscription</h2>
+                    
+                    <div class="recap-section">
+                        <h3>📍 Emplacement</h3>
+                        <div class="recap-item">
+                            <span class="recap-label">Nombre d'emplacements :</span>
+                            <span class="recap-value" id="recapBooth">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Coût emplacement :</span>
+                            <span class="recap-value" id="recapBoothPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recap-section">
+                        <h3>💰 Participations Financières</h3>
+                        <div class="recap-item">
+                            <span class="recap-label">Cocktail de bienvenue :</span>
+                            <span class="recap-value" id="recapCocktail">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Pause :</span>
+                            <span class="recap-value" id="recapPause">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Soirée Terroir :</span>
+                            <span class="recap-value" id="recapTerroir">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Soirée de Gala :</span>
+                            <span class="recap-value" id="recapGala">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recap-section">
+                        <h3>🍽️ Repas et Soirées</h3>
+                        <div class="recap-item">
+                            <span class="recap-label">Repas inclus (selon emplacement) :</span>
+                            <span class="recap-value" id="recapMealsIncluded">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Repas supplémentaires mercredi :</span>
+                            <span class="recap-value" id="recapLunchWed">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Repas supplémentaires jeudi :</span>
+                            <span class="recap-value" id="recapLunchThu">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Coût repas supplémentaires :</span>
+                            <span class="recap-value" id="recapMealsPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Soirée Terroir (repas) :</span>
+                            <span class="recap-value" id="recapTerroirDinner">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Coût soirée Terroir :</span>
+                            <span class="recap-value" id="recapTerroirDinnerPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Entrées gala gratuites :</span>
+                            <span class="recap-value" id="recapGalaFree">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Entrées gala supplémentaires :</span>
+                            <span class="recap-value" id="recapGalaExtra">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Coût entrées gala supplémentaires :</span>
+                            <span class="recap-value" id="recapGalaExtraPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recap-section">
+                        <h3>📄 Documents Publicitaires</h3>
+                        <div class="recap-item">
+                            <span class="recap-label">Documents publicitaires :</span>
+                            <span class="recap-value" id="recapAd">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Coût documents publicitaires :</span>
+                            <span class="recap-value" id="recapAdPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recap-section">
+                        <h3>🎁 Lots et Participations</h3>
+                        <div class="recap-item">
+                            <span class="recap-label">Participation financière lot :</span>
+                            <span class="recap-value" id="recapPrizeParticipation">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recap-total">
+                        <span class="recap-total-label">💶 MONTANT TOTAL TTC :</span>
+                        <span class="recap-total-value" id="recapTotal">0 € TTC</span>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button type="button" class="btn-secondary" onclick="previousSection(6)">
+                            ← Retour pour modifier
+                        </button>
                         <button type="button" class="btn-primary" onclick="submitForm()">
                             ✓ Valider et envoyer
                         </button>
@@ -922,7 +1111,18 @@
     
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrlKTe9K7L1bkLOU2U6MVY9ozVEaRrvEtJBtDwYFvHIsMY0zbZAMG3tw9Tq1s9mRU/exec';
-
+        
+        // Initialisation du menu déroulant badges (0 à 20)
+        function initBadgesSelect() {
+            const select = document.getElementById('badges');
+            for (let i = 0; i <= 20; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                select.appendChild(option);
+            }
+        }
+        
         function generateRepresentatives() {
             const container = document.getElementById('representativesContainer');
             if (!container) return;
@@ -966,14 +1166,178 @@
             }
         }
         
+        // Récupérer le nombre d'emplacements (0, 1 ou 2)
+        function getBoothCount() {
+            const val = document.getElementById('boothSpaces').value;
+            if (val === '0') return 0;
+            if (val === '1 emplacement 3x2m') return 1;
+            if (val === '2 emplacements 3x2m soit 6x2m') return 2;
+            return -1;
+        }
+        
+        // Mise à jour des infos emplacement
+        function updateBoothInfo() {
+            const count = getBoothCount();
+            const priceEl = document.getElementById('boothPrice');
+            const infoEl = document.getElementById('boothInfo');
+            
+            if (count === 0) {
+                priceEl.textContent = '+ 0 € TTC';
+                infoEl.style.display = 'block';
+                infoEl.textContent = 'Aucun repas ni soirée de gala inclus avec cette réservation.';
+            } else if (count === 1) {
+                priceEl.textContent = '+ 1 500 € TTC';
+                infoEl.style.display = 'block';
+                infoEl.innerHTML = '✅ Inclus avec votre réservation : <strong>2 repas de midi le mercredi</strong>, <strong>2 repas de midi le jeudi</strong> et <strong>1 soirée de gala</strong>.';
+            } else if (count === 2) {
+                priceEl.textContent = '+ 3 000 € TTC';
+                infoEl.style.display = 'block';
+                infoEl.innerHTML = '✅ Inclus avec votre réservation : <strong>4 repas de midi le mercredi</strong>, <strong>4 repas de midi le jeudi</strong> et <strong>2 soirées de gala</strong>.';
+            } else {
+                priceEl.textContent = '';
+                infoEl.style.display = 'none';
+            }
+            
+            updateGalaFreeEntries();
+            updateMealsIncludedInfo();
+        }
+        
+        // Mise à jour du menu entrées gratuites gala selon emplacement
+        function updateGalaFreeEntries() {
+            const count = getBoothCount();
+            const select = document.getElementById('galaFreeEntries');
+            select.innerHTML = '';
+            
+            const maxEntries = count; // 0, 1 ou 2
+            for (let i = 0; i <= maxEntries; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                select.appendChild(option);
+            }
+        }
+        
+        // Info repas inclus
+        function updateMealsIncludedInfo() {
+            const count = getBoothCount();
+            const infoEl = document.getElementById('mealsIncludedInfo');
+            
+            if (count === 0) {
+                infoEl.style.display = 'block';
+                infoEl.textContent = '⚠️ Vous ne disposez d\'aucun repas inclus avec votre réservation.';
+            } else if (count === 1) {
+                infoEl.style.display = 'block';
+                infoEl.textContent = '✅ Vous disposez de 2 repas pour le mercredi midi et 2 pour le jeudi midi inclus.';
+            } else if (count === 2) {
+                infoEl.style.display = 'block';
+                infoEl.textContent = '✅ Vous disposez de 4 repas pour le mercredi midi et 4 pour le jeudi midi inclus.';
+            } else {
+                infoEl.style.display = 'none';
+            }
+        }
+        
+        // Mise à jour des prix financiers
+        function updateFinancialDisplay() {
+            const items = [
+                { radio: 'cocktailParticipation', amount: 'cocktailAmount', display: 'cocktailPrice' },
+                { radio: 'pauseParticipation', amount: 'pauseAmount', display: 'pausePrice' },
+                { radio: 'terroirParticipation', amount: 'terroirAmount', display: 'terroirPrice' },
+                { radio: 'galaParticipation', amount: 'galaAmount', display: 'galaPrice' }
+            ];
+            
+            items.forEach(item => {
+                const radio = document.querySelector(`input[name="${item.radio}"]:checked`);
+                const amount = document.getElementById(item.amount).value;
+                const display = document.getElementById(item.display);
+                
+                if (radio && radio.value === 'Oui' && amount && !isNaN(parseFloat(amount))) {
+                    display.textContent = `+ ${parseFloat(amount).toFixed(2)} € TTC`;
+                } else {
+                    display.textContent = '';
+                }
+            });
+        }
+        
+        // Total repas
+        function updateMealsTotal() {
+            const wed = parseInt(document.getElementById('lunchWednesday').value) || 0;
+            const thu = parseInt(document.getElementById('lunchThursday').value) || 0;
+            const total = (wed + thu) * 35;
+            document.getElementById('mealsTotalPrice').textContent = `+ ${total.toFixed(2)} € TTC`;
+        }
+        
+        // Total soirée terroir
+        function updateTerroirTotal() {
+            const count = parseInt(document.getElementById('terroirDinner').value) || 0;
+            const total = count * 25;
+            document.getElementById('terroirDinnerPrice').textContent = `+ ${total.toFixed(2)} € TTC`;
+        }
+        
+        // Total gala supplémentaire
+        function updateGalaTotal() {
+            const count = parseInt(document.getElementById('galaExtraEntries').value) || 0;
+            const total = count * 60;
+            document.getElementById('galaExtraPrice').textContent = `+ ${total.toFixed(2)} € TTC`;
+        }
+        
+        function updateGalaInfo() {
+            updateGalaTotal();
+        }
+        
+        // Prix documents publicitaires
+        function updateAdPrice() {
+            const radio = document.querySelector('input[name="adDocuments"]:checked');
+            const display = document.getElementById('adPrice');
+            
+            if (!radio) {
+                display.textContent = '';
+                return;
+            }
+            
+            if (radio.value === 'Non') {
+                display.textContent = '+ 0 € TTC';
+            } else {
+                const count = getBoothCount();
+                if (count > 0) {
+                    display.textContent = '+ 250 € TTC';
+                } else {
+                    display.textContent = '+ 500 € TTC';
+                }
+            }
+        }
+        
+        // Participation lot
+        function updatePrizeParticipation() {
+            const radio = document.querySelector('input[name="prizeParticipation"]:checked');
+            const amount = document.getElementById('prizeParticipationAmount').value;
+            const display = document.getElementById('prizeParticipationPrice');
+            
+            if (radio && radio.value === 'Oui' && amount && !isNaN(parseFloat(amount))) {
+                display.textContent = `+ ${parseFloat(amount).toFixed(2)} € TTC`;
+            } else {
+                display.textContent = '';
+            }
+        }
+        
+        // Navigation
         function nextSection(current) {
-            console.log(`➡️ Passage à la section ${current + 1}`);
             const currentSection = document.getElementById(`section${current}`);
             const requiredFields = currentSection.querySelectorAll('[required]');
             let valid = true;
             
             requiredFields.forEach(field => {
-                if (!field.value.trim()) {
+                if (field.type === 'radio') {
+                    const name = field.name;
+                    const isChecked = currentSection.querySelector(`input[name="${name}"]:checked`);
+                    if (!isChecked) {
+                        valid = false;
+                        field.closest('.radio-group').style.border = '2px solid #e74c3c';
+                        field.closest('.radio-group').style.padding = '10px';
+                        field.closest('.radio-group').style.borderRadius = '8px';
+                    } else {
+                        field.closest('.radio-group').style.border = 'none';
+                    }
+                } else if (!field.value.trim()) {
                     valid = false;
                     field.style.borderColor = '#e74c3c';
                 } else {
@@ -984,6 +1348,11 @@
             if (!valid) {
                 alert('Veuillez remplir tous les champs obligatoires');
                 return;
+            }
+            
+            // Si on va vers le récapitulatif, le remplir
+            if (current === 5) {
+                fillRecap();
             }
             
             document.getElementById(`section${current}`).classList.remove('active');
@@ -1000,31 +1369,111 @@
         }
         
         function updateProgressBar(section) {
-            const progress = (section / 5) * 100;
+            const progress = (section / 6) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
         }
         
-        async function submitForm() {
-            console.log("🚀 submitForm démarré");
+        // Remplir le récapitulatif
+        function fillRecap() {
+            const count = getBoothCount();
+            const boothVal = document.getElementById('boothSpaces').value;
             
-            const currentSection = document.getElementById('section5');
-            const requiredRadios = currentSection.querySelectorAll('input[type="radio"][required]');
-            const radioGroups = new Set();
-            requiredRadios.forEach(radio => radioGroups.add(radio.name));
+            // Emplacement
+            document.getElementById('recapBooth').textContent = boothVal || '-';
+            const boothPrices = { '0': 0, '1 emplacement 3x2m': 1500, '2 emplacements 3x2m soit 6x2m': 3000 };
+            const boothPrice = boothPrices[boothVal] || 0;
+            document.getElementById('recapBoothPrice').textContent = `${boothPrice.toFixed(2)} € TTC`;
             
-            for (const groupName of radioGroups) {
-                const isChecked = currentSection.querySelector(`input[name="${groupName}"]:checked`);
-                if (!isChecked) {
-                    alert('Veuillez répondre à toutes les questions obligatoires.');
-                    return;
+            // Participations financières
+            const getFinancial = (radioName, amountId) => {
+                const radio = document.querySelector(`input[name="${radioName}"]:checked`);
+                if (radio && radio.value === 'Oui') {
+                    const amount = document.getElementById(amountId).value;
+                    const val = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0;
+                    return { text: `Oui - ${val.toFixed(2)} €`, value: val };
+                }
+                return { text: 'Non', value: 0 };
+            };
+            
+            const cocktail = getFinancial('cocktailParticipation', 'cocktailAmount');
+            const pause = getFinancial('pauseParticipation', 'pauseAmount');
+            const terroir = getFinancial('terroirParticipation', 'terroirAmount');
+            const gala = getFinancial('galaParticipation', 'galaAmount');
+            
+            document.getElementById('recapCocktail').textContent = cocktail.text;
+            document.getElementById('recapPause').textContent = pause.text;
+            document.getElementById('recapTerroir').textContent = terroir.text;
+            document.getElementById('recapGala').textContent = gala.text;
+            
+            // Repas inclus
+            let mealsIncludedText = '-';
+            if (count === 0) mealsIncludedText = 'Aucun';
+            else if (count === 1) mealsIncludedText = '2 mercredi + 2 jeudi';
+            else if (count === 2) mealsIncludedText = '4 mercredi + 4 jeudi';
+            document.getElementById('recapMealsIncluded').textContent = mealsIncludedText;
+            
+            // Repas supplémentaires
+            const lunchWed = parseInt(document.getElementById('lunchWednesday').value) || 0;
+            const lunchThu = parseInt(document.getElementById('lunchThursday').value) || 0;
+            document.getElementById('recapLunchWed').textContent = lunchWed;
+            document.getElementById('recapLunchThu').textContent = lunchThu;
+            const mealsPrice = (lunchWed + lunchThu) * 35;
+            document.getElementById('recapMealsPrice').textContent = `${mealsPrice.toFixed(2)} € TTC`;
+            
+            // Soirée terroir
+            const terroirDinner = parseInt(document.getElementById('terroirDinner').value) || 0;
+            document.getElementById('recapTerroirDinner').textContent = terroirDinner;
+            document.getElementById('recapTerroirDinnerPrice').textContent = `${(terroirDinner * 25).toFixed(2)} € TTC`;
+            
+            // Gala
+            const galaFree = document.getElementById('galaFreeEntries').value;
+            const galaExtra = parseInt(document.getElementById('galaExtraEntries').value) || 0;
+            document.getElementById('recapGalaFree').textContent = galaFree;
+            document.getElementById('recapGalaExtra').textContent = galaExtra;
+            document.getElementById('recapGalaExtraPrice').textContent = `${(galaExtra * 60).toFixed(2)} € TTC`;
+            
+            // Documents publicitaires
+            const adRadio = document.querySelector('input[name="adDocuments"]:checked');
+            let adText = '-';
+            let adPrice = 0;
+            if (adRadio) {
+                if (adRadio.value === 'Non') {
+                    adText = 'Non';
+                    adPrice = 0;
+                } else {
+                    adText = count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)';
+                    adPrice = count > 0 ? 250 : 500;
                 }
             }
-
+            document.getElementById('recapAd').textContent = adText;
+            document.getElementById('recapAdPrice').textContent = `${adPrice.toFixed(2)} € TTC`;
+            
+            // Participation lot
+            const prizeRadio = document.querySelector('input[name="prizeParticipation"]:checked');
+            let prizeText = '-';
+            let prizeValue = 0;
+            if (prizeRadio && prizeRadio.value === 'Oui') {
+                const amount = document.getElementById('prizeParticipationAmount').value;
+                prizeValue = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0;
+                prizeText = `Oui - ${prizeValue.toFixed(2)} €`;
+            } else {
+                prizeText = 'Non';
+            }
+            document.getElementById('recapPrizeParticipation').textContent = prizeText;
+            
+            // TOTAL
+            const total = boothPrice + cocktail.value + pause.value + terroir.value + gala.value + 
+                         mealsPrice + (terroirDinner * 25) + (galaExtra * 60) + adPrice + prizeValue;
+            document.getElementById('recapTotal').textContent = `${total.toFixed(2)} € TTC`;
+        }
+        
+        // Soumission du formulaire
+        async function submitForm() {
             const form = document.getElementById('partnerForm');
             const formData = new FormData(form);
             const formDataObj = Object.fromEntries(formData.entries());
             
-            // Récupérer les cases à cocher individuellement
+            // Cases à cocher
             const checkboxFields = [
                 'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
                 'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
@@ -1043,24 +1492,18 @@
             formDataObj.token = window.editToken || generateToken();
             formDataObj.action = window.editToken ? 'update' : 'create';
             
-            console.log("📦 Données prêtes:", formDataObj.companyName, "Token:", formDataObj.token);
-            
-            const submitBtn = currentSection.querySelector('.btn-primary');
+            const submitBtn = document.querySelector('#section6 .btn-primary');
             const originalText = submitBtn.innerText;
             submitBtn.innerText = 'Envoi en cours...';
             submitBtn.disabled = true;
 
             try {
-                console.log(" Envoi vers Google Apps Script...");
-                
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(formDataObj)
                 });
-                
-                console.log("✅ Envoi terminé");
                 
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
                 document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
@@ -1071,7 +1514,6 @@
                 window.scrollTo(0, 0);
                 
             } catch (error) {
-                console.error("❌ ERREUR:", error);
                 alert('Erreur de connexion. Veuillez réessayer.');
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
@@ -1087,48 +1529,33 @@
         }
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("✅ DOM chargé ! Génération des champs...");
             generateRepresentatives();
             generateOtherPeople();
+            initBadgesSelect();
         });
         
-        // 🎯 CHARGEMENT DES DONNÉES EN MODE MODIFICATION
+        // Chargement mode modification
         window.addEventListener('load', async function() {
-            console.log("🔄 Page chargée");
-            
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
             
             if (token) {
-                console.log("🔑 Token trouvé:", token);
                 window.editToken = token;
-                
-                // 🎯 AFFICHER L'ÉCRAN DE CHARGEMENT
                 const overlay = document.getElementById('loadingOverlay');
                 const loadingError = document.getElementById('loadingError');
                 overlay.classList.add('active');
-                console.log("📡 Overlay affiché");
                 
                 try {
-                    console.log("📡 Appel fetch vers:", `${SCRIPT_URL}?token=${token}`);
                     const response = await fetch(`${SCRIPT_URL}?token=${token}`);
-                    console.log("📥 Réponse reçue:", response.status);
                     const data = await response.json();
-                    console.log("📊 Données:", data);
                     
                     if (data.error) {
-                        console.error("❌ Erreur:", data.error);
                         loadingError.textContent = "❌ " + data.error;
                         loadingError.style.display = 'block';
-                        setTimeout(() => {
-                            overlay.classList.remove('active');
-                        }, 3000);
+                        setTimeout(() => overlay.classList.remove('active'), 3000);
                         return;
                     }
                     
-                    console.log("✅ Données chargées:", data.companyName);
-                    
-                    // Remplir les champs texte, email, tel, select, textarea
                     Object.keys(data).forEach(key => {
                         const input = document.querySelector(`[name="${key}"]`);
                         if (input && data[key]) {
@@ -1143,7 +1570,6 @@
                         }
                     });
                     
-                    // Cases à cocher individuelles
                     const checkboxFields = [
                         'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
                         'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
@@ -1156,31 +1582,28 @@
                     checkboxFields.forEach(field => {
                         if (data[field] === 'Oui') {
                             const cb = document.querySelector(`input[name="${field}"]`);
-                            if (cb) {
-                                cb.checked = true;
-                                console.log(`  ✓ Coché: ${field}`);
-                            }
+                            if (cb) cb.checked = true;
                         }
                     });
                     
-                    // Changer le bouton de validation
-                    const btn = document.querySelector('#section5 .btn-primary');
+                    // Mettre à jour les affichages dynamiques
+                    updateBoothInfo();
+                    updateFinancialDisplay();
+                    updateMealsTotal();
+                    updateTerroirTotal();
+                    updateGalaTotal();
+                    updateAdPrice();
+                    updatePrizeParticipation();
+                    
+                    const btn = document.querySelector('#section6 .btn-primary');
                     if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
                     
-                    console.log("✅ Formulaire rempli, masquage de l'overlay dans 500ms");
-                    // ✅ MASQUER L'ÉCRAN DE CHARGEMENT
-                    setTimeout(() => {
-                        overlay.classList.remove('active');
-                        console.log("✅ Overlay masqué");
-                    }, 500);
+                    setTimeout(() => overlay.classList.remove('active'), 500);
                     
                 } catch (err) {
-                    console.error("❌ Erreur chargement:", err);
-                    loadingError.textContent = "❌ Erreur lors du chargement des données. Veuillez réessayer.";
+                    loadingError.textContent = "❌ Erreur lors du chargement des données.";
                     loadingError.style.display = 'block';
-                    setTimeout(() => {
-                        overlay.classList.remove('active');
-                    }, 3000);
+                    setTimeout(() => overlay.classList.remove('active'), 3000);
                 }
             }
         });
