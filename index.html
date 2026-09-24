@@ -6,6 +6,9 @@
     <title>Formulaire Partenaire - AAMB JTB 2026</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e3a5f">
+    <!-- Bibliothèques pour la génération PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -141,6 +144,14 @@
             font-size: 16px;
             margin-left: 15px;
         }
+        .price-display-right {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: right;
+            margin-top: 8px;
+            width: 100%;
+        }
         .price-info-red {
             color: #e74c3c;
             font-weight: bold;
@@ -156,9 +167,39 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        .select-with-price select {
+        .select-with-price select,
+        .select-with-price input[type="text"] {
             flex: 1;
             min-width: 250px;
+        }
+        .select-with-price .price-display {
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+        .radio-with-price {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .radio-with-price .radio-group {
+            flex: 1;
+            margin-top: 0;
+        }
+        .radio-with-price .price-display {
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+        .dropdown-with-price {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .dropdown-with-price select {
+            width: 100%;
+        }
+        .dropdown-with-price .price-display-right {
+            text-align: right;
         }
         .buttons {
             display: flex;
@@ -258,7 +299,7 @@
             max-width: 80%;
         }
         
-        /* PAGE RÉCAPITULATIVE */
+        /* PAGE RÉCAPITULATIVE / BON DE COMMANDE */
         .recap-section {
             background: white;
             padding: 20px;
@@ -295,12 +336,94 @@
         .recap-total-label { font-weight: 600; }
         .recap-total-value { font-size: 28px; font-weight: bold; }
         
+        /* BON DE COMMANDE (caché à l'écran, utilisé pour le PDF) */
+        #bonDeCommande {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 800px;
+            background: white;
+            padding: 40px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #333;
+        }
+        #bonDeCommande .bc-header {
+            text-align: center;
+            border-bottom: 3px solid #1e3a5f;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        #bonDeCommande .bc-header h1 {
+            color: #1e3a5f;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        #bonDeCommande .bc-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        #bonDeCommande .bc-section {
+            margin-bottom: 25px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        #bonDeCommande .bc-section h3 {
+            color: #1e3a5f;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        #bonDeCommande .bc-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dotted #eee;
+            font-size: 14px;
+        }
+        #bonDeCommande .bc-item:last-child { border-bottom: none; }
+        #bonDeCommande .bc-item .bc-label { color: #555; }
+        #bonDeCommande .bc-item .bc-value { font-weight: 600; color: #1e3a5f; }
+        #bonDeCommande .bc-item .bc-price { color: #e74c3c; font-weight: bold; }
+        #bonDeCommande .bc-total {
+            background: #1e3a5f;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        #bonDeCommande .bc-total-value { font-size: 26px; font-weight: bold; }
+        #bonDeCommande .bc-cachet {
+            margin-top: 40px;
+            border: 2px dashed #999;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            min-height: 120px;
+        }
+        #bonDeCommande .bc-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
         @media (max-width: 768px) {
             .form-container { padding: 20px; }
             .inline-fields { grid-template-columns: 1fr; }
             .checkbox-group, .radio-group { flex-direction: column; }
             .select-with-price { flex-direction: column; align-items: flex-start; }
-            .price-display { margin-left: 0; margin-top: 5px; }
+            .select-with-price .price-display { margin-left: 0; margin-top: 5px; }
+            .radio-with-price { flex-direction: column; align-items: flex-start; }
+            .radio-with-price .price-display { margin-left: 0; margin-top: 5px; }
         }
     </style>
 </head>
@@ -313,12 +436,15 @@
         <div class="loading-error" id="loadingError"></div>
     </div>
 
+    <!-- BON DE COMMANDE (caché, utilisé pour générer le PDF) -->
+    <div id="bonDeCommande"></div>
+
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.35</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.37</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
-            <p class="subtitle">v.2.1</p>
+            <p class="subtitle">v.2.2</p>
         </div>
         
         <div class="form-container">
@@ -689,7 +815,7 @@
                 
                 <!-- SECTION 4: REPAS ET SOIREES -->
                 <div class="section" id="section4">
-                    <h2 class="section-title">🍽️ Repas de midi et Soirées Dînatoires</h2>
+                    <h2 class="section-title">️ Repas de midi et Soirées Dînatoires</h2>
                     
                     <div class="sub-section">
                         <div class="sub-section-title">Repas de Midi Supplémentaires</div>
@@ -701,7 +827,7 @@
                         
                         <div class="form-group">
                             <label>Mercredi 18 novembre 2026 - midi (repas supplémentaires)</label>
-                            <div class="select-with-price">
+                            <div class="dropdown-with-price">
                                 <select name="lunchWednesday" id="lunchWednesday" onchange="updateMealsTotal()">
                                     <option value="0">0</option>
                                     <option value="1">1</option>
@@ -720,7 +846,7 @@
                         
                         <div class="form-group">
                             <label>Jeudi 19 novembre 2026 - midi (repas supplémentaires)</label>
-                            <div class="select-with-price">
+                            <div class="dropdown-with-price">
                                 <select name="lunchThursday" id="lunchThursday" onchange="updateMealsTotal()">
                                     <option value="0">0</option>
                                     <option value="1">1</option>
@@ -734,7 +860,7 @@
                                     <option value="9">9</option>
                                     <option value="10">10</option>
                                 </select>
-                                <span class="price-display" id="mealsTotalPrice"></span>
+                                <div class="price-display-right" id="mealsTotalPrice"></div>
                             </div>
                         </div>
                     </div>
@@ -744,7 +870,7 @@
                         <div class="price-info">Tarif : 25,00 € TTC/personne</div>
                         <div class="form-group">
                             <label>Nombre de repas souhaité pour la soirée terroir</label>
-                            <div class="select-with-price">
+                            <div class="dropdown-with-price">
                                 <select name="terroirDinner" id="terroirDinner" onchange="updateTerroirTotal()">
                                     <option value="0">0</option>
                                     <option value="1">1</option>
@@ -758,7 +884,7 @@
                                     <option value="9">9</option>
                                     <option value="10">10</option>
                                 </select>
-                                <span class="price-display" id="terroirDinnerPrice"></span>
+                                <div class="price-display-right" id="terroirDinnerPrice"></div>
                             </div>
                         </div>
                     </div>
@@ -775,7 +901,7 @@
                         </div>
                         <div class="form-group">
                             <label>Nombre d'entrées supplémentaires (60,00 € TTC par personne)</label>
-                            <div class="select-with-price">
+                            <div class="dropdown-with-price">
                                 <select name="galaExtraEntries" id="galaExtraEntries" onchange="updateGalaTotal()">
                                     <option value="0">0</option>
                                     <option value="1">1</option>
@@ -789,7 +915,7 @@
                                     <option value="9">9</option>
                                     <option value="10">10</option>
                                 </select>
-                                <span class="price-display" id="galaExtraPrice"></span>
+                                <div class="price-display-right" id="galaExtraPrice"></div>
                             </div>
                         </div>
                     </div>
@@ -815,8 +941,8 @@
                         </div>
                         <div class="form-group">
                             <label class="required">Êtes-vous intéressé par l'insertion de documents publicitaires dans les sacoches ?</label>
-                            <div class="select-with-price">
-                                <div class="radio-group" style="flex: 1;">
+                            <div class="radio-with-price">
+                                <div class="radio-group">
                                     <label class="radio-item">
                                         <input type="radio" name="adDocuments" value="Oui" required onchange="updateAdPrice()">
                                         <span>Oui</span>
@@ -911,22 +1037,24 @@
                         </div>
                         <div class="form-group">
                             <label class="required">Seriez-vous intéressé par une participation financière à un lot récompensant les stagiaires les plus assidus ?</label>
-                            <div class="radio-group">
-                                <label class="radio-item">
-                                    <input type="radio" name="prizeParticipation" value="Oui" required onchange="updatePrizeParticipation()">
-                                    <span>Oui</span>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="prizeParticipation" value="Non" required onchange="updatePrizeParticipation()">
-                                    <span>Non</span>
-                                </label>
+                            <div class="radio-with-price">
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="prizeParticipation" value="Oui" required onchange="updatePrizeParticipation()">
+                                        <span>Oui</span>
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="prizeParticipation" value="Non" required onchange="updatePrizeParticipation()">
+                                        <span>Non</span>
+                                    </label>
+                                </div>
+                                <span class="price-display" id="prizeParticipationPrice"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Si oui, quel montant ?</label>
                             <div class="select-with-price">
                                 <input type="text" name="prizeParticipationAmount" id="prizeParticipationAmount" placeholder="Montant" oninput="updatePrizeParticipation()">
-                                <span class="price-display" id="prizeParticipationPrice"></span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -995,7 +1123,7 @@
                         </div>
                         <div class="recap-item">
                             <span class="recap-label">Coût emplacement :</span>
-                            <span class="recap-value" id="recapBoothPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                            <span class="recap-value" id="recapBoothPrice" style="color: #e74c3c; font-weight: bold;">0,00 € TTC</span>
                         </div>
                     </div>
                     
@@ -1035,7 +1163,7 @@
                         </div>
                         <div class="recap-item">
                             <span class="recap-label">Coût repas supplémentaires :</span>
-                            <span class="recap-value" id="recapMealsPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                            <span class="recap-value" id="recapMealsPrice" style="color: #e74c3c; font-weight: bold;">0,00 € TTC</span>
                         </div>
                         <div class="recap-item">
                             <span class="recap-label">Soirée Terroir (repas) :</span>
@@ -1043,7 +1171,7 @@
                         </div>
                         <div class="recap-item">
                             <span class="recap-label">Coût soirée Terroir :</span>
-                            <span class="recap-value" id="recapTerroirDinnerPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                            <span class="recap-value" id="recapTerroirDinnerPrice" style="color: #e74c3c; font-weight: bold;">0,00 € TTC</span>
                         </div>
                         <div class="recap-item">
                             <span class="recap-label">Entrées gala gratuites :</span>
@@ -1055,7 +1183,7 @@
                         </div>
                         <div class="recap-item">
                             <span class="recap-label">Coût entrées gala supplémentaires :</span>
-                            <span class="recap-value" id="recapGalaExtraPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                            <span class="recap-value" id="recapGalaExtraPrice" style="color: #e74c3c; font-weight: bold;">0,00 € TTC</span>
                         </div>
                     </div>
                     
@@ -1067,12 +1195,12 @@
                         </div>
                         <div class="recap-item">
                             <span class="recap-label">Coût documents publicitaires :</span>
-                            <span class="recap-value" id="recapAdPrice" style="color: #e74c3c; font-weight: bold;">0 € TTC</span>
+                            <span class="recap-value" id="recapAdPrice" style="color: #e74c3c; font-weight: bold;">0,00 € TTC</span>
                         </div>
                     </div>
                     
                     <div class="recap-section">
-                        <h3>🎁 Lots et Participations</h3>
+                        <h3> Lots et Participations</h3>
                         <div class="recap-item">
                             <span class="recap-label">Participation financière lot :</span>
                             <span class="recap-value" id="recapPrizeParticipation">-</span>
@@ -1081,7 +1209,7 @@
                     
                     <div class="recap-total">
                         <span class="recap-total-label">💶 MONTANT TOTAL TTC :</span>
-                        <span class="recap-total-value" id="recapTotal">0 € TTC</span>
+                        <span class="recap-total-value" id="recapTotal">0,00 € TTC</span>
                     </div>
                     
                     <div class="buttons">
@@ -1110,7 +1238,7 @@
     </div>
     
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrlKTe9K7L1bkLOU2U6MVY9ozVEaRrvEtJBtDwYFvHIsMY0zbZAMG3tw9Tq1s9mRU/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzp7DeAHTQapnCRI1ONg0C9vFELMZHVCyU4jh_T99Q4_d9JybUflX3rL9vuY9b-gSW/exec';
         
         // Initialisation du menu déroulant badges (0 à 20)
         function initBadgesSelect() {
@@ -1175,6 +1303,11 @@
             return -1;
         }
         
+        // Formatage des prix avec 2 décimales et virgule
+        function formatPrice(amount) {
+            return amount.toFixed(2).replace('.', ',') + ' € TTC';
+        }
+        
         // Mise à jour des infos emplacement
         function updateBoothInfo() {
             const count = getBoothCount();
@@ -1182,15 +1315,15 @@
             const infoEl = document.getElementById('boothInfo');
             
             if (count === 0) {
-                priceEl.textContent = '+ 0 € TTC';
+                priceEl.textContent = '+ ' + formatPrice(0);
                 infoEl.style.display = 'block';
                 infoEl.textContent = 'Aucun repas ni soirée de gala inclus avec cette réservation.';
             } else if (count === 1) {
-                priceEl.textContent = '+ 1 500 € TTC';
+                priceEl.textContent = '+ ' + formatPrice(1500);
                 infoEl.style.display = 'block';
                 infoEl.innerHTML = '✅ Inclus avec votre réservation : <strong>2 repas de midi le mercredi</strong>, <strong>2 repas de midi le jeudi</strong> et <strong>1 soirée de gala</strong>.';
             } else if (count === 2) {
-                priceEl.textContent = '+ 3 000 € TTC';
+                priceEl.textContent = '+ ' + formatPrice(3000);
                 infoEl.style.display = 'block';
                 infoEl.innerHTML = '✅ Inclus avec votre réservation : <strong>4 repas de midi le mercredi</strong>, <strong>4 repas de midi le jeudi</strong> et <strong>2 soirées de gala</strong>.';
             } else {
@@ -1206,6 +1339,7 @@
         function updateGalaFreeEntries() {
             const count = getBoothCount();
             const select = document.getElementById('galaFreeEntries');
+            const currentVal = select.value;
             select.innerHTML = '';
             
             const maxEntries = count; // 0, 1 ou 2
@@ -1214,6 +1348,11 @@
                 option.value = i;
                 option.textContent = i;
                 select.appendChild(option);
+            }
+            
+            // Restaurer la valeur si possible
+            if (parseInt(currentVal) <= maxEntries) {
+                select.value = currentVal;
             }
         }
         
@@ -1251,7 +1390,7 @@
                 const display = document.getElementById(item.display);
                 
                 if (radio && radio.value === 'Oui' && amount && !isNaN(parseFloat(amount))) {
-                    display.textContent = `+ ${parseFloat(amount).toFixed(2)} € TTC`;
+                    display.textContent = '+ ' + formatPrice(parseFloat(amount));
                 } else {
                     display.textContent = '';
                 }
@@ -1263,21 +1402,21 @@
             const wed = parseInt(document.getElementById('lunchWednesday').value) || 0;
             const thu = parseInt(document.getElementById('lunchThursday').value) || 0;
             const total = (wed + thu) * 35;
-            document.getElementById('mealsTotalPrice').textContent = `+ ${total.toFixed(2)} € TTC`;
+            document.getElementById('mealsTotalPrice').textContent = '+ ' + formatPrice(total);
         }
         
         // Total soirée terroir
         function updateTerroirTotal() {
             const count = parseInt(document.getElementById('terroirDinner').value) || 0;
             const total = count * 25;
-            document.getElementById('terroirDinnerPrice').textContent = `+ ${total.toFixed(2)} € TTC`;
+            document.getElementById('terroirDinnerPrice').textContent = '+ ' + formatPrice(total);
         }
         
         // Total gala supplémentaire
         function updateGalaTotal() {
             const count = parseInt(document.getElementById('galaExtraEntries').value) || 0;
             const total = count * 60;
-            document.getElementById('galaExtraPrice').textContent = `+ ${total.toFixed(2)} € TTC`;
+            document.getElementById('galaExtraPrice').textContent = '+ ' + formatPrice(total);
         }
         
         function updateGalaInfo() {
@@ -1295,13 +1434,13 @@
             }
             
             if (radio.value === 'Non') {
-                display.textContent = '+ 0 € TTC';
+                display.textContent = '+ ' + formatPrice(0);
             } else {
                 const count = getBoothCount();
                 if (count > 0) {
-                    display.textContent = '+ 250 € TTC';
+                    display.textContent = '+ ' + formatPrice(250);
                 } else {
-                    display.textContent = '+ 500 € TTC';
+                    display.textContent = '+ ' + formatPrice(500);
                 }
             }
         }
@@ -1313,7 +1452,7 @@
             const display = document.getElementById('prizeParticipationPrice');
             
             if (radio && radio.value === 'Oui' && amount && !isNaN(parseFloat(amount))) {
-                display.textContent = `+ ${parseFloat(amount).toFixed(2)} € TTC`;
+                display.textContent = '+ ' + formatPrice(parseFloat(amount));
             } else {
                 display.textContent = '';
             }
@@ -1373,8 +1512,33 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
         
+        // Récupérer toutes les données du formulaire
+        function getFormData() {
+            const form = document.getElementById('partnerForm');
+            const formData = new FormData(form);
+            const formDataObj = Object.fromEntries(formData.entries());
+            
+            // Cases à cocher
+            const checkboxFields = [
+                'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
+                'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
+                'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire',
+                'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique',
+                'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils',
+                'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'
+            ];
+            
+            checkboxFields.forEach(field => {
+                const cb = document.querySelector(`input[name="${field}"]`);
+                formDataObj[field] = cb && cb.checked ? 'Oui' : '';
+            });
+            
+            return formDataObj;
+        }
+        
         // Remplir le récapitulatif
         function fillRecap() {
+            const data = getFormData();
             const count = getBoothCount();
             const boothVal = document.getElementById('boothSpaces').value;
             
@@ -1382,7 +1546,7 @@
             document.getElementById('recapBooth').textContent = boothVal || '-';
             const boothPrices = { '0': 0, '1 emplacement 3x2m': 1500, '2 emplacements 3x2m soit 6x2m': 3000 };
             const boothPrice = boothPrices[boothVal] || 0;
-            document.getElementById('recapBoothPrice').textContent = `${boothPrice.toFixed(2)} € TTC`;
+            document.getElementById('recapBoothPrice').textContent = formatPrice(boothPrice);
             
             // Participations financières
             const getFinancial = (radioName, amountId) => {
@@ -1390,7 +1554,7 @@
                 if (radio && radio.value === 'Oui') {
                     const amount = document.getElementById(amountId).value;
                     const val = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0;
-                    return { text: `Oui - ${val.toFixed(2)} €`, value: val };
+                    return { text: 'Oui - ' + formatPrice(val), value: val };
                 }
                 return { text: 'Non', value: 0 };
             };
@@ -1418,19 +1582,19 @@
             document.getElementById('recapLunchWed').textContent = lunchWed;
             document.getElementById('recapLunchThu').textContent = lunchThu;
             const mealsPrice = (lunchWed + lunchThu) * 35;
-            document.getElementById('recapMealsPrice').textContent = `${mealsPrice.toFixed(2)} € TTC`;
+            document.getElementById('recapMealsPrice').textContent = formatPrice(mealsPrice);
             
             // Soirée terroir
             const terroirDinner = parseInt(document.getElementById('terroirDinner').value) || 0;
             document.getElementById('recapTerroirDinner').textContent = terroirDinner;
-            document.getElementById('recapTerroirDinnerPrice').textContent = `${(terroirDinner * 25).toFixed(2)} € TTC`;
+            document.getElementById('recapTerroirDinnerPrice').textContent = formatPrice(terroirDinner * 25);
             
             // Gala
             const galaFree = document.getElementById('galaFreeEntries').value;
             const galaExtra = parseInt(document.getElementById('galaExtraEntries').value) || 0;
             document.getElementById('recapGalaFree').textContent = galaFree;
             document.getElementById('recapGalaExtra').textContent = galaExtra;
-            document.getElementById('recapGalaExtraPrice').textContent = `${(galaExtra * 60).toFixed(2)} € TTC`;
+            document.getElementById('recapGalaExtraPrice').textContent = formatPrice(galaExtra * 60);
             
             // Documents publicitaires
             const adRadio = document.querySelector('input[name="adDocuments"]:checked');
@@ -1446,7 +1610,7 @@
                 }
             }
             document.getElementById('recapAd').textContent = adText;
-            document.getElementById('recapAdPrice').textContent = `${adPrice.toFixed(2)} € TTC`;
+            document.getElementById('recapAdPrice').textContent = formatPrice(adPrice);
             
             // Participation lot
             const prizeRadio = document.querySelector('input[name="prizeParticipation"]:checked');
@@ -1455,7 +1619,7 @@
             if (prizeRadio && prizeRadio.value === 'Oui') {
                 const amount = document.getElementById('prizeParticipationAmount').value;
                 prizeValue = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0;
-                prizeText = `Oui - ${prizeValue.toFixed(2)} €`;
+                prizeText = 'Oui - ' + formatPrice(prizeValue);
             } else {
                 prizeText = 'Non';
             }
@@ -1464,45 +1628,220 @@
             // TOTAL
             const total = boothPrice + cocktail.value + pause.value + terroir.value + gala.value + 
                          mealsPrice + (terroirDinner * 25) + (galaExtra * 60) + adPrice + prizeValue;
-            document.getElementById('recapTotal').textContent = `${total.toFixed(2)} € TTC`;
+            document.getElementById('recapTotal').textContent = formatPrice(total);
+            
+            return { data, boothPrice, cocktail, pause, terroir, gala, mealsPrice, terroirDinner, galaExtra, adPrice, prizeValue, total, count, boothVal, lunchWed, lunchThu, galaFree, adText, prizeText };
+        }
+        
+        // Générer le Bon de Commande HTML (caché)
+        function generateBonDeCommandeHTML(recapData) {
+            const { data, boothPrice, cocktail, pause, terroir, gala, mealsPrice, terroirDinner, galaExtra, adPrice, prizeValue, total, count, boothVal, lunchWed, lunchThu, galaFree, adText, prizeText } = recapData;
+            
+            const companyName = data.companyName || 'Non renseigné';
+            const decisionMaker = data.decisionMakerName || '-';
+            const decisionEmail = data.decisionMakerEmail || '-';
+            const decisionPhone = data.decisionMakerPhone || '-';
+            const billingAddress = data.billingAddress || '-';
+            const billingContact = data.billingContactName || '-';
+            const billingEmail = data.billingContactEmail || '-';
+            const billingPhone = data.billingContactPhone || '-';
+            const badges = data.badges || '0';
+            
+            // Qualité
+            const qualityList = [];
+            if (data.quality_fabricant === 'Oui') qualityList.push('Fabricant/Constructeur');
+            if (data.quality_distributeur === 'Oui') qualityList.push('Distributeur');
+            if (data.quality_maintenance === 'Oui') qualityList.push('Maintenance & Contrôle');
+            if (data.quality_service === 'Oui') qualityList.push('Service');
+            if (data.quality_autre === 'Oui') qualityList.push('Autre');
+            
+            // Secteurs
+            const sectorList = [];
+            const sectorMap = {
+                'sector_accessoires': 'Accessoires/Câbles/Consommables/Etiquetage',
+                'sector_appareils': 'Appareils de mesures',
+                'sector_batterie': 'Batterie',
+                'sector_bras': 'Bras/Table opératoire/Scialytique',
+                'sector_desinfection': 'Désinfection/Stérilisation',
+                'sector_endoscopie': 'Endoscopie',
+                'sector_exploration': 'Exploration fonctionnelle',
+                'sector_humanitaire': 'Humanitaire',
+                'sector_imagerie': 'Imagerie Médicale',
+                'sector_instrumentation': 'Instrumentation de chirurgie',
+                'sector_laboratoire': 'Laboratoire',
+                'sector_maintenances': 'Maintenances',
+                'sector_metrologie': 'Métrologie',
+                'sector_monitorage': 'Monitorage',
+                'sector_odontologie': 'Odontologie',
+                'sector_optique': 'Optique/lampes',
+                'sector_perfusion': 'Perfusion',
+                'sector_rechauffement': 'Réchauffement patient',
+                'sector_ventilation': 'Ventilation',
+                'sector_autres': 'Autres'
+            };
+            Object.keys(sectorMap).forEach(key => {
+                if (data[key] === 'Oui') sectorList.push(sectorMap[key]);
+            });
+            
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('fr-FR');
+            const token = data.token || 'N/A';
+            
+            return `
+                <div class="bc-header">
+                    <h1>BON DE COMMANDE</h1>
+                    <p>AAMB - Journées Techniques du Bâtiment 2026</p>
+                    <p>Besançon - 17, 18 et 19 novembre 2026</p>
+                    <p style="margin-top: 15px;"><strong>Date :</strong> ${dateStr} | <strong>Référence :</strong> ${token}</p>
+                </div>
+                
+                <div class="bc-section">
+                    <h3>📋 Informations Société</h3>
+                    <div class="bc-item"><span class="bc-label">Société :</span><span class="bc-value">${companyName}</span></div>
+                    <div class="bc-item"><span class="bc-label">Qualité :</span><span class="bc-value">${qualityList.length > 0 ? qualityList.join(', ') : '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">Secteurs :</span><span class="bc-value">${sectorList.length > 0 ? sectorList.join(', ') : '-'}</span></div>
+                </div>
+                
+                <div class="bc-section">
+                    <h3>👤 Responsable Décisionnel</h3>
+                    <div class="bc-item"><span class="bc-label">Nom :</span><span class="bc-value">${decisionMaker}</span></div>
+                    <div class="bc-item"><span class="bc-label">Téléphone :</span><span class="bc-value">${decisionPhone}</span></div>
+                    <div class="bc-item"><span class="bc-label">Email :</span><span class="bc-value">${decisionEmail}</span></div>
+                </div>
+                
+                <div class="bc-section">
+                    <h3>💶 Facturation</h3>
+                    <div class="bc-item"><span class="bc-label">Adresse :</span><span class="bc-value">${billingAddress}</span></div>
+                    <div class="bc-item"><span class="bc-label">Référent :</span><span class="bc-value">${billingContact}</span></div>
+                    <div class="bc-item"><span class="bc-label">Téléphone :</span><span class="bc-value">${billingPhone}</span></div>
+                    <div class="bc-item"><span class="bc-label">Email :</span><span class="bc-value">${billingEmail}</span></div>
+                </div>
+                
+                <div class="bc-section">
+                    <h3>📍 Emplacement & Logistique</h3>
+                    <div class="bc-item"><span class="bc-label">Emplacements :</span><span class="bc-value">${boothVal || '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">Coût emplacement :</span><span class="bc-price">${formatPrice(boothPrice)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Badges :</span><span class="bc-value">${badges}</span></div>
+                    <div class="bc-item"><span class="bc-label">Livraison amont :</span><span class="bc-value">${data.delivery || '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">Montage :</span><span class="bc-value">${data.setupTime || '-'}</span></div>
+                </div>
+                
+                <div class="bc-section">
+                    <h3>💰 Participations Financières</h3>
+                    <div class="bc-item"><span class="bc-label">Cocktail de bienvenue :</span><span class="bc-value">${cocktail.text}</span></div>
+                    <div class="bc-item"><span class="bc-label">Pause :</span><span class="bc-value">${pause.text}</span></div>
+                    <div class="bc-item"><span class="bc-label">Soirée Terroir :</span><span class="bc-value">${terroir.text}</span></div>
+                    <div class="bc-item"><span class="bc-label">Soirée de Gala :</span><span class="bc-value">${gala.text}</span></div>
+                </div>
+                
+                <div class="bc-section">
+                    <h3>🍽️ Repas et Soirées</h3>
+                    <div class="bc-item"><span class="bc-label">Repas inclus :</span><span class="bc-value">${count === 0 ? 'Aucun' : count === 1 ? '2 mer. + 2 jeu.' : '4 mer. + 4 jeu.'}</span></div>
+                    <div class="bc-item"><span class="bc-label">Repas suppl. mercredi :</span><span class="bc-value">${lunchWed}</span></div>
+                    <div class="bc-item"><span class="bc-label">Repas suppl. jeudi :</span><span class="bc-value">${lunchThu}</span></div>
+                    <div class="bc-item"><span class="bc-label">Coût repas supplémentaires :</span><span class="bc-price">${formatPrice(mealsPrice)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Soirée Terroir (repas) :</span><span class="bc-value">${terroirDinner}</span></div>
+                    <div class="bc-item"><span class="bc-label">Coût soirée Terroir :</span><span class="bc-price">${formatPrice(terroirDinner * 25)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Entrées gala gratuites :</span><span class="bc-value">${galaFree}</span></div>
+                    <div class="bc-item"><span class="bc-label">Entrées gala supplémentaires :</span><span class="bc-value">${galaExtra}</span></div>
+                    <div class="bc-item"><span class="bc-label">Coût entrées gala suppl. :</span><span class="bc-price">${formatPrice(galaExtra * 60)}</span></div>
+                </div>
+                
+                <div class="bc-section">
+                    <h3>📄 Documents & Services</h3>
+                    <div class="bc-item"><span class="bc-label">Documents publicitaires :</span><span class="bc-value">${adText}</span></div>
+                    <div class="bc-item"><span class="bc-label">Coût documents :</span><span class="bc-price">${formatPrice(adPrice)}</span></div>
+                    <div class="bc-item"><span class="bc-label">180 sacoches :</span><span class="bc-value">${data.provideBags || '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">180 blocs-notes :</span><span class="bc-value">${data.provideNotepads || '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">180 stylos :</span><span class="bc-value">${data.providePens || '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">5 questions QCM :</span><span class="bc-value">${data.knowledgeQuestions || '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">Lot fourni :</span><span class="bc-value">${data.providePrize || '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">Participation financière lot :</span><span class="bc-value">${prizeText}</span></div>
+                    <div class="bc-item"><span class="bc-label">Jeu sur le stand :</span><span class="bc-value">${data.standGame || '-'}</span></div>
+                    <div class="bc-item"><span class="bc-label">Atelier :</span><span class="bc-value">${data.workshopInterest || '-'} ${data.workshopTheme ? '(' + data.workshopTheme + ')' : ''}</span></div>
+                </div>
+                
+                <div class="bc-total">
+                    <span>MONTANT TOTAL TTC :</span>
+                    <span class="bc-total-value">${formatPrice(total)}</span>
+                </div>
+                
+                <div class="bc-cachet">
+                    <strong>Cachet de l'entreprise</strong><br>
+                    <em>(à apposer et signer)</em>
+                </div>
+                
+                <div class="bc-footer">
+                    <p>AAMB - Association des Ambulanciers de la Médecine du Bâtiment</p>
+                    <p>JTB 2026 - Besançon - 17, 18 et 19 novembre 2026</p>
+                    <p>Email : jtb.partenaire@aamb.asso.fr</p>
+                </div>
+            `;
+        }
+        
+        // Convertir le bon de commande en PDF (base64)
+        async function generatePDF() {
+            const recapData = fillRecap();
+            const bonDiv = document.getElementById('bonDeCommande');
+            bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
+            
+            // Attendre que le DOM soit rendu
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const canvas = await html2canvas(bonDiv, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                width: 800
+            });
+            
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+            
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+            
+            return pdf.output('datauristring');
         }
         
         // Soumission du formulaire
         async function submitForm() {
-            const form = document.getElementById('partnerForm');
-            const formData = new FormData(form);
-            const formDataObj = Object.fromEntries(formData.entries());
-            
-            // Cases à cocher
-            const checkboxFields = [
-                'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
-                'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
-                'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire',
-                'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique',
-                'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils',
-                'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'
-            ];
-            
-            checkboxFields.forEach(field => {
-                const cb = document.querySelector(`input[name="${field}"]`);
-                formDataObj[field] = cb && cb.checked ? 'Oui' : '';
-            });
-            
-            formDataObj.timestamp = new Date().toISOString();
-            formDataObj.token = window.editToken || generateToken();
-            formDataObj.action = window.editToken ? 'update' : 'create';
-            
             const submitBtn = document.querySelector('#section6 .btn-primary');
             const originalText = submitBtn.innerText;
-            submitBtn.innerText = 'Envoi en cours...';
+            submitBtn.innerText = 'Génération du bon de commande...';
             submitBtn.disabled = true;
-
+            
             try {
+                // Générer le PDF
+                const pdfBase64 = await generatePDF();
+                
+                const data = getFormData();
+                data.timestamp = new Date().toISOString();
+                data.token = window.editToken || generateToken();
+                data.action = window.editToken ? 'update' : 'create';
+                data.pdfBase64 = pdfBase64;
+                
+                submitBtn.innerText = 'Envoi en cours...';
+                
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify(formDataObj)
+                    body: JSON.stringify(data)
                 });
                 
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -1514,7 +1853,8 @@
                 window.scrollTo(0, 0);
                 
             } catch (error) {
-                alert('Erreur de connexion. Veuillez réessayer.');
+                console.error('Erreur:', error);
+                alert('Erreur lors de la génération ou de l\'envoi. Veuillez réessayer.');
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
             }
@@ -1550,7 +1890,7 @@
                     const data = await response.json();
                     
                     if (data.error) {
-                        loadingError.textContent = "❌ " + data.error;
+                        loadingError.textContent = '❌ ' + data.error;
                         loadingError.style.display = 'block';
                         setTimeout(() => overlay.classList.remove('active'), 3000);
                         return;
@@ -1586,7 +1926,6 @@
                         }
                     });
                     
-                    // Mettre à jour les affichages dynamiques
                     updateBoothInfo();
                     updateFinancialDisplay();
                     updateMealsTotal();
@@ -1601,7 +1940,7 @@
                     setTimeout(() => overlay.classList.remove('active'), 500);
                     
                 } catch (err) {
-                    loadingError.textContent = "❌ Erreur lors du chargement des données.";
+                    loadingError.textContent = '❌ Erreur lors du chargement des données.';
                     loadingError.style.display = 'block';
                     setTimeout(() => overlay.classList.remove('active'), 3000);
                 }
