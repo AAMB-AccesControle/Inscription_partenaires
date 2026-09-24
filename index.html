@@ -433,11 +433,12 @@
             padding-left: 15px;
         }
         #bonDeCommande .bc-col h4 {
-            color: #2d5a87;
-            font-size: 11px;
+            color: #1e3a5f;
+            font-size: 13px;
             margin: 0 0 4px 0;
-            padding-bottom: 2px;
-            border-bottom: 1px dotted #ccc;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #667eea;
+            font-weight: 600;
         }
         @media (max-width: 768px) {
             .form-container { padding: 20px; }
@@ -465,7 +466,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.40</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.41</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.2</p>
         </div>
@@ -1656,7 +1657,7 @@
             return { data, boothPrice, cocktail, pause, terroir, gala, mealsPrice, terroirDinner, galaExtra, adPrice, prizeValue, total, count, boothVal, lunchWed, lunchThu, galaFree, adText, prizeText };
         }
         
-        // Générer le Bon de Commande HTML (compact, une seule page)
+        // Générer le Bon de Commande HTML (ultra-compact, une seule page)
         function generateBonDeCommandeHTML(recapData) {
             const { data, boothPrice, cocktail, pause, terroir, gala, mealsPrice, terroirDinner, galaExtra, adPrice, prizeValue, total, count, boothVal, lunchWed, lunchThu, galaFree, adText, prizeText } = recapData;
             
@@ -1673,6 +1674,19 @@
             const totalMealsWed = mealsIncludedPerDay + lunchWed;
             const totalMealsThu = mealsIncludedPerDay + lunchThu;
             const totalGalaEntries = parseInt(galaFree) + parseInt(galaExtra);
+            
+            // 🍽️ Fournitures : une seule ligne avec la liste
+            const fournitures = [];
+            if (data.provideBags === 'Oui') fournitures.push('180 sacoches');
+            if (data.provideNotepads === 'Oui') fournitures.push('180 blocs-notes');
+            if (data.providePens === 'Oui') fournitures.push('180 stylos');
+            const fournituresText = fournitures.length > 0 ? fournitures.join(', ') : '-';
+            
+            // 💰 Valeurs financières (sans "Oui -", juste le montant ou 0,00 € TTC)
+            const cocktailPrice = cocktail.value > 0 ? formatPrice(cocktail.value) : formatPrice(0);
+            const pausePrice = pause.value > 0 ? formatPrice(pause.value) : formatPrice(0);
+            const terroirPrice = terroir.value > 0 ? formatPrice(terroir.value) : formatPrice(0);
+            const galaPrice = gala.value > 0 ? formatPrice(gala.value) : formatPrice(0);
             
             return `
                 <div class="bc-header">
@@ -1698,22 +1712,22 @@
                 </div>
                 
                 <div class="bc-section">
-                    <h3>📍 Emplacement & Logistique</h3>
+                    <h3> Emplacement & Logistique</h3>
                     <div class="bc-item"><span class="bc-label">Emplacements :</span><span class="bc-value">${boothVal || '-'}</span></div>
                     <div class="bc-item"><span class="bc-label">Coût emplacement :</span><span class="bc-price">${formatPrice(boothPrice)}</span></div>
                 </div>
                 
                 <div class="bc-section">
                     <h3>💰 Participations Financières</h3>
-                    <div class="bc-item"><span class="bc-label">Cocktail de bienvenue :</span><span class="bc-value">${cocktail.text}</span></div>
-                    <div class="bc-item"><span class="bc-label">Pause :</span><span class="bc-value">${pause.text}</span></div>
-                    <div class="bc-item"><span class="bc-label">Soirée Terroir :</span><span class="bc-value">${terroir.text}</span></div>
-                    <div class="bc-item"><span class="bc-label">Soirée de Gala :</span><span class="bc-value">${gala.text}</span></div>
+                    <div class="bc-item"><span class="bc-label">Cocktail de bienvenue :</span><span class="bc-price">${cocktailPrice}</span></div>
+                    <div class="bc-item"><span class="bc-label">Pause :</span><span class="bc-price">${pausePrice}</span></div>
+                    <div class="bc-item"><span class="bc-label">Soirée Terroir :</span><span class="bc-price">${terroirPrice}</span></div>
+                    <div class="bc-item"><span class="bc-label">Soirée de Gala :</span><span class="bc-price">${galaPrice}</span></div>
                 </div>
                 
                 <div class="bc-section">
                     <h3>🍽️ Repas et Soirées</h3>
-                    <div class="bc-item"><span class="bc-label">Repas mercredi / jeudi :</span><span class="bc-value">${totalMealsWed} mer. (dont ${mealsIncludedPerDay} inclus) / ${totalMealsThu} jeu. (dont ${mealsIncludedPerDay} inclus)</span></div>
+                    <div class="bc-item"><span class="bc-label">Repas mercredi midi et jeudi midi :</span><span class="bc-value">MER. ${totalMealsWed} repas (dont ${mealsIncludedPerDay} inclus) / JEU. ${totalMealsThu} repas (dont ${mealsIncludedPerDay} inclus)</span></div>
                     <div class="bc-item"><span class="bc-label">Coût repas supplémentaires :</span><span class="bc-price">${formatPrice(mealsPrice)}</span></div>
                     <div class="bc-item"><span class="bc-label">Soirée Terroir (repas) :</span><span class="bc-value">${terroirDinner}</span></div>
                     <div class="bc-item"><span class="bc-label">Coût soirée Terroir :</span><span class="bc-price">${formatPrice(terroirDinner * 25)}</span></div>
@@ -1723,12 +1737,9 @@
                 
                 <div class="bc-section">
                     <h3>📄 Documents & Services</h3>
-                    <div class="bc-item"><span class="bc-label">Documents publicitaires :</span><span class="bc-value">${adText}</span></div>
-                    <div class="bc-item"><span class="bc-label">Coût documents :</span><span class="bc-price">${formatPrice(adPrice)}</span></div>
-                    <div class="bc-item"><span class="bc-label">180 sacoches :</span><span class="bc-value">${data.provideBags || '-'}</span></div>
-                    <div class="bc-item"><span class="bc-label">180 blocs-notes :</span><span class="bc-value">${data.provideNotepads || '-'}</span></div>
-                    <div class="bc-item"><span class="bc-label">180 stylos :</span><span class="bc-value">${data.providePens || '-'}</span></div>
-                    <div class="bc-item"><span class="bc-label">Participation financière lot :</span><span class="bc-value">${prizeText}</span></div>
+                    <div class="bc-item"><span class="bc-label">Coût documents publicitaires :</span><span class="bc-price">${formatPrice(adPrice)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Fournitures :</span><span class="bc-value">${fournituresText}</span></div>
+                    <div class="bc-item"><span class="bc-label">Participation financière lot :</span><span class="bc-price">${prizeValue > 0 ? formatPrice(prizeValue) : formatPrice(0)}</span></div>
                 </div>
                 
                 <div class="bc-total">
@@ -1747,6 +1758,7 @@
                 </div>
             `;
         }
+        
         
 
         // Convertir le bon de commande en PDF (base64) de manière optimisée
