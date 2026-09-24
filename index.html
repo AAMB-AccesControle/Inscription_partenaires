@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.46</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.47</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1932,76 +1932,119 @@
             initBadgesSelect();
         });
         
-        window.addEventListener('load', async function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
+// Charger les données si un token est présent dans l'URL (mode édition)
+window.addEventListener('load', async function() {
+    console.log("🔄 Page chargée");
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+        console.log("🔑 Token trouvé:", token);
+        window.editToken = token;
+        
+        // 🎯 AFFICHER L'ÉCRAN DE CHARGEMENT
+        const overlay = document.getElementById('loadingOverlay');
+        const loadingError = document.getElementById('loadingError');
+        overlay.classList.add('active');
+        console.log("📡 Overlay affiché");
+        
+        try {
+            console.log("📡 Appel fetch vers:", `${SCRIPT_URL}?token=${token}`);
+            const response = await fetch(`${SCRIPT_URL}?token=${token}`);
+            console.log(" Réponse reçue:", response.status);
+            const data = await response.json();
+            console.log(" Données reçues:", data);
             
-            if (token) {
-                window.editToken = token;
-                const overlay = document.getElementById('loadingOverlay');
-                const loadingError = document.getElementById('loadingError');
-                overlay.classList.add('active');
-                
-                try {
-                    const response = await fetch(`${SCRIPT_URL}?token=${token}`);
-                    const data = await response.json();
-                    
-                    if (data.error) {
-                        loadingError.textContent = '❌ ' + data.error;
-                        loadingError.style.display = 'block';
-                        setTimeout(() => overlay.classList.remove('active'), 3000);
-                        return;
-                    }
-                    
-                    Object.keys(data).forEach(key => {
-                        const input = document.querySelector(`[name="${key}"]`);
-                        if (input && data[key]) {
-                            if (input.type === 'radio') {
-                                const radio = document.querySelector(`input[name="${key}"][value="${data[key]}"]`);
-                                if (radio) radio.checked = true;
-                            } else if (input.tagName === 'SELECT' || input.tagName === 'TEXTAREA') {
-                                input.value = data[key];
-                            } else if (input.type !== 'file' && input.type !== 'checkbox') {
-                                input.value = data[key];
-                            }
-                        }
-                    });
-                    
-                    const checkboxFields = [
-                        'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
-                        'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
-                        'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire',
-                        'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique',
-                        'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils',
-                        'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'
-                    ];
-                    
-                    checkboxFields.forEach(field => {
-                        if (data[field] === 'Oui') {
-                            const cb = document.querySelector(`input[name="${field}"]`);
-                            if (cb) cb.checked = true;
-                        }
-                    });
-                    
-                    updateBoothInfo();
-                    updateFinancialDisplay();
-                    updateMealsTotal();
-                    updateTerroirTotal();
-                    updateGalaTotal();
-                    updateAdPrice();
-                    
-                    const btn = document.querySelector('#section6 .btn-primary');
-                    if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
-                    
-                    setTimeout(() => overlay.classList.remove('active'), 500);
-                    
-                } catch (err) {
-                    loadingError.textContent = '❌ Erreur lors du chargement des données.';
-                    loadingError.style.display = 'block';
-                    setTimeout(() => overlay.classList.remove('active'), 3000);
-                }
+            if (data.error) {
+                console.error("❌ Erreur:", data.error);
+                loadingError.textContent = "❌ " + data.error;
+                loadingError.style.display = 'block';
+                setTimeout(() => overlay.classList.remove('active'), 3000);
+                return;
             }
-        });
+            
+            console.log("✅ Données chargées pour:", data.companyName);
+            
+            // ✅ Remplir les champs texte, email, tel, select, textarea, number
+            // CORRECTION : on n'ignore plus les valeurs à 0 ou ""
+            Object.keys(data).forEach(key => {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input) {
+                    const value = data[key];
+                    
+                    // On accepte toutes les valeurs sauf undefined et null
+                    if (value !== undefined && value !== null) {
+                        if (input.type === 'radio') {
+                            const radio = document.querySelector(`input[name="${key}"][value="${value}"]`);
+                            if (radio) {
+                                radio.checked = true;
+                                console.log(`  ✓ Radio cochée: ${key} = ${value}`);
+                            }
+                        } else if (input.tagName === 'SELECT' || input.tagName === 'TEXTAREA') {
+                            input.value = value;
+                            console.log(`  ✓ Select/Textarea: ${key} = ${value}`);
+                        } else if (input.type === 'number') {
+                            input.value = value === '' ? 0 : value;
+                            console.log(`  ✓ Number: ${key} = ${value}`);
+                        } else if (input.type !== 'file' && input.type !== 'checkbox') {
+                            input.value = value;
+                            console.log(`  ✓ Input: ${key} = ${value}`);
+                        }
+                    }
+                }
+            });
+            
+            // Cases à cocher individuelles (qualité et secteurs)
+            const checkboxFields = [
+                'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
+                'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
+                'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire',
+                'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique',
+                'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils',
+                'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'
+            ];
+            
+            checkboxFields.forEach(field => {
+                if (data[field] === 'Oui') {
+                    const cb = document.querySelector(`input[name="${field}"]`);
+                    if (cb) {
+                        cb.checked = true;
+                        console.log(`  ✓ Coché: ${field}`);
+                    }
+                }
+            });
+            
+            // Mettre à jour tous les affichages dynamiques (prix, infos, etc.)
+            updateBoothInfo();
+            updateFinancialDisplay();
+            updateMealsTotal();
+            updateTerroirTotal();
+            updateGalaTotal();
+            updateAdPrice();
+            
+            // Changer le bouton de validation
+            const btn = document.querySelector('#section6 .btn-primary');
+            if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
+            
+            console.log("✅ Formulaire rempli, masquage de l'overlay dans 500ms");
+            
+            // ✅ MASQUER L'ÉCRAN DE CHARGEMENT
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                console.log("✅ Overlay masqué");
+            }, 500);
+            
+        } catch (err) {
+            console.error("❌ Erreur chargement:", err);
+            loadingError.textContent = "❌ Erreur lors du chargement des données. Veuillez réessayer.";
+            loadingError.style.display = 'block';
+            setTimeout(() => overlay.classList.remove('active'), 3000);
+        }
+    } else {
+        console.log("️ Pas de token dans l'URL, mode création");
+    }
+});
         
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
