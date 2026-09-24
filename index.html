@@ -442,7 +442,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.37</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.38</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.2</p>
         </div>
@@ -1238,7 +1238,7 @@
     </div>
     
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzp7DeAHTQapnCRI1ONg0C9vFELMZHVCyU4jh_T99Q4_d9JybUflX3rL9vuY9b-gSW/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxv-tuN2uuUrr_BfzuA9iv1rFGjT3r6EV7TBQq9Pl6mGVsQAtSHOTH9FXyp7NLbEW7S/exec';
         
         // Initialisation du menu déroulant badges (0 à 20)
         function initBadgesSelect() {
@@ -1779,7 +1779,8 @@
             `;
         }
         
-        // Convertir le bon de commande en PDF (base64)
+
+        // Convertir le bon de commande en PDF (base64) de manière optimisée
         async function generatePDF() {
             const recapData = fillRecap();
             const bonDiv = document.getElementById('bonDeCommande');
@@ -1788,14 +1789,15 @@
             // Attendre que le DOM soit rendu
             await new Promise(resolve => setTimeout(resolve, 100));
             
+            // ⚠️ OPTIMISATION : scale: 1 (au lieu de 2) et format JPEG à 70% de qualité
             const canvas = await html2canvas(bonDiv, {
-                scale: 2,
+                scale: 1, 
                 useCORS: true,
                 backgroundColor: '#ffffff',
                 width: 800
             });
             
-            const imgData = canvas.toDataURL('image/png');
+            const imgData = canvas.toDataURL('image/jpeg', 0.7); 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             
@@ -1805,13 +1807,13 @@
             let heightLeft = imgHeight;
             let position = 0;
             
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
             heightLeft -= pageHeight;
             
             while (heightLeft > 0) {
                 position = heightLeft - imgHeight;
                 pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
             }
             
@@ -1819,6 +1821,7 @@
         }
         
         // Soumission du formulaire
+
         async function submitForm() {
             const submitBtn = document.querySelector('#section6 .btn-primary');
             const originalText = submitBtn.innerText;
@@ -1826,17 +1829,27 @@
             submitBtn.disabled = true;
             
             try {
-                // Générer le PDF
+                // 1. Générer le PDF optimisé
                 const pdfBase64 = await generatePDF();
                 
+                // 2. Récupérer les données du formulaire
                 const data = getFormData();
                 data.timestamp = new Date().toISOString();
                 data.token = window.editToken || generateToken();
                 data.action = window.editToken ? 'update' : 'create';
-                data.pdfBase64 = pdfBase64;
+                
+                // 3. 🛡️ SÉCURITÉ : Vérifier la taille du PDF pour éviter le timeout de Google Apps Script
+                // Une chaîne Base64 de 10 000 000 de caractères fait environ 7,5 Mo
+                if (pdfBase64 && pdfBase64.length > 10000000) {
+                    console.warn("⚠️ PDF trop lourd (" + pdfBase64.length + " caractères). Envoi du formulaire SANS pièce jointe pour éviter le blocage.");
+                    // On n'ajoute PAS data.pdfBase64 pour ne pas surcharger l'envoi
+                } else {
+                    data.pdfBase64 = pdfBase64;
+                }
                 
                 submitBtn.innerText = 'Envoi en cours...';
                 
+                // 4. Envoi vers Google Apps Script
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -1844,6 +1857,7 @@
                     body: JSON.stringify(data)
                 });
                 
+                // 5. Succès : afficher le message de confirmation
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
                 document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
                 document.querySelector('.buttons').style.display = 'none';
@@ -1853,7 +1867,7 @@
                 window.scrollTo(0, 0);
                 
             } catch (error) {
-                console.error('Erreur:', error);
+                console.error('❌ Erreur lors de l\'envoi:', error);
                 alert('Erreur lors de la génération ou de l\'envoi. Veuillez réessayer.');
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
