@@ -337,50 +337,55 @@
         .recap-total-value { font-size: 28px; font-weight: bold; }
         
         /* BON DE COMMANDE (caché à l'écran, utilisé pour le PDF) */
+
         #bonDeCommande {
             position: absolute;
             left: -9999px;
             top: 0;
-            width: 800px;
+            width: 750px;
             background: white;
-            padding: 40px;
+            padding: 25px 30px;
             font-family: 'Segoe UI', Arial, sans-serif;
             color: #333;
+            font-size: 12px;
+            line-height: 1.3;
         }
         #bonDeCommande .bc-header {
             text-align: center;
-            border-bottom: 3px solid #1e3a5f;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            border-bottom: 2px solid #1e3a5f;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
         #bonDeCommande .bc-header h1 {
             color: #1e3a5f;
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 22px;
+            margin-bottom: 4px;
         }
         #bonDeCommande .bc-header p {
             color: #666;
-            font-size: 14px;
+            font-size: 11px;
+            margin: 2px 0;
         }
         #bonDeCommande .bc-section {
-            margin-bottom: 25px;
+            margin-bottom: 12px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
+            border-radius: 5px;
+            padding: 8px 12px;
+            page-break-inside: avoid;
         }
         #bonDeCommande .bc-section h3 {
             color: #1e3a5f;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-            font-size: 18px;
+            border-bottom: 1px solid #667eea;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+            font-size: 14px;
         }
         #bonDeCommande .bc-item {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
+            padding: 3px 0;
             border-bottom: 1px dotted #eee;
-            font-size: 14px;
+            font-size: 11px;
         }
         #bonDeCommande .bc-item:last-child { border-bottom: none; }
         #bonDeCommande .bc-item .bc-label { color: #555; }
@@ -389,31 +394,31 @@
         #bonDeCommande .bc-total {
             background: #1e3a5f;
             color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
+            padding: 10px 15px;
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 20px;
-            margin-top: 20px;
+            font-size: 15px;
+            margin-top: 12px;
         }
-        #bonDeCommande .bc-total-value { font-size: 26px; font-weight: bold; }
+        #bonDeCommande .bc-total-value { font-size: 18px; font-weight: bold; }
         #bonDeCommande .bc-cachet {
-            margin-top: 40px;
-            border: 2px dashed #999;
-            padding: 30px;
+            margin-top: 20px;
+            border: 1.5px dashed #999;
+            padding: 15px;
             text-align: center;
             color: #666;
-            font-size: 14px;
-            min-height: 120px;
+            font-size: 11px;
+            min-height: 60px;
         }
         #bonDeCommande .bc-footer {
-            margin-top: 30px;
+            margin-top: 15px;
             text-align: center;
             color: #999;
-            font-size: 12px;
+            font-size: 9px;
             border-top: 1px solid #eee;
-            padding-top: 15px;
+            padding-top: 8px;
         }
         
         @media (max-width: 768px) {
@@ -442,7 +447,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.38</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.39</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.2</p>
         </div>
@@ -1633,55 +1638,14 @@
             return { data, boothPrice, cocktail, pause, terroir, gala, mealsPrice, terroirDinner, galaExtra, adPrice, prizeValue, total, count, boothVal, lunchWed, lunchThu, galaFree, adText, prizeText };
         }
         
-        // Générer le Bon de Commande HTML (caché)
+        // Générer le Bon de Commande HTML (compact, une seule page)
         function generateBonDeCommandeHTML(recapData) {
             const { data, boothPrice, cocktail, pause, terroir, gala, mealsPrice, terroirDinner, galaExtra, adPrice, prizeValue, total, count, boothVal, lunchWed, lunchThu, galaFree, adText, prizeText } = recapData;
             
             const companyName = data.companyName || 'Non renseigné';
             const decisionMaker = data.decisionMakerName || '-';
-            const decisionEmail = data.decisionMakerEmail || '-';
-            const decisionPhone = data.decisionMakerPhone || '-';
             const billingAddress = data.billingAddress || '-';
             const billingContact = data.billingContactName || '-';
-            const billingEmail = data.billingContactEmail || '-';
-            const billingPhone = data.billingContactPhone || '-';
-            const badges = data.badges || '0';
-            
-            // Qualité
-            const qualityList = [];
-            if (data.quality_fabricant === 'Oui') qualityList.push('Fabricant/Constructeur');
-            if (data.quality_distributeur === 'Oui') qualityList.push('Distributeur');
-            if (data.quality_maintenance === 'Oui') qualityList.push('Maintenance & Contrôle');
-            if (data.quality_service === 'Oui') qualityList.push('Service');
-            if (data.quality_autre === 'Oui') qualityList.push('Autre');
-            
-            // Secteurs
-            const sectorList = [];
-            const sectorMap = {
-                'sector_accessoires': 'Accessoires/Câbles/Consommables/Etiquetage',
-                'sector_appareils': 'Appareils de mesures',
-                'sector_batterie': 'Batterie',
-                'sector_bras': 'Bras/Table opératoire/Scialytique',
-                'sector_desinfection': 'Désinfection/Stérilisation',
-                'sector_endoscopie': 'Endoscopie',
-                'sector_exploration': 'Exploration fonctionnelle',
-                'sector_humanitaire': 'Humanitaire',
-                'sector_imagerie': 'Imagerie Médicale',
-                'sector_instrumentation': 'Instrumentation de chirurgie',
-                'sector_laboratoire': 'Laboratoire',
-                'sector_maintenances': 'Maintenances',
-                'sector_metrologie': 'Métrologie',
-                'sector_monitorage': 'Monitorage',
-                'sector_odontologie': 'Odontologie',
-                'sector_optique': 'Optique/lampes',
-                'sector_perfusion': 'Perfusion',
-                'sector_rechauffement': 'Réchauffement patient',
-                'sector_ventilation': 'Ventilation',
-                'sector_autres': 'Autres'
-            };
-            Object.keys(sectorMap).forEach(key => {
-                if (data[key] === 'Oui') sectorList.push(sectorMap[key]);
-            });
             
             const today = new Date();
             const dateStr = today.toLocaleDateString('fr-FR');
@@ -1692,38 +1656,29 @@
                     <h1>BON DE COMMANDE</h1>
                     <p>AAMB - Journées Techniques du Bâtiment 2026</p>
                     <p>Besançon - 17, 18 et 19 novembre 2026</p>
-                    <p style="margin-top: 15px;"><strong>Date :</strong> ${dateStr} | <strong>Référence :</strong> ${token}</p>
+                    <p style="margin-top: 6px;"><strong>Date :</strong> ${dateStr} | <strong>Référence :</strong> ${token}</p>
                 </div>
                 
                 <div class="bc-section">
-                    <h3>📋 Informations Société</h3>
+                    <h3> Informations Société</h3>
                     <div class="bc-item"><span class="bc-label">Société :</span><span class="bc-value">${companyName}</span></div>
-                    <div class="bc-item"><span class="bc-label">Qualité :</span><span class="bc-value">${qualityList.length > 0 ? qualityList.join(', ') : '-'}</span></div>
-                    <div class="bc-item"><span class="bc-label">Secteurs :</span><span class="bc-value">${sectorList.length > 0 ? sectorList.join(', ') : '-'}</span></div>
                 </div>
                 
                 <div class="bc-section">
                     <h3>👤 Responsable Décisionnel</h3>
                     <div class="bc-item"><span class="bc-label">Nom :</span><span class="bc-value">${decisionMaker}</span></div>
-                    <div class="bc-item"><span class="bc-label">Téléphone :</span><span class="bc-value">${decisionPhone}</span></div>
-                    <div class="bc-item"><span class="bc-label">Email :</span><span class="bc-value">${decisionEmail}</span></div>
                 </div>
                 
                 <div class="bc-section">
                     <h3>💶 Facturation</h3>
                     <div class="bc-item"><span class="bc-label">Adresse :</span><span class="bc-value">${billingAddress}</span></div>
                     <div class="bc-item"><span class="bc-label">Référent :</span><span class="bc-value">${billingContact}</span></div>
-                    <div class="bc-item"><span class="bc-label">Téléphone :</span><span class="bc-value">${billingPhone}</span></div>
-                    <div class="bc-item"><span class="bc-label">Email :</span><span class="bc-value">${billingEmail}</span></div>
                 </div>
                 
                 <div class="bc-section">
                     <h3>📍 Emplacement & Logistique</h3>
                     <div class="bc-item"><span class="bc-label">Emplacements :</span><span class="bc-value">${boothVal || '-'}</span></div>
                     <div class="bc-item"><span class="bc-label">Coût emplacement :</span><span class="bc-price">${formatPrice(boothPrice)}</span></div>
-                    <div class="bc-item"><span class="bc-label">Badges :</span><span class="bc-value">${badges}</span></div>
-                    <div class="bc-item"><span class="bc-label">Livraison amont :</span><span class="bc-value">${data.delivery || '-'}</span></div>
-                    <div class="bc-item"><span class="bc-label">Montage :</span><span class="bc-value">${data.setupTime || '-'}</span></div>
                 </div>
                 
                 <div class="bc-section">
@@ -1754,11 +1709,7 @@
                     <div class="bc-item"><span class="bc-label">180 sacoches :</span><span class="bc-value">${data.provideBags || '-'}</span></div>
                     <div class="bc-item"><span class="bc-label">180 blocs-notes :</span><span class="bc-value">${data.provideNotepads || '-'}</span></div>
                     <div class="bc-item"><span class="bc-label">180 stylos :</span><span class="bc-value">${data.providePens || '-'}</span></div>
-                    <div class="bc-item"><span class="bc-label">5 questions QCM :</span><span class="bc-value">${data.knowledgeQuestions || '-'}</span></div>
-                    <div class="bc-item"><span class="bc-label">Lot fourni :</span><span class="bc-value">${data.providePrize || '-'}</span></div>
                     <div class="bc-item"><span class="bc-label">Participation financière lot :</span><span class="bc-value">${prizeText}</span></div>
-                    <div class="bc-item"><span class="bc-label">Jeu sur le stand :</span><span class="bc-value">${data.standGame || '-'}</span></div>
-                    <div class="bc-item"><span class="bc-label">Atelier :</span><span class="bc-value">${data.workshopInterest || '-'} ${data.workshopTheme ? '(' + data.workshopTheme + ')' : ''}</span></div>
                 </div>
                 
                 <div class="bc-total">
@@ -1773,8 +1724,7 @@
                 
                 <div class="bc-footer">
                     <p>AAMB - Association des Ambulanciers de la Médecine du Bâtiment</p>
-                    <p>JTB 2026 - Besançon - 17, 18 et 19 novembre 2026</p>
-                    <p>Email : jtb.partenaire@aamb.asso.fr</p>
+                    <p>JTB 2026 - Besançon - 17, 18 et 19 novembre 2026 | Email : jtb.partenaire@aamb.asso.fr</p>
                 </div>
             `;
         }
