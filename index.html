@@ -420,7 +420,25 @@
             border-top: 1px solid #eee;
             padding-top: 8px;
         }
-        
+        #bonDeCommande .bc-two-columns {
+            display: flex;
+            gap: 15px;
+        }
+        #bonDeCommande .bc-col {
+            flex: 1;
+            min-width: 0;
+        }
+        #bonDeCommande .bc-col + .bc-col {
+            border-left: 1px solid #e0e0e0;
+            padding-left: 15px;
+        }
+        #bonDeCommande .bc-col h4 {
+            color: #2d5a87;
+            font-size: 11px;
+            margin: 0 0 4px 0;
+            padding-bottom: 2px;
+            border-bottom: 1px dotted #ccc;
+        }
         @media (max-width: 768px) {
             .form-container { padding: 20px; }
             .inline-fields { grid-template-columns: 1fr; }
@@ -447,7 +465,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.39</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.40</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.2</p>
         </div>
@@ -1651,28 +1669,32 @@
             const dateStr = today.toLocaleDateString('fr-FR');
             const token = data.token || 'N/A';
             
+            const mealsIncludedPerDay = count === 0 ? 0 : count === 1 ? 2 : 4;
+            const totalMealsWed = mealsIncludedPerDay + lunchWed;
+            const totalMealsThu = mealsIncludedPerDay + lunchThu;
+            const totalGalaEntries = parseInt(galaFree) + parseInt(galaExtra);
+            
             return `
                 <div class="bc-header">
                     <h1>BON DE COMMANDE</h1>
                     <p>AAMB - Journées Techniques du Bâtiment 2026</p>
                     <p>Besançon - 17, 18 et 19 novembre 2026</p>
-                    <p style="margin-top: 6px;"><strong>Date :</strong> ${dateStr} | <strong>Référence :</strong> ${token}</p>
+                    <p style="margin-top: 4px;"><strong>Date :</strong> ${dateStr} | <strong>Référence :</strong> ${token}</p>
                 </div>
                 
                 <div class="bc-section">
-                    <h3> Informations Société</h3>
-                    <div class="bc-item"><span class="bc-label">Société :</span><span class="bc-value">${companyName}</span></div>
-                </div>
-                
-                <div class="bc-section">
-                    <h3>👤 Responsable Décisionnel</h3>
-                    <div class="bc-item"><span class="bc-label">Nom :</span><span class="bc-value">${decisionMaker}</span></div>
-                </div>
-                
-                <div class="bc-section">
-                    <h3>💶 Facturation</h3>
-                    <div class="bc-item"><span class="bc-label">Adresse :</span><span class="bc-value">${billingAddress}</span></div>
-                    <div class="bc-item"><span class="bc-label">Référent :</span><span class="bc-value">${billingContact}</span></div>
+                    <div class="bc-two-columns">
+                        <div class="bc-col">
+                            <h4>Société & Responsable</h4>
+                            <div class="bc-item"><span class="bc-label">Société :</span><span class="bc-value">${companyName}</span></div>
+                            <div class="bc-item"><span class="bc-label">Responsable :</span><span class="bc-value">${decisionMaker}</span></div>
+                        </div>
+                        <div class="bc-col">
+                            <h4>Facturation</h4>
+                            <div class="bc-item"><span class="bc-label">Adresse :</span><span class="bc-value">${billingAddress}</span></div>
+                            <div class="bc-item"><span class="bc-label">Référent :</span><span class="bc-value">${billingContact}</span></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="bc-section">
@@ -1691,14 +1713,11 @@
                 
                 <div class="bc-section">
                     <h3>🍽️ Repas et Soirées</h3>
-                    <div class="bc-item"><span class="bc-label">Repas inclus :</span><span class="bc-value">${count === 0 ? 'Aucun' : count === 1 ? '2 mer. + 2 jeu.' : '4 mer. + 4 jeu.'}</span></div>
-                    <div class="bc-item"><span class="bc-label">Repas suppl. mercredi :</span><span class="bc-value">${lunchWed}</span></div>
-                    <div class="bc-item"><span class="bc-label">Repas suppl. jeudi :</span><span class="bc-value">${lunchThu}</span></div>
+                    <div class="bc-item"><span class="bc-label">Repas mercredi / jeudi :</span><span class="bc-value">${totalMealsWed} mer. (dont ${mealsIncludedPerDay} inclus) / ${totalMealsThu} jeu. (dont ${mealsIncludedPerDay} inclus)</span></div>
                     <div class="bc-item"><span class="bc-label">Coût repas supplémentaires :</span><span class="bc-price">${formatPrice(mealsPrice)}</span></div>
                     <div class="bc-item"><span class="bc-label">Soirée Terroir (repas) :</span><span class="bc-value">${terroirDinner}</span></div>
                     <div class="bc-item"><span class="bc-label">Coût soirée Terroir :</span><span class="bc-price">${formatPrice(terroirDinner * 25)}</span></div>
-                    <div class="bc-item"><span class="bc-label">Entrées gala gratuites :</span><span class="bc-value">${galaFree}</span></div>
-                    <div class="bc-item"><span class="bc-label">Entrées gala supplémentaires :</span><span class="bc-value">${galaExtra}</span></div>
+                    <div class="bc-item"><span class="bc-label">Entrées gala :</span><span class="bc-value">${totalGalaEntries} (dont ${galaFree} gratuites + ${galaExtra} supplémentaires)</span></div>
                     <div class="bc-item"><span class="bc-label">Coût entrées gala suppl. :</span><span class="bc-price">${formatPrice(galaExtra * 60)}</span></div>
                 </div>
                 
