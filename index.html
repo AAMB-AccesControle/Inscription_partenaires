@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.52</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.53</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1238,7 +1238,7 @@
                     <h2 class="section-title">📊 Récapitulatif de votre inscription</h2>
                     
                     <div class="recap-section">
-                        <h3> Emplacement</h3>
+                        <h3>📍 Emplacement</h3>
                         <div class="recap-item">
                             <span class="recap-label">Nombre d'emplacements :</span>
                             <span class="recap-value" id="recapBooth">-</span>
@@ -1322,7 +1322,7 @@
                     </div>
                     
                     <div class="recap-section">
-                        <h3>📄 Documents & Services</h3>
+                        <h3> Documents & Services</h3>
                         <div class="recap-item">
                             <span class="recap-label">Documents publicitaires :</span>
                             <span class="recap-value" id="recapAd">-</span>
@@ -1375,6 +1375,8 @@
                         </button>
                     </div>
                 </div>
+
+                
 
 
 
@@ -1675,148 +1677,170 @@
         }
         
         function fillRecap() {
-            const data = getFormData();
-            const count = getBoothCount();
-            const boothVal = document.getElementById('boothSpaces').value;
-            
-            // Fonction utilitaire pour mettre à jour un élément en toute sécurité
-            const setRecap = (id, value) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = value;
-            };
-            
-            // Emplacement
-            setRecap('recapBooth', boothVal || '-');
-            const boothPrices = { '0': 0, '1 emplacement 3x2m': PRICE_BOOTH_1, '2 emplacements 3x2m soit 6x2m': PRICE_BOOTH_2 };
-            const boothPrice = boothPrices[boothVal] || 0;
-            setRecap('recapBoothPrice', formatPrice(boothPrice));
-            
-            // Participations financières (sans "Oui -", juste le montant)
-            const getFinancial = (radioName, amountId) => {
-                const radio = document.querySelector(`input[name="${radioName}"]:checked`);
-                if (radio && radio.value === 'Oui') {
-                    const amount = document.getElementById(amountId).value;
-                    const val = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0;
-                    return { text: formatPrice(val), value: val };
+            try {
+                console.log(" Début de fillRecap()");
+                
+                const data = getFormData();
+                const count = getBoothCount();
+                const boothVal = document.getElementById('boothSpaces').value;
+                
+                // Fonction utilitaire sécurisée
+                const setRecap = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.textContent = value;
+                    } else {
+                        console.warn(`⚠️ Élément non trouvé: ${id}`);
+                    }
+                };
+                
+                // Emplacement
+                setRecap('recapBooth', boothVal || '-');
+                const boothPrices = { '0': 0, '1 emplacement 3x2m': PRICE_BOOTH_1, '2 emplacements 3x2m soit 6x2m': PRICE_BOOTH_2 };
+                const boothPrice = boothPrices[boothVal] || 0;
+                setRecap('recapBoothPrice', formatPrice(boothPrice));
+                
+                // Participations financières
+                const getFinancial = (radioName, amountId) => {
+                    const radio = document.querySelector(`input[name="${radioName}"]:checked`);
+                    if (radio && radio.value === 'Oui') {
+                        const amountEl = document.getElementById(amountId);
+                        const amount = amountEl ? amountEl.value : '';
+                        const val = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0;
+                        return { text: formatPrice(val), value: val };
+                    }
+                    return { text: formatPrice(0), value: 0 };
+                };
+                
+                const cocktail = getFinancial('cocktailParticipation', 'cocktailAmount');
+                const pause = getFinancial('pauseParticipation', 'pauseAmount');
+                const terroir = getFinancial('terroirParticipation', 'terroirAmount');
+                const gala = getFinancial('galaParticipation', 'galaAmount');
+                const studentFees = getFinancial('studentFeesParticipation', 'studentFeesAmount');
+                const prizeParticipation = getFinancial('prizeParticipation', 'prizeParticipationAmount');
+                
+                setRecap('recapCocktail', cocktail.text);
+                setRecap('recapPause', pause.text);
+                setRecap('recapTerroir', terroir.text);
+                setRecap('recapGala', gala.text);
+                setRecap('recapStudentFees', studentFees.text);
+                setRecap('recapPrizeParticipation', prizeParticipation.text);
+                
+                // Lot fourni
+                const providePrizeRadio = document.querySelector('input[name="providePrize"]:checked');
+                let prizeProvidedValue = 0;
+                if (providePrizeRadio && providePrizeRadio.value === 'Oui') {
+                    const prizeValueEl = document.querySelector('input[name="prizeValue"]');
+                    prizeProvidedValue = prizeValueEl ? (parseFloat(prizeValueEl.value) || 0) : 0;
                 }
-                return { text: formatPrice(0), value: 0 };
-            };
-            
-            const cocktail = getFinancial('cocktailParticipation', 'cocktailAmount');
-            const pause = getFinancial('pauseParticipation', 'pauseAmount');
-            const terroir = getFinancial('terroirParticipation', 'terroirAmount');
-            const gala = getFinancial('galaParticipation', 'galaAmount');
-            const studentFees = getFinancial('studentFeesParticipation', 'studentFeesAmount');
-            const prizeParticipation = getFinancial('prizeParticipation', 'prizeParticipationAmount');
-            
-            setRecap('recapCocktail', cocktail.text);
-            setRecap('recapPause', pause.text);
-            setRecap('recapTerroir', terroir.text);
-            setRecap('recapGala', gala.text);
-            setRecap('recapStudentFees', studentFees.text);
-            setRecap('recapPrizeParticipation', prizeParticipation.text);
-            
-            // Lot fourni
-            const providePrizeRadio = document.querySelector('input[name="providePrize"]:checked');
-            let prizeProvidedValue = 0;
-            if (providePrizeRadio && providePrizeRadio.value === 'Oui') {
-                prizeProvidedValue = parseFloat(document.querySelector('input[name="prizeValue"]').value) || 0;
-            }
-            setRecap('recapPrizeProvided', formatPrice(prizeProvidedValue));
-            
-            // Repas
-            const mealsIncludedPerDay = count === 0 ? 0 : count === 1 ? 2 : 4;
-            const lunchWed = parseInt(document.getElementById('lunchWednesday').value) || 0;
-            const lunchThu = parseInt(document.getElementById('lunchThursday').value) || 0;
-            const totalMealsWed = mealsIncludedPerDay + lunchWed;
-            const totalMealsThu = mealsIncludedPerDay + lunchThu;
-            
-            setRecap('recapMealsIncluded', count === 0 ? 'Aucun' : count === 1 ? '2 mercredi + 2 jeudi' : '4 mercredi + 4 jeudi');
-            setRecap('recapLunchWed', `MER. ${totalMealsWed} repas (dont ${mealsIncludedPerDay} inclus) / JEU. ${totalMealsThu} repas (dont ${mealsIncludedPerDay} inclus)`);
-            const mealsPrice = (lunchWed + lunchThu) * PRICE_MEAL;
-            setRecap('recapMealsPrice', formatPrice(mealsPrice));
-            
-            // Soirée Terroir
-            const terroirDinner = parseInt(document.getElementById('terroirDinner').value) || 0;
-            setRecap('recapTerroirDinner', terroirDinner);
-            setRecap('recapTerroirDinnerPrice', formatPrice(terroirDinner * PRICE_TERROIR_DINNER));
-            
-            // Gala
-            const galaFree = document.getElementById('galaFreeEntries').value;
-            const galaExtra = parseInt(document.getElementById('galaExtraEntries').value) || 0;
-            const totalGalaEntries = parseInt(galaFree) + galaExtra;
-            setRecap('recapGalaFree', `${totalGalaEntries} soirées de gala (dont ${galaFree} gratuites)`);
-            setRecap('recapGalaExtraPrice', formatPrice(galaExtra * PRICE_GALA_EXTRA));
-            
-            // Régimes spécifiques (3 lignes séparées)
-            const regimeFields = [
-                { name: 'wedNoPork', type: 'pork', meal: 'MER midi' },
-                { name: 'thuNoPork', type: 'pork', meal: 'JEU midi' },
-                { name: 'terroirNoPork', type: 'pork', meal: 'soirée terroir' },
-                { name: 'galaNoPork', type: 'pork', meal: 'soirée de gala' },
-                { name: 'wedNoMeat', type: 'meat', meal: 'MER midi' },
-                { name: 'thuNoMeat', type: 'meat', meal: 'JEU midi' },
-                { name: 'terroirNoMeat', type: 'meat', meal: 'soirée terroir' },
-                { name: 'galaNoMeat', type: 'meat', meal: 'soirée de gala' },
-                { name: 'wedNoGluten', type: 'gluten', meal: 'MER midi' },
-                { name: 'thuNoGluten', type: 'gluten', meal: 'JEU midi' },
-                { name: 'terroirNoGluten', type: 'gluten', meal: 'soirée terroir' },
-                { name: 'galaNoGluten', type: 'gluten', meal: 'soirée de gala' }
-            ];
-            
-            const regimesByType = { 'pork': [], 'meat': [], 'gluten': [] };
-            regimeFields.forEach(field => {
-                const input = document.querySelector(`[name="${field.name}"]`);
-                const value = input ? (parseInt(input.value) || 0) : 0;
-                if (value > 0) {
-                    regimesByType[field.type].push(`${value} repas ${field.meal}`);
-                }
-            });
-            
-            setRecap('recapRegimePork', regimesByType['pork'].length > 0 ? regimesByType['pork'].join(', ') : '-');
-            setRecap('recapRegimeMeat', regimesByType['meat'].length > 0 ? regimesByType['meat'].join(', ') : '-');
-            setRecap('recapRegimeGluten', regimesByType['gluten'].length > 0 ? regimesByType['gluten'].join(', ') : '-');
-            
-            setRecap('recapRegimes', regimesText.length > 0 ? regimesText.join(' | ') : '-');
-            
-            // Documents publicitaires
-            const adRadio = document.querySelector('input[name="adDocuments"]:checked');
-            let adPrice = 0;
-            if (adRadio) {
-                if (adRadio.value === 'Non') {
-                    setRecap('recapAd', 'Non');
-                    adPrice = 0;
+                setRecap('recapPrizeProvided', formatPrice(prizeProvidedValue));
+                
+                // Repas
+                const mealsIncludedPerDay = count === 0 ? 0 : count === 1 ? 2 : 4;
+                const lunchWedEl = document.getElementById('lunchWednesday');
+                const lunchThuEl = document.getElementById('lunchThursday');
+                const lunchWed = lunchWedEl ? (parseInt(lunchWedEl.value) || 0) : 0;
+                const lunchThu = lunchThuEl ? (parseInt(lunchThuEl.value) || 0) : 0;
+                const totalMealsWed = mealsIncludedPerDay + lunchWed;
+                const totalMealsThu = mealsIncludedPerDay + lunchThu;
+                
+                setRecap('recapLunchWed', `MER. ${totalMealsWed} repas (dont ${mealsIncludedPerDay} inclus) / JEU. ${totalMealsThu} repas (dont ${mealsIncludedPerDay} inclus)`);
+                const mealsPrice = (lunchWed + lunchThu) * PRICE_MEAL;
+                setRecap('recapMealsPrice', formatPrice(mealsPrice));
+                
+                // Soirée Terroir
+                const terroirDinnerEl = document.getElementById('terroirDinner');
+                const terroirDinner = terroirDinnerEl ? (parseInt(terroirDinnerEl.value) || 0) : 0;
+                setRecap('recapTerroirDinner', terroirDinner);
+                setRecap('recapTerroirDinnerPrice', formatPrice(terroirDinner * PRICE_TERROIR_DINNER));
+                
+                // Gala
+                const galaFreeEl = document.getElementById('galaFreeEntries');
+                const galaExtraEl = document.getElementById('galaExtraEntries');
+                const galaFree = galaFreeEl ? galaFreeEl.value : '0';
+                const galaExtra = galaExtraEl ? (parseInt(galaExtraEl.value) || 0) : 0;
+                const totalGalaEntries = parseInt(galaFree) + galaExtra;
+                setRecap('recapGalaFree', `${totalGalaEntries} soirées de gala (dont ${galaFree} gratuites)`);
+                setRecap('recapGalaExtraPrice', formatPrice(galaExtra * PRICE_GALA_EXTRA));
+                
+                // Régimes spécifiques (3 lignes)
+                const regimeFields = [
+                    { name: 'wedNoPork', type: 'pork', meal: 'MER midi' },
+                    { name: 'thuNoPork', type: 'pork', meal: 'JEU midi' },
+                    { name: 'terroirNoPork', type: 'pork', meal: 'soirée terroir' },
+                    { name: 'galaNoPork', type: 'pork', meal: 'soirée de gala' },
+                    { name: 'wedNoMeat', type: 'meat', meal: 'MER midi' },
+                    { name: 'thuNoMeat', type: 'meat', meal: 'JEU midi' },
+                    { name: 'terroirNoMeat', type: 'meat', meal: 'soirée terroir' },
+                    { name: 'galaNoMeat', type: 'meat', meal: 'soirée de gala' },
+                    { name: 'wedNoGluten', type: 'gluten', meal: 'MER midi' },
+                    { name: 'thuNoGluten', type: 'gluten', meal: 'JEU midi' },
+                    { name: 'terroirNoGluten', type: 'gluten', meal: 'soirée terroir' },
+                    { name: 'galaNoGluten', type: 'gluten', meal: 'soirée de gala' }
+                ];
+                
+                const regimesByType = { 'pork': [], 'meat': [], 'gluten': [] };
+                regimeFields.forEach(field => {
+                    const input = document.querySelector(`[name="${field.name}"]`);
+                    const value = input ? (parseInt(input.value) || 0) : 0;
+                    if (value > 0) {
+                        regimesByType[field.type].push(`${value} repas ${field.meal}`);
+                    }
+                });
+                
+                setRecap('recapRegimePork', regimesByType['pork'].length > 0 ? regimesByType['pork'].join(', ') : '-');
+                setRecap('recapRegimeMeat', regimesByType['meat'].length > 0 ? regimesByType['meat'].join(', ') : '-');
+                setRecap('recapRegimeGluten', regimesByType['gluten'].length > 0 ? regimesByType['gluten'].join(', ') : '-');
+                
+                // Documents publicitaires
+                const adRadio = document.querySelector('input[name="adDocuments"]:checked');
+                let adPrice = 0;
+                if (adRadio) {
+                    if (adRadio.value === 'Non') {
+                        setRecap('recapAd', 'Non');
+                        adPrice = 0;
+                    } else {
+                        setRecap('recapAd', count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)');
+                        adPrice = count > 0 ? 250 : 500;
+                    }
                 } else {
-                    setRecap('recapAd', count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)');
-                    adPrice = count > 0 ? 250 : 500;
+                    setRecap('recapAd', '-');
                 }
-            } else {
-                setRecap('recapAd', '-');
+                setRecap('recapAdPrice', formatPrice(adPrice));
+                
+                // Fournitures
+                const fournitures = [];
+                if (data.provideNotepads === 'Oui') fournitures.push('200 blocs-notes');
+                if (data.providePens === 'Oui') fournitures.push('200 stylos');
+                if (data.provideBags === 'Oui') fournitures.push('200 sacoches');
+                setRecap('recapFournitures', fournitures.length > 0 ? fournitures.join(', ') : '-');
+                
+                // Autres
+                setRecap('recapKnowledgeQuestions', data.knowledgeQuestions || '-');
+                setRecap('recapStandGame', data.standGame || '-');
+                setRecap('recapPrizeDistribution', data.prizeDistribution || '-');
+                setRecap('recapWorkshop', data.workshopInterest || '-');
+                setRecap('recapWorkshopTheme', data.workshopTheme || '-');
+                
+                // TOTAL
+                const total = boothPrice + cocktail.value + pause.value + terroir.value + gala.value + 
+                             studentFees.value + prizeParticipation.value + prizeProvidedValue +
+                             mealsPrice + (terroirDinner * PRICE_TERROIR_DINNER) + (galaExtra * PRICE_GALA_EXTRA) + adPrice;
+                setRecap('recapTotal', formatPrice(total));
+                
+                console.log("✅ fillRecap() terminé avec succès");
+                
+                return { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, adText: adRadio ? (adRadio.value === 'Non' ? 'Non' : (count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)')) : '-', mealsIncludedPerDay, totalMealsWed, totalMealsThu };
+                
+            } catch (error) {
+                console.error("❌ Erreur dans fillRecap():", error);
+                alert("Erreur lors du remplissage du récapitulatif: " + error.message);
+                return null;
             }
-            setRecap('recapAdPrice', formatPrice(adPrice));
-            
-            // Fournitures (sur une ligne)
-            const fournitures = [];
-            if (data.provideNotepads === 'Oui') fournitures.push('200 blocs-notes');
-            if (data.providePens === 'Oui') fournitures.push('200 stylos');
-            if (data.provideBags === 'Oui') fournitures.push('200 sacoches');
-            setRecap('recapFournitures', fournitures.length > 0 ? fournitures.join(', ') : '-');
-            
-            // Autres
-            setRecap('recapKnowledgeQuestions', data.knowledgeQuestions || '-');
-            setRecap('recapStandGame', data.standGame || '-');
-            setRecap('recapPrizeDistribution', data.prizeDistribution || '-');
-            setRecap('recapWorkshop', data.workshopInterest || '-');
-            setRecap('recapWorkshopTheme', data.workshopTheme || '-');
-            
-            // TOTAL
-            const total = boothPrice + cocktail.value + pause.value + terroir.value + gala.value + 
-                         studentFees.value + prizeParticipation.value + prizeProvidedValue +
-                         mealsPrice + (terroirDinner * PRICE_TERROIR_DINNER) + (galaExtra * PRICE_GALA_EXTRA) + adPrice;
-            setRecap('recapTotal', formatPrice(total));
-            
-            return { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, adText: adRadio ? (adRadio.value === 'Non' ? 'Non' : (count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)')) : '-', mealsIncludedPerDay, totalMealsWed, totalMealsThu };
         }
+
+
+        
         
          function getRegimeText(type, data) {
             const fields = {
