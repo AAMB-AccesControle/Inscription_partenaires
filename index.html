@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.50</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.51</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1675,11 +1675,17 @@
             const count = getBoothCount();
             const boothVal = document.getElementById('boothSpaces').value;
             
+            // Fonction utilitaire pour mettre à jour un élément en toute sécurité
+            const setRecap = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
+            
             // Emplacement
-            document.getElementById('recapBooth').textContent = boothVal || '-';
+            setRecap('recapBooth', boothVal || '-');
             const boothPrices = { '0': 0, '1 emplacement 3x2m': PRICE_BOOTH_1, '2 emplacements 3x2m soit 6x2m': PRICE_BOOTH_2 };
             const boothPrice = boothPrices[boothVal] || 0;
-            document.getElementById('recapBoothPrice').textContent = formatPrice(boothPrice);
+            setRecap('recapBoothPrice', formatPrice(boothPrice));
             
             // Participations financières (sans "Oui -", juste le montant)
             const getFinancial = (radioName, amountId) => {
@@ -1699,23 +1705,20 @@
             const studentFees = getFinancial('studentFeesParticipation', 'studentFeesAmount');
             const prizeParticipation = getFinancial('prizeParticipation', 'prizeParticipationAmount');
             
-            document.getElementById('recapCocktail').textContent = cocktail.text;
-            document.getElementById('recapPause').textContent = pause.text;
-            document.getElementById('recapTerroir').textContent = terroir.text;
-            document.getElementById('recapGala').textContent = gala.text;
-            document.getElementById('recapStudentFees').textContent = studentFees.text;
-            document.getElementById('recapPrizeParticipation').textContent = prizeParticipation.text;
+            setRecap('recapCocktail', cocktail.text);
+            setRecap('recapPause', pause.text);
+            setRecap('recapTerroir', terroir.text);
+            setRecap('recapGala', gala.text);
+            setRecap('recapStudentFees', studentFees.text);
+            setRecap('recapPrizeParticipation', prizeParticipation.text);
             
             // Lot fourni
             const providePrizeRadio = document.querySelector('input[name="providePrize"]:checked');
-            let prizeProvidedText = formatPrice(0);
             let prizeProvidedValue = 0;
             if (providePrizeRadio && providePrizeRadio.value === 'Oui') {
-                const prizeValue = parseFloat(document.querySelector('input[name="prizeValue"]').value) || 0;
-                prizeProvidedValue = prizeValue;
-                prizeProvidedText = formatPrice(prizeValue);
+                prizeProvidedValue = parseFloat(document.querySelector('input[name="prizeValue"]').value) || 0;
             }
-            document.getElementById('recapPrizeProvided').textContent = prizeProvidedText;
+            setRecap('recapPrizeProvided', formatPrice(prizeProvidedValue));
             
             // Repas
             const mealsIncludedPerDay = count === 0 ? 0 : count === 1 ? 2 : 4;
@@ -1724,27 +1727,24 @@
             const totalMealsWed = mealsIncludedPerDay + lunchWed;
             const totalMealsThu = mealsIncludedPerDay + lunchThu;
             
-            document.getElementById('recapMealsIncluded').textContent = count === 0 ? 'Aucun' : count === 1 ? '2 mercredi + 2 jeudi' : '4 mercredi + 4 jeudi';
-            document.getElementById('recapLunchWed').textContent = `${totalMealsWed} repas (dont ${mealsIncludedPerDay} inclus)`;
-            document.getElementById('recapLunchThu').textContent = `${totalMealsThu} repas (dont ${mealsIncludedPerDay} inclus)`;
+            setRecap('recapMealsIncluded', count === 0 ? 'Aucun' : count === 1 ? '2 mercredi + 2 jeudi' : '4 mercredi + 4 jeudi');
+            setRecap('recapLunchWed', `MER. ${totalMealsWed} repas (dont ${mealsIncludedPerDay} inclus) / JEU. ${totalMealsThu} repas (dont ${mealsIncludedPerDay} inclus)`);
             const mealsPrice = (lunchWed + lunchThu) * PRICE_MEAL;
-            document.getElementById('recapMealsPrice').textContent = formatPrice(mealsPrice);
+            setRecap('recapMealsPrice', formatPrice(mealsPrice));
             
             // Soirée Terroir
             const terroirDinner = parseInt(document.getElementById('terroirDinner').value) || 0;
-            document.getElementById('recapTerroirDinner').textContent = terroirDinner;
-            document.getElementById('recapTerroirDinnerPrice').textContent = formatPrice(terroirDinner * PRICE_TERROIR_DINNER);
+            setRecap('recapTerroirDinner', terroirDinner);
+            setRecap('recapTerroirDinnerPrice', formatPrice(terroirDinner * PRICE_TERROIR_DINNER));
             
             // Gala
             const galaFree = document.getElementById('galaFreeEntries').value;
             const galaExtra = parseInt(document.getElementById('galaExtraEntries').value) || 0;
             const totalGalaEntries = parseInt(galaFree) + galaExtra;
-            document.getElementById('recapGalaFree').textContent = `${totalGalaEntries} soirées de gala (dont ${galaFree} gratuites)`;
-            document.getElementById('recapGalaExtra').textContent = galaExtra;
-            document.getElementById('recapGalaExtraPrice').textContent = formatPrice(galaExtra * PRICE_GALA_EXTRA);
+            setRecap('recapGalaFree', `${totalGalaEntries} soirées de gala (dont ${galaFree} gratuites)`);
+            setRecap('recapGalaExtraPrice', formatPrice(galaExtra * PRICE_GALA_EXTRA));
             
             // Régimes spécifiques (uniquement ceux > 0)
-            const regimes = [];
             const regimeFields = [
                 { name: 'wedNoPork', label: 'sans porc', meal: 'mercredi midi' },
                 { name: 'thuNoPork', label: 'sans porc', meal: 'jeudi midi' },
@@ -1760,10 +1760,10 @@
                 { name: 'galaNoGluten', label: 'sans gluten', meal: 'soirée de gala' }
             ];
             
-            // Regrouper par type de régime
             const regimesByType = { 'sans porc': [], 'sans viande': [], 'sans gluten': [] };
             regimeFields.forEach(field => {
-                const value = parseInt(document.querySelector(`[name="${field.name}"]`).value) || 0;
+                const input = document.querySelector(`[name="${field.name}"]`);
+                const value = input ? (parseInt(input.value) || 0) : 0;
                 if (value > 0) {
                     regimesByType[field.label].push(`${value} repas du ${field.meal}`);
                 }
@@ -1774,46 +1774,48 @@
             if (regimesByType['sans viande'].length > 0) regimesText.push(`sans viande: ${regimesByType['sans viande'].join(', ')}`);
             if (regimesByType['sans gluten'].length > 0) regimesText.push(`sans gluten: ${regimesByType['sans gluten'].join(', ')}`);
             
-            document.getElementById('recapRegimes').textContent = regimesText.length > 0 ? regimesText.join(' | ') : '-';
+            setRecap('recapRegimes', regimesText.length > 0 ? regimesText.join(' | ') : '-');
             
             // Documents publicitaires
             const adRadio = document.querySelector('input[name="adDocuments"]:checked');
-            let adText = '-';
             let adPrice = 0;
             if (adRadio) {
                 if (adRadio.value === 'Non') {
-                    adText = 'Non';
+                    setRecap('recapAd', 'Non');
                     adPrice = 0;
                 } else {
-                    adText = count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)';
+                    setRecap('recapAd', count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)');
                     adPrice = count > 0 ? 250 : 500;
                 }
+            } else {
+                setRecap('recapAd', '-');
             }
-            document.getElementById('recapAd').textContent = adText;
-            document.getElementById('recapAdPrice').textContent = formatPrice(adPrice);
+            setRecap('recapAdPrice', formatPrice(adPrice));
             
             // Fournitures (sur une ligne)
             const fournitures = [];
             if (data.provideNotepads === 'Oui') fournitures.push('200 blocs-notes');
             if (data.providePens === 'Oui') fournitures.push('200 stylos');
             if (data.provideBags === 'Oui') fournitures.push('200 sacoches');
-            document.getElementById('recapFournitures').textContent = fournitures.length > 0 ? fournitures.join(', ') : '-';
+            setRecap('recapFournitures', fournitures.length > 0 ? fournitures.join(', ') : '-');
             
             // Autres
-            document.getElementById('recapKnowledgeQuestions').textContent = data.knowledgeQuestions || '-';
-            document.getElementById('recapStandGame').textContent = data.standGame || '-';
-            document.getElementById('recapPrizeDistribution').textContent = data.prizeDistribution || '-';
-            document.getElementById('recapWorkshop').textContent = data.workshopInterest || '-';
-            document.getElementById('recapWorkshopTheme').textContent = data.workshopTheme || '-';
+            setRecap('recapKnowledgeQuestions', data.knowledgeQuestions || '-');
+            setRecap('recapStandGame', data.standGame || '-');
+            setRecap('recapPrizeDistribution', data.prizeDistribution || '-');
+            setRecap('recapWorkshop', data.workshopInterest || '-');
+            setRecap('recapWorkshopTheme', data.workshopTheme || '-');
             
             // TOTAL
             const total = boothPrice + cocktail.value + pause.value + terroir.value + gala.value + 
                          studentFees.value + prizeParticipation.value + prizeProvidedValue +
                          mealsPrice + (terroirDinner * PRICE_TERROIR_DINNER) + (galaExtra * PRICE_GALA_EXTRA) + adPrice;
-            document.getElementById('recapTotal').textContent = formatPrice(total);
+            setRecap('recapTotal', formatPrice(total));
             
-            return { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, adText, mealsIncludedPerDay, totalMealsWed, totalMealsThu };
+            return { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, adText: adRadio ? (adRadio.value === 'Non' ? 'Non' : (count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)')) : '-', mealsIncludedPerDay, totalMealsWed, totalMealsThu };
         }
+
+        
         
         function generateBonDeCommandeHTML(recapData) {
             const { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, adText } = recapData;
