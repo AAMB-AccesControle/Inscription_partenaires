@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.51</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.52</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1284,10 +1284,6 @@
                     <div class="recap-section">
                         <h3>🍽️ Repas et Soirées</h3>
                         <div class="recap-item">
-                            <span class="recap-label">Repas inclus (selon emplacement) :</span>
-                            <span class="recap-value" id="recapMealsIncluded">-</span>
-                        </div>
-                        <div class="recap-item">
                             <span class="recap-label">Repas mercredi midi et jeudi midi :</span>
                             <span class="recap-value" id="recapLunchWed">-</span>
                         </div>
@@ -1312,8 +1308,16 @@
                             <span class="recap-value" id="recapGalaExtraPrice" style="color: #e74c3c; font-weight: bold;">0,00 € TTC</span>
                         </div>
                         <div class="recap-item">
-                            <span class="recap-label">Régimes spécifiques :</span>
-                            <span class="recap-value" id="recapRegimes">-</span>
+                            <span class="recap-label">Repas sans porc :</span>
+                            <span class="recap-value" id="recapRegimePork">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Repas sans viande :</span>
+                            <span class="recap-value" id="recapRegimeMeat">-</span>
+                        </div>
+                        <div class="recap-item">
+                            <span class="recap-label">Repas sans gluten :</span>
+                            <span class="recap-value" id="recapRegimeGluten">-</span>
                         </div>
                     </div>
                     
@@ -1744,35 +1748,34 @@
             setRecap('recapGalaFree', `${totalGalaEntries} soirées de gala (dont ${galaFree} gratuites)`);
             setRecap('recapGalaExtraPrice', formatPrice(galaExtra * PRICE_GALA_EXTRA));
             
-            // Régimes spécifiques (uniquement ceux > 0)
+            // Régimes spécifiques (3 lignes séparées)
             const regimeFields = [
-                { name: 'wedNoPork', label: 'sans porc', meal: 'mercredi midi' },
-                { name: 'thuNoPork', label: 'sans porc', meal: 'jeudi midi' },
-                { name: 'terroirNoPork', label: 'sans porc', meal: 'soirée terroir' },
-                { name: 'galaNoPork', label: 'sans porc', meal: 'soirée de gala' },
-                { name: 'wedNoMeat', label: 'sans viande', meal: 'mercredi midi' },
-                { name: 'thuNoMeat', label: 'sans viande', meal: 'jeudi midi' },
-                { name: 'terroirNoMeat', label: 'sans viande', meal: 'soirée terroir' },
-                { name: 'galaNoMeat', label: 'sans viande', meal: 'soirée de gala' },
-                { name: 'wedNoGluten', label: 'sans gluten', meal: 'mercredi midi' },
-                { name: 'thuNoGluten', label: 'sans gluten', meal: 'jeudi midi' },
-                { name: 'terroirNoGluten', label: 'sans gluten', meal: 'soirée terroir' },
-                { name: 'galaNoGluten', label: 'sans gluten', meal: 'soirée de gala' }
+                { name: 'wedNoPork', type: 'pork', meal: 'MER midi' },
+                { name: 'thuNoPork', type: 'pork', meal: 'JEU midi' },
+                { name: 'terroirNoPork', type: 'pork', meal: 'soirée terroir' },
+                { name: 'galaNoPork', type: 'pork', meal: 'soirée de gala' },
+                { name: 'wedNoMeat', type: 'meat', meal: 'MER midi' },
+                { name: 'thuNoMeat', type: 'meat', meal: 'JEU midi' },
+                { name: 'terroirNoMeat', type: 'meat', meal: 'soirée terroir' },
+                { name: 'galaNoMeat', type: 'meat', meal: 'soirée de gala' },
+                { name: 'wedNoGluten', type: 'gluten', meal: 'MER midi' },
+                { name: 'thuNoGluten', type: 'gluten', meal: 'JEU midi' },
+                { name: 'terroirNoGluten', type: 'gluten', meal: 'soirée terroir' },
+                { name: 'galaNoGluten', type: 'gluten', meal: 'soirée de gala' }
             ];
             
-            const regimesByType = { 'sans porc': [], 'sans viande': [], 'sans gluten': [] };
+            const regimesByType = { 'pork': [], 'meat': [], 'gluten': [] };
             regimeFields.forEach(field => {
                 const input = document.querySelector(`[name="${field.name}"]`);
                 const value = input ? (parseInt(input.value) || 0) : 0;
                 if (value > 0) {
-                    regimesByType[field.label].push(`${value} repas du ${field.meal}`);
+                    regimesByType[field.type].push(`${value} repas ${field.meal}`);
                 }
             });
             
-            const regimesText = [];
-            if (regimesByType['sans porc'].length > 0) regimesText.push(`sans porc: ${regimesByType['sans porc'].join(', ')}`);
-            if (regimesByType['sans viande'].length > 0) regimesText.push(`sans viande: ${regimesByType['sans viande'].join(', ')}`);
-            if (regimesByType['sans gluten'].length > 0) regimesText.push(`sans gluten: ${regimesByType['sans gluten'].join(', ')}`);
+            setRecap('recapRegimePork', regimesByType['pork'].length > 0 ? regimesByType['pork'].join(', ') : '-');
+            setRecap('recapRegimeMeat', regimesByType['meat'].length > 0 ? regimesByType['meat'].join(', ') : '-');
+            setRecap('recapRegimeGluten', regimesByType['gluten'].length > 0 ? regimesByType['gluten'].join(', ') : '-');
             
             setRecap('recapRegimes', regimesText.length > 0 ? regimesText.join(' | ') : '-');
             
@@ -1814,8 +1817,39 @@
             
             return { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, adText: adRadio ? (adRadio.value === 'Non' ? 'Non' : (count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)')) : '-', mealsIncludedPerDay, totalMealsWed, totalMealsThu };
         }
-
         
+         function getRegimeText(type, data) {
+            const fields = {
+                'pork': [
+                    { name: 'wedNoPork', meal: 'MER midi' },
+                    { name: 'thuNoPork', meal: 'JEU midi' },
+                    { name: 'terroirNoPork', meal: 'soirée terroir' },
+                    { name: 'galaNoPork', meal: 'soirée de gala' }
+                ],
+                'meat': [
+                    { name: 'wedNoMeat', meal: 'MER midi' },
+                    { name: 'thuNoMeat', meal: 'JEU midi' },
+                    { name: 'terroirNoMeat', meal: 'soirée terroir' },
+                    { name: 'galaNoMeat', meal: 'soirée de gala' }
+                ],
+                'gluten': [
+                    { name: 'wedNoGluten', meal: 'MER midi' },
+                    { name: 'thuNoGluten', meal: 'JEU midi' },
+                    { name: 'terroirNoGluten', meal: 'soirée terroir' },
+                    { name: 'galaNoGluten', meal: 'soirée de gala' }
+                ]
+            };
+            
+            const items = [];
+            fields[type].forEach(field => {
+                const value = parseInt(data[field.name]) || 0;
+                if (value > 0) {
+                    items.push(`${value} repas ${field.meal}`);
+                }
+            });
+            
+            return items.length > 0 ? items.join(', ') : '-';
+        }       
         
         function generateBonDeCommandeHTML(recapData) {
             const { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, adText } = recapData;
@@ -1896,8 +1930,11 @@
                     <div class="bc-item"><span class="bc-label">Coût soirée Terroir :</span><span class="bc-price">${formatPrice(terroirDinner * PRICE_TERROIR_DINNER)}</span></div>
                     <div class="bc-item"><span class="bc-label">Entrées gala :</span><span class="bc-value">${totalGalaEntries} soirées de gala (dont ${galaFree} gratuites)</span></div>
                     <div class="bc-item"><span class="bc-label">Coût entrées gala suppl. :</span><span class="bc-price">${formatPrice(galaExtra * PRICE_GALA_EXTRA)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Repas sans porc :</span><span class="bc-value">${getRegimeText('pork', data)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Repas sans viande :</span><span class="bc-value">${getRegimeText('meat', data)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Repas sans gluten :</span><span class="bc-value">${getRegimeText('gluten', data)}</span></div>
                 </div>
-                
+
                 <div class="bc-section">
                     <h3>📄 Documents & Services</h3>
                     <div class="bc-item"><span class="bc-label">Coût documents publicitaires :</span><span class="bc-price">${formatPrice(adPrice)}</span></div>
