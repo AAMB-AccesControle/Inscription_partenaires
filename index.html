@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.55</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.56</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1983,49 +1983,63 @@
         }
         
         async function generatePDF() {
+            console.log("📄 Début génération PDF...");
+            
             const recapData = fillRecap();
             const bonDiv = document.getElementById('bonDeCommande');
             bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
             
             // Attendre que le DOM soit bien rendu
-            await new Promise(resolve => setTimeout(resolve, 200));
+            await new Promise(resolve => setTimeout(resolve, 300));
             
-            // ⚠️ OPTIMISATION QUALITÉ : scale: 3 + PNG sans compression
-            const canvas = await html2canvas(bonDiv, {
-                scale: 3,              // 3x plus de résolution (au lieu de 1)
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                width: 800,
-                logging: false,
-                letterRendering: true,  // Meilleur rendu du texte
-                removeContainer: true
-            });
-            
-            // PNG au lieu de JPEG pour éviter les artefacts de compression
-            const imgData = canvas.toDataURL('image/png');
-            
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            const imgWidth = 210;  // Largeur A4 en mm
-            const pageHeight = 297; // Hauteur A4 en mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-            
-            // Première page
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-            
-            // Pages supplémentaires si le contenu dépasse une page
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            try {
+                // Configuration optimisée : scale 2 + JPEG qualité 0.9
+                const canvas = await html2canvas(bonDiv, {
+                    scale: 2,              // Bon compromis qualité/poids
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    width: 800,
+                    logging: false,
+                    letterRendering: true,
+                    removeContainer: true,
+                    imageTimeout: 0
+                });
+                
+                console.log(`📊 Canvas généré : ${canvas.width}x${canvas.height}px`);
+                
+                // JPEG avec qualité 0.9 (meilleur compromis que PNG)
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                const imgSize = Math.round((imgData.length * 3) / 4 / 1024); // Taille en Ko
+                console.log(`📦 Taille image : ${imgSize} Ko`);
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const imgWidth = 210;
+                const pageHeight = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+                
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
+                
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                const pdfOutput = pdf.output('datauristring');
+                console.log(`✅ PDF généré avec succès (${Math.round(pdfOutput.length / 1024)} Ko)`);
+                
+                return pdfOutput;
+                
+            } catch (error) {
+                console.error("❌ Erreur génération PDF:", error);
+                throw error;
             }
-            
-            return pdf.output('datauristring');
         }
         
         async function submitForm() {
