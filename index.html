@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.56</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.57</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1983,64 +1983,72 @@
         }
         
         async function generatePDF() {
-            console.log("📄 Début génération PDF...");
-            
-            const recapData = fillRecap();
-            const bonDiv = document.getElementById('bonDeCommande');
-            bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
-            
-            // Attendre que le DOM soit bien rendu
-            await new Promise(resolve => setTimeout(resolve, 300));
+            console.log("📄 Début génération PDF vectoriel...");
             
             try {
-                // Configuration optimisée : scale 2 + JPEG qualité 0.9
-                const canvas = await html2canvas(bonDiv, {
-                    scale: 2,              // Bon compromis qualité/poids
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    width: 800,
-                    logging: false,
-                    letterRendering: true,
-                    removeContainer: true,
-                    imageTimeout: 0
-                });
+                const recapData = fillRecap();
+                const bonDiv = document.getElementById('bonDeCommande');
+                bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
                 
-                console.log(`📊 Canvas généré : ${canvas.width}x${canvas.height}px`);
-                
-                // JPEG avec qualité 0.9 (meilleur compromis que PNG)
-                const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                const imgSize = Math.round((imgData.length * 3) / 4 / 1024); // Taille en Ko
-                console.log(`📦 Taille image : ${imgSize} Ko`);
+                // Attendre que le DOM soit bien rendu
+                await new Promise(resolve => setTimeout(resolve, 300));
                 
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
                 
-                const imgWidth = 210;
-                const pageHeight = 297;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                let position = 0;
+                // Créer un nouveau PDF A4
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4',
+                    compress: true
+                });
                 
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
+                // Configuration pour pdf.html()
+                const opt = {
+                    margin: [10, 10, 10, 10], // Marges en mm (haut, gauche, bas, droite)
+                    filename: 'Bon_de_Commande.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        letterRendering: true,
+                        backgroundColor: '#ffffff'
+                    },
+                    jsPDF: { 
+                        unit: 'mm', 
+                        format: 'a4', 
+                        orientation: 'portrait',
+                        compress: true
+                    },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                };
                 
-                while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
+                console.log("🔄 Génération du PDF vectoriel en cours...");
+                
+                // Générer le PDF à partir du HTML
+                await pdf.html(bonDiv, opt);
                 
                 const pdfOutput = pdf.output('datauristring');
-                console.log(`✅ PDF généré avec succès (${Math.round(pdfOutput.length / 1024)} Ko)`);
+                const pdfSizeKB = Math.round(pdfOutput.length / 1024);
+                
+                console.log(`✅ PDF vectoriel généré avec succès (${pdfSizeKB} Ko)`);
+                console.log("📊 Texte sélectionnable : OUI");
+                console.log(" Qualité vectorielle : OUI");
                 
                 return pdfOutput;
                 
             } catch (error) {
-                console.error("❌ Erreur génération PDF:", error);
-                throw error;
+                console.error(" Erreur critique génération PDF:", error);
+                console.error("Stack trace:", error.stack);
+                
+                // Fallback : retourner null pour envoyer sans PDF
+                alert("Erreur lors de la génération du PDF. Le formulaire sera envoyé sans pièce jointe.");
+                return null;
             }
         }
+
+        
         
         async function submitForm() {
             const submitBtn = document.querySelector('#section6 .btn-primary');
