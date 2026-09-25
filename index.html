@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.53</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.54</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1987,34 +1987,30 @@
             const bonDiv = document.getElementById('bonDeCommande');
             bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
             
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // Attendre que le DOM soit rendu
+            await new Promise(resolve => setTimeout(resolve, 200));
             
-            const canvas = await html2canvas(bonDiv, {
-                scale: 1, 
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                width: 800
-            });
-            
-            const imgData = canvas.toDataURL('image/jpeg', 0.7); 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             
-            const imgWidth = 210;
-            const pageHeight = 297;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-            
-            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-            
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
+            // Utilisation de pdf.html() pour du texte vectoriel
+            await pdf.html(bonDiv, {
+                callback: function(pdf) {
+                    // Le PDF est généré
+                },
+                margin: [10, 10, 10, 10],
+                autoPaging: 'text',
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            });
             
             return pdf.output('datauristring');
         }
