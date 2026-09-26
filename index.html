@@ -2154,13 +2154,13 @@
                 y += 9;
         
                 // --- 2. EMPLACEMENT & LOGISTIQUE ---
-                drawSectionHeader("📍 Emplacement & Logistique");
+                drawSectionHeader("Emplacement & Logistique");
                 drawRow("Emplacements :", boothVal || 'Aucun');
                 drawRow("Coût emplacement :", formatPrice(boothPrice), true);
                 y += 3;
         
                 // --- 3. PARTICIPATIONS FINANCIÈRES ---
-                drawSectionHeader("💰 Participations Financières");
+                drawSectionHeader("Participations Financières");
                 drawRow("Cocktail de bienvenue :", cocktail.text, true);
                 drawRow("Pause :", pause.text, true);
                 drawRow("Soirée Terroir :", terroir.text, true);
@@ -2171,7 +2171,7 @@
                 y += 3;
         
                 // --- 4. REPAS ET SOIRÉES ---
-                drawSectionHeader("🍽️ Repas et Soirées");
+                drawSectionHeader("Repas et Soirées");
                 
                 // Repas midi
                 const totalWed = (data.boothCount || 0) * 2 + suppWed;
@@ -2197,7 +2197,7 @@
                 y += 3;
         
                 // --- 5. DOCUMENTS & SERVICES ---
-                drawSectionHeader("📄 Documents & Services");
+                drawSectionHeader("Documents & Services");
                 drawRow("Coût documents publicitaires :", formatPrice(adPrice), true);
                 drawRow("Fournitures :", suppliesDetails || 'Aucune');
                 y += 6;
