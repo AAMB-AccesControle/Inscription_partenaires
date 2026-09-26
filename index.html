@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.63</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.64</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1998,7 +1998,6 @@
                     return null;
                 }
         
-                // On récupère exactement l'ensemble des champs du récapitulatif
                 const {
                     data,
                     boothPrice,
@@ -2015,15 +2014,9 @@
                     adPrice,
                     total,
                     boothVal,
-                    lunchWed,
-                    lunchThu,
                     galaFree,
-                    terroirFree,
                     suppWed,
                     suppThu,
-                    noPorkDetails,
-                    vegetarianDetails,
-                    glutenFreeDetails,
                     suppliesDetails
                 } = recapData;
         
@@ -2037,9 +2030,8 @@
                 });
         
                 // Couleurs
-                const primaryColor = [30, 58, 95];       // #1e3a5f (En-têtes)
-                const lightBgColor = [248, 249, 250];    // Fond des blocs
-                const borderColor = [220, 224, 230];    // Lignes & bordures
+                const primaryColor = [30, 58, 95];       // #1e3a5f
+                const borderColor = [220, 224, 230];
                 const textDark = [40, 40, 40];
                 const textMuted = [100, 100, 100];
                 const priceRed = [217, 83, 79];
@@ -2103,7 +2095,7 @@
                     y += 5.5;
                 }
         
-                // --- 1. SOCIÉTÉ & RESPONSABLE / FACTURATION (SUR 2 COLONNES) ---
+                // --- 1. SOCIÉTÉ & RESPONSABLE / FACTURATION ---
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(10);
                 doc.setTextColor(...primaryColor);
@@ -2117,7 +2109,7 @@
                 doc.line(108, y, 200, y);
                 y += 5;
         
-                // Colonne Gauche
+                // Ligne 1
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(8.5);
                 doc.setTextColor(...textMuted);
@@ -2126,7 +2118,6 @@
                 doc.setTextColor(...textDark);
                 doc.text(data.companyName || '-', 100, y, { align: "right" });
         
-                // Colonne Droite
                 doc.setFont("helvetica", "normal");
                 doc.setTextColor(...textMuted);
                 doc.text("Adresse :", 110, y);
@@ -2136,7 +2127,7 @@
         
                 y += 5.5;
         
-                // Ligne 2 (Responsable / Référent)
+                // Ligne 2
                 doc.setFont("helvetica", "normal");
                 doc.setTextColor(...textMuted);
                 doc.text("Responsable :", 14, y);
@@ -2154,13 +2145,13 @@
                 y += 9;
         
                 // --- 2. EMPLACEMENT & LOGISTIQUE ---
-                drawSectionHeader("Emplacement & Logistique");
+                drawSectionHeader("📍 Emplacement & Logistique");
                 drawRow("Emplacements :", boothVal || 'Aucun');
                 drawRow("Coût emplacement :", formatPrice(boothPrice), true);
                 y += 3;
         
                 // --- 3. PARTICIPATIONS FINANCIÈRES ---
-                drawSectionHeader("Participations Financières");
+                drawSectionHeader("💰 Participations Financières");
                 drawRow("Cocktail de bienvenue :", cocktail.text, true);
                 drawRow("Pause :", pause.text, true);
                 drawRow("Soirée Terroir :", terroir.text, true);
@@ -2170,34 +2161,69 @@
                 drawRow("Participation financière lot :", prizeParticipation.text, true);
                 y += 3;
         
-                // --- 4. REPAS ET SOIRÉES ---
-                drawSectionHeader("Repas et Soirées");
-                
-                // Repas midi
-                const totalWed = (data.boothCount || 0) * 2 + suppWed;
-                const totalThu = (data.boothCount || 0) * 2 + suppThu;
-                const incWed = (data.boothCount || 0) * 2;
-                const incThu = (data.boothCount || 0) * 2;
-                
+                // --- 4. REPAS ET SOIRÉES (CALCULS SÉCURISÉS) ---
+                drawSectionHeader("🍽️ Repas et Soirées");
+        
+                // Conversions numériques explicites pour éviter tout bug d'addition/concaténation
+                const boothNum = parseInt(data.boothCount, 10) || 0;
+                const wedSuppNum = parseInt(suppWed, 10) || 0;
+                const thuSuppNum = parseInt(suppThu, 10) || 0;
+        
+                const incWed = boothNum * 2;
+                const incThu = boothNum * 2;
+                const totalWed = incWed + wedSuppNum;
+                const totalThu = incThu + thuSuppNum;
+        
+                const galaExtraNum = parseInt(galaExtra, 10) || 0;
+                const galaFreeNum = parseInt(galaFree, 10) || 0;
+                const totalGala = galaExtraNum + galaFreeNum;
+        
+                // Parsing des régimes alimentaires
+                const pWed = parseInt(data.noPorkWed, 10) || 0;
+                const pThu = parseInt(data.noPorkThu, 10) || 0;
+                const pTerroir = parseInt(data.noPorkTerroir, 10) || 0;
+                const pGala = parseInt(data.noPorkGala, 10) || 0;
+        
+                const vWed = parseInt(data.vegWed, 10) || 0;
+                const vThu = parseInt(data.vegThu, 10) || 0;
+                const vTerroir = parseInt(data.vegTerroir, 10) || 0;
+                const vGala = parseInt(data.vegGala, 10) || 0;
+        
+                const gWed = parseInt(data.glutenWed, 10) || 0;
+                const gThu = parseInt(data.glutenThu, 10) || 0;
+                const gTerroir = parseInt(data.glutenTerroir, 10) || 0;
+                const gGala = parseInt(data.glutenGala, 10) || 0;
+        
+                function formatRegimeText(wed, thu, terroir, gala) {
+                    const parts = [];
+                    if (wed > 0) parts.push(`${wed} repas MER midi`);
+                    if (thu > 0) parts.push(`${thu} repas JEU midi`);
+                    if (terroir > 0) parts.push(`${terroir} repas soirée terroir`);
+                    if (gala > 0) parts.push(`${gala} repas soirée de gala`);
+                    return parts.length > 0 ? parts.join(', ') : 'Aucun';
+                }
+        
+                const noPorkText = formatRegimeText(pWed, pThu, pTerroir, pGala);
+                const vegText = formatRegimeText(vWed, vThu, vTerroir, vGala);
+                const glutenText = formatRegimeText(gWed, gThu, gTerroir, gGala);
+        
+                // Lignes du tableau
                 drawRow("Repas mercredi midi et jeudi midi :", `MER. ${totalWed} repas (dont ${incWed} inclus) / JEU. ${totalThu} repas (dont ${incThu} inclus)`);
                 drawRow("Coût repas supplémentaires :", formatPrice(mealsPrice), true);
-                
-                // Terroir
-                drawRow("Soirée Terroir (repas) :", terroirDinner);
-                drawRow("Coût soirée Terroir :", formatPrice(terroirDinner * PRICE_TERROIR_DINNER), true);
-                
-                // Gala
-                drawRow("Entrées gala :", `${galaExtra + galaFree} soirées de gala (dont ${galaFree} gratuites)`);
-                drawRow("Coût entrées gala suppl. :", formatPrice(galaExtra * PRICE_GALA_EXTRA), true);
-                
-                // Régimes alimentaires
-                drawRow("Repas sans porc :", noPorkDetails || 'Aucun');
-                drawRow("Repas sans viande :", vegetarianDetails || 'Aucun');
-                drawRow("Repas sans gluten :", glutenFreeDetails || 'Aucun');
+        
+                drawRow("Soirée Terroir (repas) :", terroirDinner || 0);
+                drawRow("Coût soirée Terroir :", formatPrice((parseInt(terroirDinner, 10) || 0) * PRICE_TERROIR_DINNER), true);
+        
+                drawRow("Entrées gala :", `${totalGala} soirées de gala (dont ${galaFreeNum} gratuites)`);
+                drawRow("Coût entrées gala suppl. :", formatPrice(galaExtraNum * PRICE_GALA_EXTRA), true);
+        
+                drawRow("Repas sans porc :", noPorkText);
+                drawRow("Repas sans viande :", vegText);
+                drawRow("Repas sans gluten :", glutenText);
                 y += 3;
         
                 // --- 5. DOCUMENTS & SERVICES ---
-                drawSectionHeader("Documents & Services");
+                drawSectionHeader("📄 Documents & Services");
                 drawRow("Coût documents publicitaires :", formatPrice(adPrice), true);
                 drawRow("Fournitures :", suppliesDetails || 'Aucune');
                 y += 6;
