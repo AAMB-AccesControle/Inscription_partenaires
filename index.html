@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire Partenaire - AAMB JTB 2026</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e3a5f">
+    <meta name="theme-color" content="#0a4c6a">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0a4c6a 0%, #2e5b70 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -25,13 +25,25 @@
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            background: linear-gradient(135deg, #0a4c6a 0%, #1a3a4b 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        .header img { max-width: 150px; margin-bottom: 15px; }
-        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header-logo-wrapper {
+            background: white;
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            margin-bottom: 15px;
+        }
+        .header img { 
+            max-width: 140px; 
+            height: auto;
+            display: block;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
         .header .subtitle { font-size: 14px; opacity: 0.9; }
         .form-container { padding: 40px; }
         .section { display: none; animation: fadeIn 0.5s; }
@@ -41,11 +53,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .section-title {
-            color: #1e3a5f;
+            color: #0a4c6a;
             font-size: 24px;
             margin-bottom: 25px;
             padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid #4a8b38;
         }
         .form-group { margin-bottom: 20px; }
         label {
@@ -68,7 +80,7 @@
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #0a4c6a;
         }
         .checkbox-group, .radio-group {
             display: flex;
@@ -88,7 +100,7 @@
             transition: all 0.3s;
         }
         .checkbox-item:hover, .radio-item:hover {
-            border-color: #667eea;
+            border-color: #0a4c6a;
             background: #eef2f7;
         }
         .checkbox-item input[type="checkbox"],
@@ -102,10 +114,10 @@
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #0a4c6a;
         }
         .sub-section-title {
-            color: #2d5a87;
+            color: #0a4c6a;
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 15px;
@@ -119,7 +131,7 @@
         }
         .person-title {
             font-weight: 600;
-            color: #667eea;
+            color: #0a4c6a;
             margin-bottom: 10px;
             font-size: 14px;
         }
@@ -216,12 +228,12 @@
             transition: all 0.3s;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0a4c6a 0%, #2e5b70 100%);
             color: white;
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 20px rgba(10, 76, 106, 0.4);
         }
         .btn-primary:disabled {
             opacity: 0.6;
@@ -238,7 +250,7 @@
             overflow: hidden;
         }
         .progress-fill {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #0a4c6a 0%, #4a8b38 100%);
             height: 100%;
             transition: width 0.3s;
         }
@@ -253,7 +265,7 @@
             color: #28a745;
             margin-bottom: 20px;
         }
-        .success-message h2 { color: #1e3a5f; margin-bottom: 15px; }
+        .success-message h2 { color: #0a4c6a; margin-bottom: 15px; }
         
         #loadingOverlay {
             display: none;
@@ -262,7 +274,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(30, 58, 95, 0.98);
+            background: rgba(10, 76, 106, 0.98);
             z-index: 9999;
             justify-content: center;
             align-items: center;
@@ -277,7 +289,7 @@
             width: 60px;
             height: 60px;
             border: 5px solid rgba(255,255,255,0.3);
-            border-top: 5px solid #667eea;
+            border-top: 5px solid #4a8b38;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 25px;
@@ -305,8 +317,8 @@
             border: 2px solid #e9ecef;
         }
         .recap-section h3 {
-            color: #1e3a5f;
-            border-bottom: 2px solid #667eea;
+            color: #0a4c6a;
+            border-bottom: 2px solid #4a8b38;
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
@@ -318,9 +330,9 @@
         }
         .recap-item:last-child { border-bottom: none; }
         .recap-label { color: #555; }
-        .recap-value { font-weight: 600; color: #1e3a5f; }
+        .recap-value { font-weight: 600; color: #0a4c6a; }
         .recap-total {
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            background: linear-gradient(135deg, #0a4c6a 0%, #1a3a4b 100%);
             color: white;
             padding: 20px;
             border-radius: 8px;
@@ -346,13 +358,22 @@
             line-height: 1.2;
         }
         #bonDeCommande .bc-header {
-            text-align: center;
-            border-bottom: 2px solid #1e3a5f;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #0a4c6a;
             padding-bottom: 8px;
             margin-bottom: 10px;
         }
+        #bonDeCommande .bc-header-logo {
+            width: 100px;
+            height: auto;
+        }
+        #bonDeCommande .bc-header-title {
+            text-align: right;
+        }
         #bonDeCommande .bc-header h1 {
-            color: #1e3a5f;
+            color: #0a4c6a;
             font-size: 20px;
             margin-bottom: 3px;
         }
@@ -369,8 +390,8 @@
             page-break-inside: avoid;
         }
         #bonDeCommande .bc-section h3 {
-            color: #1e3a5f;
-            border-bottom: 1px solid #667eea;
+            color: #0a4c6a;
+            border-bottom: 1px solid #4a8b38;
             padding-bottom: 3px;
             margin-bottom: 4px;
             font-size: 13px;
@@ -388,11 +409,11 @@
             padding-left: 15px;
         }
         #bonDeCommande .bc-col h4 {
-            color: #1e3a5f;
+            color: #0a4c6a;
             font-size: 13px;
             margin: 0 0 4px 0;
             padding-bottom: 3px;
-            border-bottom: 1px solid #667eea;
+            border-bottom: 1px solid #4a8b38;
             font-weight: 600;
         }
         #bonDeCommande .bc-item {
@@ -404,10 +425,10 @@
         }
         #bonDeCommande .bc-item:last-child { border-bottom: none; }
         #bonDeCommande .bc-item .bc-label { color: #555; }
-        #bonDeCommande .bc-item .bc-value { font-weight: 600; color: #1e3a5f; }
+        #bonDeCommande .bc-item .bc-value { font-weight: 600; color: #0a4c6a; }
         #bonDeCommande .bc-item .bc-price { color: #e74c3c; font-weight: bold; }
         #bonDeCommande .bc-total {
-            background: #1e3a5f;
+            background: #0a4c6a;
             color: white;
             padding: 8px 12px;
             border-radius: 4px;
@@ -459,8 +480,10 @@
 
     <div class="container">
         <div class="header">
-            <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.68</h1>
+            <div class="header-logo-wrapper">
+                <img id="aambLogo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'><path fill='%235b8f36' d='M195 50 Q230 40 260 70 Q280 90 270 120 Q290 140 280 170 Q250 200 210 190 Q190 200 170 170 Q150 140 170 110 Q160 80 195 50 Z'/><path fill='%23366023' d='M180 60 Q140 90 150 130 Q130 160 160 190 L200 190 Q180 120 180 60 Z'/><rect x='192' y='180' width='16' height='70' fill='%236e5233'/><path d='M100 230 L115 220 L125 240 L135 190 L145 250 L155 225 L180 225 L190 190 L200 260 L210 180 L220 230 L230 210 L240 230 L270 200 L280 230 L290 220 L300 230 L320 215' fill='none' stroke='%23d9232a' stroke-width='3' stroke-linejoin='round'/><text x='200' y='340' font-family='Arial, sans-serif' font-weight='900' font-size='68' fill='%230a4c6a' text-anchor='middle'>AAMB</text></svg>" alt="Logo AAMB">
+            </div>
+            <h1>AAMB - JTB 2026 - Besançon v0.69</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -721,7 +744,7 @@
                     </div>
                 </div>
                 
-                <!-- SECTION 3: PARTICIPATIONS FINANCIERES (incluant maintenant les lots) -->
+                <!-- SECTION 3: PARTICIPATIONS FINANCIERES -->
                 <div class="section" id="section3">
                     <h2 class="section-title">💰 Participations Financières</h2>
                     
@@ -1233,7 +1256,6 @@
                 </div>
                 
                 <!-- SECTION 6: RÉCAPITULATIF -->
-
                 <div class="section" id="section6">
                     <h2 class="section-title">📊 Récapitulatif de votre inscription</h2>
                     
@@ -1322,7 +1344,7 @@
                     </div>
                     
                     <div class="recap-section">
-                        <h3> Documents & Services</h3>
+                        <h3>📄 Documents & Services</h3>
                         <div class="recap-item">
                             <span class="recap-label">Documents publicitaires :</span>
                             <span class="recap-value" id="recapAd">-</span>
@@ -1376,12 +1398,6 @@
                     </div>
                 </div>
 
-                
-
-
-
-                
-                
                 <!-- SUCCESS MESSAGE -->
                 <div class="success-message" id="successMessage">
                     <div class="success-icon">✓</div>
@@ -1400,7 +1416,6 @@
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2JCf8oam0h2fD1U2FlnB49iWZ9-2hhahajtkumvvhBS-RKju7nG0yS1uNAJZz_JRb/exec';
         
-        // NOUVEAUX PRIX
         const PRICE_BOOTH_1 = 1800;
         const PRICE_BOOTH_2 = 3600;
         const PRICE_MEAL = 36;
@@ -1678,29 +1693,20 @@
         
         function fillRecap() {
             try {
-                console.log(" Début de fillRecap()");
-                
                 const data = getFormData();
                 const count = getBoothCount();
                 const boothVal = document.getElementById('boothSpaces').value;
                 
-                // Fonction utilitaire sécurisée
                 const setRecap = (id, value) => {
                     const el = document.getElementById(id);
-                    if (el) {
-                        el.textContent = value;
-                    } else {
-                        console.warn(`⚠️ Élément non trouvé: ${id}`);
-                    }
+                    if (el) el.textContent = value;
                 };
                 
-                // Emplacement
                 setRecap('recapBooth', boothVal || '-');
                 const boothPrices = { '0': 0, '1 emplacement 3x2m': PRICE_BOOTH_1, '2 emplacements 3x2m soit 6x2m': PRICE_BOOTH_2 };
                 const boothPrice = boothPrices[boothVal] || 0;
                 setRecap('recapBoothPrice', formatPrice(boothPrice));
                 
-                // Participations financières
                 const getFinancial = (radioName, amountId) => {
                     const radio = document.querySelector(`input[name="${radioName}"]:checked`);
                     if (radio && radio.value === 'Oui') {
@@ -1726,7 +1732,6 @@
                 setRecap('recapStudentFees', studentFees.text);
                 setRecap('recapPrizeParticipation', prizeParticipation.text);
                 
-                // Lot fourni
                 const providePrizeRadio = document.querySelector('input[name="providePrize"]:checked');
                 let prizeProvidedValue = 0;
                 if (providePrizeRadio && providePrizeRadio.value === 'Oui') {
@@ -1735,7 +1740,6 @@
                 }
                 setRecap('recapPrizeProvided', formatPrice(prizeProvidedValue));
                 
-                // Repas
                 const mealsIncludedPerDay = count === 0 ? 0 : count === 1 ? 2 : 4;
                 const lunchWedEl = document.getElementById('lunchWednesday');
                 const lunchThuEl = document.getElementById('lunchThursday');
@@ -1748,13 +1752,11 @@
                 const mealsPrice = (lunchWed + lunchThu) * PRICE_MEAL;
                 setRecap('recapMealsPrice', formatPrice(mealsPrice));
                 
-                // Soirée Terroir
                 const terroirDinnerEl = document.getElementById('terroirDinner');
                 const terroirDinner = terroirDinnerEl ? (parseInt(terroirDinnerEl.value) || 0) : 0;
                 setRecap('recapTerroirDinner', terroirDinner);
                 setRecap('recapTerroirDinnerPrice', formatPrice(terroirDinner * PRICE_TERROIR_DINNER));
                 
-                // Gala
                 const galaFreeEl = document.getElementById('galaFreeEntries');
                 const galaExtraEl = document.getElementById('galaExtraEntries');
                 const galaFree = galaFreeEl ? galaFreeEl.value : '0';
@@ -1763,7 +1765,6 @@
                 setRecap('recapGalaFree', `${totalGalaEntries} soirées de gala (dont ${galaFree} gratuites)`);
                 setRecap('recapGalaExtraPrice', formatPrice(galaExtra * PRICE_GALA_EXTRA));
                 
-                // Régimes spécifiques (3 lignes)
                 const regimeFields = [
                     { name: 'wedNoPork', type: 'pork', meal: 'MER midi' },
                     { name: 'thuNoPork', type: 'pork', meal: 'JEU midi' },
@@ -1792,7 +1793,6 @@
                 setRecap('recapRegimeMeat', regimesByType['meat'].length > 0 ? regimesByType['meat'].join(', ') : '-');
                 setRecap('recapRegimeGluten', regimesByType['gluten'].length > 0 ? regimesByType['gluten'].join(', ') : '-');
                 
-                // Documents publicitaires
                 const adRadio = document.querySelector('input[name="adDocuments"]:checked');
                 let adPrice = 0;
                 if (adRadio) {
@@ -1808,27 +1808,22 @@
                 }
                 setRecap('recapAdPrice', formatPrice(adPrice));
                 
-                // Fournitures
                 const fournitures = [];
                 if (data.provideNotepads === 'Oui') fournitures.push('200 blocs-notes');
                 if (data.providePens === 'Oui') fournitures.push('200 stylos');
                 if (data.provideBags === 'Oui') fournitures.push('200 sacoches');
                 setRecap('recapFournitures', fournitures.length > 0 ? fournitures.join(', ') : '-');
                 
-                // Autres
                 setRecap('recapKnowledgeQuestions', data.knowledgeQuestions || '-');
                 setRecap('recapStandGame', data.standGame || '-');
                 setRecap('recapPrizeDistribution', data.prizeDistribution || '-');
                 setRecap('recapWorkshop', data.workshopInterest || '-');
                 setRecap('recapWorkshopTheme', data.workshopTheme || '-');
                 
-                // TOTAL
                 const total = boothPrice + cocktail.value + pause.value + terroir.value + gala.value + 
                              studentFees.value + prizeParticipation.value + prizeProvidedValue +
                              mealsPrice + (terroirDinner * PRICE_TERROIR_DINNER) + (galaExtra * PRICE_GALA_EXTRA) + adPrice;
                 setRecap('recapTotal', formatPrice(total));
-                
-                console.log("✅ fillRecap() terminé avec succès");
                 
                 return { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, adText: adRadio ? (adRadio.value === 'Non' ? 'Non' : (count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)')) : '-', mealsIncludedPerDay, totalMealsWed, totalMealsThu };
                 
@@ -1839,10 +1834,7 @@
             }
         }
 
-
-        
-        
-         function getRegimeText(type, data) {
+        function getRegimeText(type, data) {
             const fields = {
                 'pork': [
                     { name: 'wedNoPork', meal: 'MER midi' },
@@ -1898,20 +1890,17 @@
             if (data.providePens === 'Oui') fournitures.push('200 stylos');
             const fournituresText = fournitures.length > 0 ? fournitures.join(', ') : '-';
             
-            const cocktailPrice = cocktail.value > 0 ? formatPrice(cocktail.value) : formatPrice(0);
-            const pausePrice = pause.value > 0 ? formatPrice(pause.value) : formatPrice(0);
-            const terroirPrice = terroir.value > 0 ? formatPrice(terroir.value) : formatPrice(0);
-            const galaPrice = gala.value > 0 ? formatPrice(gala.value) : formatPrice(0);
-            const studentFeesPrice = studentFees.value > 0 ? formatPrice(studentFees.value) : formatPrice(0);
-            const prizePartPrice = prizeParticipation.value > 0 ? formatPrice(prizeParticipation.value) : formatPrice(0);
-            const prizeProvidedPrice = prizeProvidedValue > 0 ? formatPrice(prizeProvidedValue) : formatPrice(0);
-            
+            const logoSvg = document.getElementById('aambLogo').src;
+
             return `
                 <div class="bc-header">
-                    <h1>BON DE COMMANDE</h1>
-                    <p>AAMB - Journées Techniques du Bâtiment 2026</p>
-                    <p>Besançon - 17, 18 et 19 novembre 2026</p>
-                    <p style="margin-top: 4px;"><strong>Date :</strong> ${dateStr} | <strong>Référence :</strong> ${token}</p>
+                    <img class="bc-header-logo" src="${logoSvg}" alt="AAMB Logo">
+                    <div class="bc-header-title">
+                        <h1>BON DE COMMANDE</h1>
+                        <p>AAMB - Journées Techniques du Bâtiment 2026</p>
+                        <p>Besançon - 17, 18 et 19 novembre 2026</p>
+                        <p style="margin-top: 4px;"><strong>Date :</strong> ${dateStr} | <strong>Référence :</strong> ${token}</p>
+                    </div>
                 </div>
                 
                 <div class="bc-section">
@@ -1937,13 +1926,13 @@
                 
                 <div class="bc-section">
                     <h3>💰 Participations Financières</h3>
-                    <div class="bc-item"><span class="bc-label">Cocktail de bienvenue :</span><span class="bc-price">${cocktailPrice}</span></div>
-                    <div class="bc-item"><span class="bc-label">Pause :</span><span class="bc-price">${pausePrice}</span></div>
-                    <div class="bc-item"><span class="bc-label">Soirée Terroir :</span><span class="bc-price">${terroirPrice}</span></div>
-                    <div class="bc-item"><span class="bc-label">Soirée de Gala :</span><span class="bc-price">${galaPrice}</span></div>
-                    <div class="bc-item"><span class="bc-label">Frais étudiants :</span><span class="bc-price">${studentFeesPrice}</span></div>
-                    <div class="bc-item"><span class="bc-label">Lot fourni (valeur) :</span><span class="bc-price">${prizeProvidedPrice}</span></div>
-                    <div class="bc-item"><span class="bc-label">Participation financière lot :</span><span class="bc-price">${prizePartPrice}</span></div>
+                    <div class="bc-item"><span class="bc-label">Cocktail de bienvenue :</span><span class="bc-price">${formatPrice(cocktail.value)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Pause :</span><span class="bc-price">${formatPrice(pause.value)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Soirée Terroir :</span><span class="bc-price">${formatPrice(terroir.value)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Soirée de Gala :</span><span class="bc-price">${formatPrice(gala.value)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Frais étudiants :</span><span class="bc-price">${formatPrice(studentFees.value)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Lot fourni (valeur) :</span><span class="bc-price">${formatPrice(prizeProvidedValue)}</span></div>
+                    <div class="bc-item"><span class="bc-label">Participation financière lot :</span><span class="bc-price">${formatPrice(prizeParticipation.value)}</span></div>
                 </div>
                 
                 <div class="bc-section">
@@ -1981,241 +1970,48 @@
                 </div>
             `;
         }
-
-
-
-
-async function generatePDF() {
-    console.log("📄 Génération du PDF...");
-
-    try {
-        const { jsPDF } = window.jspdf;
-
-        const doc = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: true
-        });
-
-        // Couleurs
-        const primaryColor = [30, 58, 95];
-        const borderColor = [220, 224, 230];
-        const textDark = [40, 40, 40];
-        const textMuted = [100, 100, 100];
-        const priceRed = [217, 83, 79];
-
-        let y = 12;
-
-        // Fonction pour récupérer le texte affiché à l'écran dans le récapitulatif HTML
-        function getRecapText(labelSubstring) {
-            const elements = document.querySelectorAll('div, tr, p, li');
-            for (const el of elements) {
-                if (el.children.length >= 2 && el.innerText.includes(labelSubstring)) {
-                    const lastChild = el.children[el.children.length - 1];
-                    if (lastChild && lastChild !== el) {
-                        return lastChild.innerText.trim();
-                    }
-                }
-            }
-            return null;
-        }
-
-        // --- EN-TÊTE ---
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.setTextColor(...primaryColor);
-        doc.text("BON DE COMMANDE", 105, y, { align: "center" });
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.setTextColor(...textMuted);
-        doc.text("AAMB - Journées Techniques du Bâtiment 2026", 105, y + 5, { align: "center" });
-        doc.text("Besançon - 17, 18 et 19 novembre 2026", 105, y + 9, { align: "center" });
         
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...textDark);
-        
-        const refVal = document.getElementById("recapToken")?.innerText || window.formData?.token || 'N/A';
-        doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')} | Référence : ${refVal}`, 105, y + 14, { align: "center" });
-
-        y += 18;
-        doc.setDrawColor(...borderColor);
-        doc.setLineWidth(0.5);
-        doc.line(10, y, 200, y);
-        y += 6;
-
-        function drawSectionHeader(title) {
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(10);
-            doc.setTextColor(...primaryColor);
-            doc.text(title, 12, y);
+        async function generatePDF() {
+            const recapData = fillRecap();
+            const bonDiv = document.getElementById('bonDeCommande');
+            bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
             
-            y += 2;
-            doc.setDrawColor(...primaryColor);
-            doc.setLineWidth(0.4);
-            doc.line(12, y, 200, y);
-            y += 4;
-        }
-
-        function drawRow(label, value, isPrice = false) {
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(8.5);
-            doc.setTextColor(...textMuted);
-            doc.text(label, 14, y);
-
-            if (isPrice) {
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(...priceRed);
-            } else {
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(...textDark);
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            const canvas = await html2canvas(bonDiv, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                width: 800,
+                logging: false,
+                letterRendering: true,
+                removeContainer: true
+            });
+            
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+            
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
             }
+            
+            return pdf.output('datauristring');
+        }      
 
-            const valStr = String(value ?? '-');
-            doc.text(valStr, 198, y, { align: "right" });
-            y += 5.5;
-        }
-
-        const d = window.formData || {};
-
-        // --- 1. SOCIÉTÉ & RESPONSABLE / FACTURATION ---
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(...primaryColor);
-        doc.text("Société & Responsable", 12, y);
-        doc.text("Facturation", 108, y);
-        
-        y += 2;
-        doc.setDrawColor(...primaryColor);
-        doc.setLineWidth(0.4);
-        doc.line(12, y, 100, y);
-        doc.line(108, y, 200, y);
-        y += 5;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...textMuted);
-        doc.text("Société :", 14, y);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...textDark);
-        doc.text(d.companyName || getRecapText("Société") || '-', 100, y, { align: "right" });
-
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(...textMuted);
-        doc.text("Adresse :", 110, y);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...textDark);
-        doc.text((d.billingAddress || getRecapText("Adresse") || '-').replace(/\n/g, ' '), 198, y, { align: "right" });
-
-        y += 5.5;
-
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(...textMuted);
-        doc.text("Responsable :", 14, y);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...textDark);
-        doc.text(d.decisionMakerName || getRecapText("Responsable") || '-', 100, y, { align: "right" });
-
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(...textMuted);
-        doc.text("Référent :", 110, y);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...textDark);
-        doc.text(d.billingContactName || getRecapText("Référent") || '-', 198, y, { align: "right" });
-
-        y += 9;
-
-        // --- 2. EMPLACEMENT & LOGISTIQUE ---
-        drawSectionHeader("Emplacement & Logistique");
-        drawRow("Emplacements :", getRecapText("Nombre d'emplacements"));
-        drawRow("Coût emplacement :", getRecapText("Coût emplacement"), true);
-        y += 3;
-
-        // --- 3. PARTICIPATIONS FINANCIÈRES ---
-        drawSectionHeader("Participations Financières");
-        drawRow("Cocktail de bienvenue :", getRecapText("Cocktail de bienvenue"), true);
-        drawRow("Pause :", getRecapText("Pause"), true);
-        drawRow("Soirée Terroir :", getRecapText("Soirée Terroir :"), true);
-        drawRow("Soirée de Gala :", getRecapText("Soirée de Gala :"), true);
-        drawRow("Frais étudiants :", getRecapText("Frais étudiants"), true);
-        drawRow("Lot fourni (valeur) :", getRecapText("Lot fourni (valeur)"), true);
-        drawRow("Participation financière lot :", getRecapText("Participation financière lot"), true);
-        y += 3;
-
-        // --- 4. REPAS ET SOIRÉES ---
-        drawSectionHeader("Repas et Soirées");
-        drawRow("Repas mercredi midi et jeudi midi :", getRecapText("Repas mercredi midi et jeudi midi"));
-        drawRow("Coût repas supplémentaires :", getRecapText("Coût repas supplémentaires"), true);
-        drawRow("Soirée Terroir (repas) :", getRecapText("Soirée Terroir (repas)"));
-        drawRow("Coût soirée Terroir :", getRecapText("Coût soirée Terroir"), true);
-        drawRow("Entrées gala :", getRecapText("Entrées gala"));
-        drawRow("Coût entrées gala suppl. :", getRecapText("Coût entrées gala suppl."), true);
-        drawRow("Repas sans porc :", getRecapText("Repas sans porc"));
-        drawRow("Repas sans viande :", getRecapText("Repas sans viande"));
-        drawRow("Repas sans gluten :", getRecapText("Repas sans gluten"));
-        y += 3;
-
-        // --- 5. DOCUMENTS & SERVICES ---
-        drawSectionHeader("Documents & Services");
-        drawRow("Documents publicitaires :", getRecapText("Documents publicitaires"));
-        drawRow("Coût documents publicitaires :", getRecapText("Coût documents publicitaires"), true);
-        drawRow("Fournitures :", getRecapText("Fournitures"));
-        y += 6;
-
-        // --- MONTANT TOTAL TTC ---
-        doc.setFillColor(...primaryColor);
-        doc.rect(10, y, 190, 10, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.text("MONTANT TOTAL TTC :", 15, y + 6.5);
-        doc.setFontSize(12);
-
-        const totalVal = getRecapText("MONTANT TOTAL TTC") || '0,00 € TTC';
-        doc.text(totalVal, 198, y + 6.5, { align: "right" });
-
-        y += 16;
-
-        // --- CACHET DE L'ENTREPRISE ---
-        doc.setDrawColor(180, 180, 180);
-        doc.setLineDashPattern([2, 2], 0);
-        doc.rect(10, y, 190, 22);
-        doc.setLineDashPattern([], 0);
-
-        doc.setTextColor(120, 120, 120);
-        doc.setFontSize(8.5);
-        doc.setFont("helvetica", "italic");
-        doc.text("Cachet de l'entreprise", 105, y + 9, { align: "center" });
-        doc.text("(à apposer et signer)", 105, y + 14, { align: "center" });
-
-        // --- PIED DE PAGE ---
-        doc.setFontSize(7);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(150, 150, 150);
-        doc.text("AAMB - Association des Agents de Maintenance Biomédicale", 105, 287, { align: "center" });
-        doc.text("JTB 2026 - Besançon - 17, 18 et 19 novembre 2026 | Email : jtb.partenaire@aamb.asso.fr", 105, 290, { align: "center" });
-
-        return doc.output('datauristring');
-
-    } catch (error) {
-        console.error("Erreur PDF:", error);
-        return null;
-    }
-}
-        
-
-
-
-
-
-
-        
-
-        
-
-        
         async function submitForm() {
             const submitBtn = document.querySelector('#section6 .btn-primary');
             const originalText = submitBtn.innerText;
@@ -2275,119 +2071,83 @@ async function generatePDF() {
             initBadgesSelect();
         });
         
-// Charger les données si un token est présent dans l'URL (mode édition)
-window.addEventListener('load', async function() {
-    console.log("🔄 Page chargée");
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    
-    if (token) {
-        console.log("🔑 Token trouvé:", token);
-        window.editToken = token;
-        
-        // 🎯 AFFICHER L'ÉCRAN DE CHARGEMENT
-        const overlay = document.getElementById('loadingOverlay');
-        const loadingError = document.getElementById('loadingError');
-        overlay.classList.add('active');
-        console.log("📡 Overlay affiché");
-        
-        try {
-            console.log("📡 Appel fetch vers:", `${SCRIPT_URL}?token=${token}`);
-            const response = await fetch(`${SCRIPT_URL}?token=${token}`);
-            console.log(" Réponse reçue:", response.status);
-            const data = await response.json();
-            console.log(" Données reçues:", data);
+        window.addEventListener('load', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
             
-            if (data.error) {
-                console.error("❌ Erreur:", data.error);
-                loadingError.textContent = "❌ " + data.error;
-                loadingError.style.display = 'block';
-                setTimeout(() => overlay.classList.remove('active'), 3000);
-                return;
-            }
-            
-            console.log("✅ Données chargées pour:", data.companyName);
-            
-            // ✅ Remplir les champs texte, email, tel, select, textarea, number
-            // CORRECTION : on n'ignore plus les valeurs à 0 ou ""
-            Object.keys(data).forEach(key => {
-                const input = document.querySelector(`[name="${key}"]`);
-                if (input) {
-                    const value = data[key];
+            if (token) {
+                window.editToken = token;
+                const overlay = document.getElementById('loadingOverlay');
+                const loadingError = document.getElementById('loadingError');
+                overlay.classList.add('active');
+                
+                try {
+                    const response = await fetch(`${SCRIPT_URL}?token=${token}`);
+                    const data = await response.json();
                     
-                    // On accepte toutes les valeurs sauf undefined et null
-                    if (value !== undefined && value !== null) {
-                        if (input.type === 'radio') {
-                            const radio = document.querySelector(`input[name="${key}"][value="${value}"]`);
-                            if (radio) {
-                                radio.checked = true;
-                                console.log(`  ✓ Radio cochée: ${key} = ${value}`);
+                    if (data.error) {
+                        loadingError.textContent = "❌ " + data.error;
+                        loadingError.style.display = 'block';
+                        setTimeout(() => overlay.classList.remove('active'), 3000);
+                        return;
+                    }
+                    
+                    Object.keys(data).forEach(key => {
+                        const input = document.querySelector(`[name="${key}"]`);
+                        if (input) {
+                            const value = data[key];
+                            if (value !== undefined && value !== null) {
+                                if (input.type === 'radio') {
+                                    const radio = document.querySelector(`input[name="${key}"][value="${value}"]`);
+                                    if (radio) radio.checked = true;
+                                } else if (input.tagName === 'SELECT' || input.tagName === 'TEXTAREA') {
+                                    input.value = value;
+                                } else if (input.type === 'number') {
+                                    input.value = value === '' ? 0 : value;
+                                } else if (input.type !== 'file' && input.type !== 'checkbox') {
+                                    input.value = value;
+                                }
                             }
-                        } else if (input.tagName === 'SELECT' || input.tagName === 'TEXTAREA') {
-                            input.value = value;
-                            console.log(`  ✓ Select/Textarea: ${key} = ${value}`);
-                        } else if (input.type === 'number') {
-                            input.value = value === '' ? 0 : value;
-                            console.log(`  ✓ Number: ${key} = ${value}`);
-                        } else if (input.type !== 'file' && input.type !== 'checkbox') {
-                            input.value = value;
-                            console.log(`  ✓ Input: ${key} = ${value}`);
                         }
-                    }
+                    });
+                    
+                    const checkboxFields = [
+                        'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
+                        'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
+                        'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire',
+                        'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique',
+                        'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils',
+                        'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'
+                    ];
+                    
+                    checkboxFields.forEach(field => {
+                        if (data[field] === 'Oui') {
+                            const cb = document.querySelector(`input[name="${field}"]`);
+                            if (cb) cb.checked = true;
+                        }
+                    });
+                    
+                    updateBoothInfo();
+                    updateFinancialDisplay();
+                    updateMealsTotal();
+                    updateTerroirTotal();
+                    updateGalaTotal();
+                    updateAdPrice();
+                    
+                    const btn = document.querySelector('#section6 .btn-primary');
+                    if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
+                    
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                    }, 500);
+                    
+                } catch (err) {
+                    loadingError.textContent = "❌ Erreur lors du chargement des données. Veuillez réessayer.";
+                    loadingError.style.display = 'block';
+                    setTimeout(() => overlay.classList.remove('active'), 3000);
                 }
-            });
-            
-            // Cases à cocher individuelles (qualité et secteurs)
-            const checkboxFields = [
-                'quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre',
-                'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement',
-                'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire',
-                'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique',
-                'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils',
-                'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'
-            ];
-            
-            checkboxFields.forEach(field => {
-                if (data[field] === 'Oui') {
-                    const cb = document.querySelector(`input[name="${field}"]`);
-                    if (cb) {
-                        cb.checked = true;
-                        console.log(`  ✓ Coché: ${field}`);
-                    }
-                }
-            });
-            
-            // Mettre à jour tous les affichages dynamiques (prix, infos, etc.)
-            updateBoothInfo();
-            updateFinancialDisplay();
-            updateMealsTotal();
-            updateTerroirTotal();
-            updateGalaTotal();
-            updateAdPrice();
-            
-            // Changer le bouton de validation
-            const btn = document.querySelector('#section6 .btn-primary');
-            if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
-            
-            console.log("✅ Formulaire rempli, masquage de l'overlay dans 500ms");
-            
-            // ✅ MASQUER L'ÉCRAN DE CHARGEMENT
-            setTimeout(() => {
-                overlay.classList.remove('active');
-                console.log("✅ Overlay masqué");
-            }, 500);
-            
-        } catch (err) {
-            console.error("❌ Erreur chargement:", err);
-            loadingError.textContent = "❌ Erreur lors du chargement des données. Veuillez réessayer.";
-            loadingError.style.display = 'block';
-            setTimeout(() => overlay.classList.remove('active'), 3000);
-        }
-    } else {
-        console.log("️ Pas de token dans l'URL, mode création");
-    }
-});
+            }
+        });
         
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
