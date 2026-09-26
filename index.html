@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.67</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.68</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1986,7 +1986,7 @@
 
 
 async function generatePDF() {
-    console.log("📄 Génération du PDF vectoriel d'après le DOM...");
+    console.log("📄 Génération du PDF...");
 
     try {
         const { jsPDF } = window.jspdf;
@@ -2007,15 +2007,14 @@ async function generatePDF() {
 
         let y = 12;
 
-        // Fonction d'extraction du texte HTML depuis la page (par contenu de ligne ou ID)
-        function getDomTextByLabel(labelSubstring) {
-            const rows = document.querySelectorAll('tr, div, p, li');
-            for (const row of rows) {
-                if (row.children.length >= 2 && row.innerText.includes(labelSubstring)) {
-                    // On prend le dernier élément enfant ou le texte de droite
-                    const valEl = row.children[row.children.length - 1];
-                    if (valEl && valEl !== row) {
-                        return valEl.innerText.trim();
+        // Fonction pour récupérer le texte affiché à l'écran dans le récapitulatif HTML
+        function getRecapText(labelSubstring) {
+            const elements = document.querySelectorAll('div, tr, p, li');
+            for (const el of elements) {
+                if (el.children.length >= 2 && el.innerText.includes(labelSubstring)) {
+                    const lastChild = el.children[el.children.length - 1];
+                    if (lastChild && lastChild !== el) {
+                        return lastChild.innerText.trim();
                     }
                 }
             }
@@ -2047,7 +2046,6 @@ async function generatePDF() {
         doc.line(10, y, 200, y);
         y += 6;
 
-        // --- UTILITAIRES DE RENDU ---
         function drawSectionHeader(title) {
             doc.setFont("helvetica", "bold");
             doc.setFontSize(10);
@@ -2075,14 +2073,12 @@ async function generatePDF() {
                 doc.setTextColor(...textDark);
             }
 
-            const valStr = String(value ?? '');
+            const valStr = String(value ?? '-');
             doc.text(valStr, 198, y, { align: "right" });
             y += 5.5;
         }
 
-        // Recours aux objets JS globaux si disponibles
-        const rData = (typeof fillRecap === 'function') ? fillRecap() : {};
-        const d = window.formData || rData.data || {};
+        const d = window.formData || {};
 
         // --- 1. SOCIÉTÉ & RESPONSABLE / FACTURATION ---
         doc.setFont("helvetica", "bold");
@@ -2104,14 +2100,14 @@ async function generatePDF() {
         doc.text("Société :", 14, y);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...textDark);
-        doc.text(d.companyName || getDomTextByLabel("Société") || '-', 100, y, { align: "right" });
+        doc.text(d.companyName || getRecapText("Société") || '-', 100, y, { align: "right" });
 
         doc.setFont("helvetica", "normal");
         doc.setTextColor(...textMuted);
         doc.text("Adresse :", 110, y);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...textDark);
-        doc.text((d.billingAddress || getDomTextByLabel("Adresse") || '-').replace(/\n/g, ' '), 198, y, { align: "right" });
+        doc.text((d.billingAddress || getRecapText("Adresse") || '-').replace(/\n/g, ' '), 198, y, { align: "right" });
 
         y += 5.5;
 
@@ -2120,58 +2116,52 @@ async function generatePDF() {
         doc.text("Responsable :", 14, y);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...textDark);
-        doc.text(d.decisionMakerName || getDomTextByLabel("Responsable") || '-', 100, y, { align: "right" });
+        doc.text(d.decisionMakerName || getRecapText("Responsable") || '-', 100, y, { align: "right" });
 
         doc.setFont("helvetica", "normal");
         doc.setTextColor(...textMuted);
         doc.text("Référent :", 110, y);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...textDark);
-        doc.text(d.billingContactName || getDomTextByLabel("Référent") || '-', 198, y, { align: "right" });
+        doc.text(d.billingContactName || getRecapText("Référent") || '-', 198, y, { align: "right" });
 
         y += 9;
 
         // --- 2. EMPLACEMENT & LOGISTIQUE ---
         drawSectionHeader("Emplacement & Logistique");
-        drawRow("Emplacements :", getDomTextByLabel("Nombre d'emplacements") || rData.boothVal || '1 emplacement 3x2m');
-        drawRow("Coût emplacement :", getDomTextByLabel("Coût emplacement") || formatPrice(rData.boothPrice), true);
+        drawRow("Emplacements :", getRecapText("Nombre d'emplacements"));
+        drawRow("Coût emplacement :", getRecapText("Coût emplacement"), true);
         y += 3;
 
         // --- 3. PARTICIPATIONS FINANCIÈRES ---
         drawSectionHeader("Participations Financières");
-        drawRow("Cocktail de bienvenue :", getDomTextByLabel("Cocktail de bienvenue") || rData.cocktail?.text, true);
-        drawRow("Pause :", getDomTextByLabel("Pause") || rData.pause?.text, true);
-        drawRow("Soirée Terroir :", getDomTextByLabel("Soirée Terroir :") || rData.terroir?.text, true);
-        drawRow("Soirée de Gala :", getDomTextByLabel("Soirée de Gala :") || rData.gala?.text, true);
-        drawRow("Frais étudiants :", getDomTextByLabel("Frais étudiants") || rData.studentFees?.text, true);
-        drawRow("Lot fourni (valeur) :", getDomTextByLabel("Lot fourni") || formatPrice(rData.prizeProvidedValue), true);
-        drawRow("Participation financière lot :", getDomTextByLabel("Participation financière lot") || rData.prizeParticipation?.text, true);
+        drawRow("Cocktail de bienvenue :", getRecapText("Cocktail de bienvenue"), true);
+        drawRow("Pause :", getRecapText("Pause"), true);
+        drawRow("Soirée Terroir :", getRecapText("Soirée Terroir :"), true);
+        drawRow("Soirée de Gala :", getRecapText("Soirée de Gala :"), true);
+        drawRow("Frais étudiants :", getRecapText("Frais étudiants"), true);
+        drawRow("Lot fourni (valeur) :", getRecapText("Lot fourni (valeur)"), true);
+        drawRow("Participation financière lot :", getRecapText("Participation financière lot"), true);
         y += 3;
 
         // --- 4. REPAS ET SOIRÉES ---
         drawSectionHeader("Repas et Soirées");
-
-        // Extraction directe depuis le texte visible de la v0.66
-        const mealsText = getDomTextByLabel("Repas mercredi midi") || `MER. 4 repas (dont 2 inclus) / JEU. 5 repas (dont 2 inclus)`;
-        drawRow("Repas mercredi midi et jeudi midi :", mealsText);
-        drawRow("Coût repas supplémentaires :", getDomTextByLabel("Coût repas supplémentaires") || formatPrice(rData.mealsPrice), true);
-
-        drawRow("Soirée Terroir (repas) :", getDomTextByLabel("Soirée Terroir (repas)") || rData.terroirDinner || '6');
-        drawRow("Coût soirée Terroir :", getDomTextByLabel("Coût soirée Terroir") || '198,00 € TTC', true);
-
-        drawRow("Entrées gala :", getDomTextByLabel("Entrées gala") || '3 soirées de gala (dont 1 gratuites)');
-        drawRow("Coût entrées gala suppl. :", getDomTextByLabel("Coût entrées gala suppl.") || '130,00 € TTC', true);
-
-        // Récupération des régimes
-        drawRow("Repas sans porc :", getDomTextByLabel("Repas sans porc") || '5 repas MER midi, 1 repas JEU midi, 7 repas soirée terroir, 3 repas soirée de gala');
-        drawRow("Repas sans viande :", getDomTextByLabel("Repas sans viande") || '3 repas MER midi, 3 repas JEU midi, 8 repas soirée terroir, 1 repas soirée de gala');
-        drawRow("Repas sans gluten :", getDomTextByLabel("Repas sans gluten") || '8 repas MER midi, 5 repas JEU midi, 5 repas soirée terroir, 4 repas soirée de gala');
+        drawRow("Repas mercredi midi et jeudi midi :", getRecapText("Repas mercredi midi et jeudi midi"));
+        drawRow("Coût repas supplémentaires :", getRecapText("Coût repas supplémentaires"), true);
+        drawRow("Soirée Terroir (repas) :", getRecapText("Soirée Terroir (repas)"));
+        drawRow("Coût soirée Terroir :", getRecapText("Coût soirée Terroir"), true);
+        drawRow("Entrées gala :", getRecapText("Entrées gala"));
+        drawRow("Coût entrées gala suppl. :", getRecapText("Coût entrées gala suppl."), true);
+        drawRow("Repas sans porc :", getRecapText("Repas sans porc"));
+        drawRow("Repas sans viande :", getRecapText("Repas sans viande"));
+        drawRow("Repas sans gluten :", getRecapText("Repas sans gluten"));
         y += 3;
 
         // --- 5. DOCUMENTS & SERVICES ---
         drawSectionHeader("Documents & Services");
-        drawRow("Coût documents publicitaires :", getDomTextByLabel("Coût documents publicitaires") || '250,00 € TTC', true);
-        drawRow("Fournitures :", getDomTextByLabel("Fournitures") || '200 blocs-notes, 200 stylos, 200 sacoches');
+        drawRow("Documents publicitaires :", getRecapText("Documents publicitaires"));
+        drawRow("Coût documents publicitaires :", getRecapText("Coût documents publicitaires"), true);
+        drawRow("Fournitures :", getRecapText("Fournitures"));
         y += 6;
 
         // --- MONTANT TOTAL TTC ---
@@ -2183,8 +2173,8 @@ async function generatePDF() {
         doc.text("MONTANT TOTAL TTC :", 15, y + 6.5);
         doc.setFontSize(12);
 
-        const totalVal = getDomTextByLabel("MONTANT TOTAL TTC") || formatPrice(rData.total) || '2965,00 € TTC';
-        doc.text(totalVal.includes('€') ? totalVal : `${totalVal} € TTC`, 198, y + 6.5, { align: "right" });
+        const totalVal = getRecapText("MONTANT TOTAL TTC") || '0,00 € TTC';
+        doc.text(totalVal, 198, y + 6.5, { align: "right" });
 
         y += 16;
 
@@ -2204,16 +2194,13 @@ async function generatePDF() {
         doc.setFontSize(7);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(150, 150, 150);
-        doc.text("AAMB - Association des Ambulanciers de la Médecine du Bâtiment", 105, 287, { align: "center" });
+        doc.text("AAMB - Association des Agents de Maintenance Biomédicale", 105, 287, { align: "center" });
         doc.text("JTB 2026 - Besançon - 17, 18 et 19 novembre 2026 | Email : jtb.partenaire@aamb.asso.fr", 105, 290, { align: "center" });
 
-        const pdfOutput = doc.output('datauristring');
-        console.log(`✅ PDF extrait du récapitulatif généré avec succès !`);
-        
-        return pdfOutput;
+        return doc.output('datauristring');
 
     } catch (error) {
-        console.error("❌ Erreur génération PDF:", error);
+        console.error("Erreur PDF:", error);
         return null;
     }
 }
