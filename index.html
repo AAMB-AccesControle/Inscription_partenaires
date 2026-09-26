@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.59</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.60</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1982,89 +1982,54 @@
             `;
         }
         
+
+      
         async function generatePDF() {
-            console.log("📄 Début génération PDF vectoriel...");
+            console.log("📄 Début génération PDF...");
             
-            try {
-                const recapData = fillRecap();
-                const bonDiv = document.getElementById('bonDeCommande');
-                bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
-                
-                // ️ IMPORTANT : Rendre le div visible temporairement pour le rendu
-                const originalStyle = bonDiv.style.cssText;
-                bonDiv.style.position = 'fixed';
-                bonDiv.style.left = '0';
-                bonDiv.style.top = '0';
-                bonDiv.style.width = '800px';
-                bonDiv.style.zIndex = '-1';
-                bonDiv.style.opacity = '0';
-                
-                // Attendre que le DOM soit bien rendu
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                const { jsPDF } = window.jspdf;
-                
-                const pdf = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4',
-                    compress: true
-                });
-                
-                console.log("🔄 Appel de pdf.html()...");
-                
-                await new Promise((resolve, reject) => {
-                    pdf.html(bonDiv, {
-                        callback: function(doc) {
-                            console.log("✅ Callback pdf.html() appelé");
-                            resolve(doc);
-                        },
-                        margin: [10, 10, 10, 10],
-                        x: 0,
-                        y: 0,
-                        width: 210,  // Largeur A4 en mm
-                        windowWidth: 800,
-                        html2canvas: {
-                            scale: 2,  // ⚠️ Scale 2 pour un bon rendu
-                            useCORS: true,
-                            logging: false,
-                            backgroundColor: '#ffffff',
-                            letterRendering: true
-                        },
-                        jsPDF: pdf,
-                        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-                    }).catch(reject);
-                });
-                
-                // Restaurer le style original
-                bonDiv.style.cssText = originalStyle;
-                
-                const pdfOutput = pdf.output('datauristring');
-                
-                if (!pdfOutput || pdfOutput.length < 1000) {
-                    console.error("❌ PDF vide ou trop petit !");
-                    return null;
-                }
-                
-                const pdfSizeKB = Math.round(pdfOutput.length / 1024);
-                console.log(`✅ PDF généré : ${pdfSizeKB} Ko`);
-                console.log(`📊 Longueur base64 : ${pdfOutput.length} caractères`);
-                
-                return pdfOutput;
-                
-            } catch (error) {
-                console.error("❌ Erreur génération PDF:", error);
-                console.error("Stack:", error.stack);
-                return null;
+            const recapData = fillRecap();
+            const bonDiv = document.getElementById('bonDeCommande');
+            bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
+            
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            const canvas = await html2canvas(bonDiv, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                width: 800,
+                logging: false,
+                letterRendering: true,
+                removeContainer: true
+            });
+            
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+            
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
             }
-        }
+            
+            const pdfOutput = pdf.output('datauristring');
+            console.log(`✅ PDF généré : ${Math.round(pdfOutput.length / 1024)} Ko`);
+            
+            return pdfOutput;
+        }      
 
-
-        
-
-        
-
-        
         
         async function submitForm() {
             const submitBtn = document.querySelector('#section6 .btn-primary');
