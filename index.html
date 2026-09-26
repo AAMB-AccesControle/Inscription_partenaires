@@ -483,7 +483,7 @@
             <div class="header-logo-wrapper">
                 <img id="aambLogo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'><path fill='%235b8f36' d='M195 50 Q230 40 260 70 Q280 90 270 120 Q290 140 280 170 Q250 200 210 190 Q190 200 170 170 Q150 140 170 110 Q160 80 195 50 Z'/><path fill='%23366023' d='M180 60 Q140 90 150 130 Q130 160 160 190 L200 190 Q180 120 180 60 Z'/><rect x='192' y='180' width='16' height='70' fill='%236e5233'/><path d='M100 230 L115 220 L125 240 L135 190 L145 250 L155 225 L180 225 L190 190 L200 260 L210 180 L220 230 L230 210 L240 230 L270 200 L280 230 L290 220 L300 230 L320 215' fill='none' stroke='%23d9232a' stroke-width='3' stroke-linejoin='round'/><text x='200' y='340' font-family='Arial, sans-serif' font-weight='900' font-size='68' fill='%230a4c6a' text-anchor='middle'>AAMB</text></svg>" alt="Logo AAMB">
             </div>
-            <h1>AAMB - JTB 2026 - Besançon v0.69</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.70</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1971,46 +1971,281 @@
             `;
         }
         
-        async function generatePDF() {
-            const recapData = fillRecap();
-            const bonDiv = document.getElementById('bonDeCommande');
-            bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
-            
-            await new Promise(resolve => setTimeout(resolve, 300));
-            
-            const canvas = await html2canvas(bonDiv, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                width: 800,
-                logging: false,
-                letterRendering: true,
-                removeContainer: true
-            });
-            
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
-            
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            const imgWidth = 210;
-            const pageHeight = 297;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-            
-            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-            
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
-            
-            return pdf.output('datauristring');
-        }      
+
+
+
+// --- 1. CALCUL ET FORMATAGE DES DONNÉES DU FORMULAIRE ---
+function buildRecapData(formData) {
+    const PRICE_BOOTH = 1800;
+    const PRICE_MEAL_EXTRA = 35;
+    const PRICE_TERROIR_DINNER = 33;
+    const PRICE_GALA_EXTRA = 65;
+
+    const boothCount = parseInt(formData.boothCount || 0, 10);
+    const includedMealsPerDay = boothCount * 2;
+
+    const wedTotal = parseInt(formData.wednesdayMeals || 0, 10);
+    const thuTotal = parseInt(formData.thursdayMeals || 0, 10);
+
+    const wedExtra = Math.max(0, wedTotal - includedMealsPerDay);
+    const thuExtra = Math.max(0, thuTotal - includedMealsPerDay);
+    const mealsExtraPrice = (wedExtra + thuExtra) * PRICE_MEAL_EXTRA;
+
+    const terroirCount = parseInt(formData.terroirCount || 0, 10);
+    const terroirPrice = terroirCount * PRICE_TERROIR_DINNER;
+
+    const galaTotal = parseInt(formData.galaCount || 0, 10);
+    const galaFree = Math.min(galaTotal, 1);
+    const galaExtra = Math.max(0, galaTotal - galaFree);
+    const galaExtraPrice = galaExtra * PRICE_GALA_EXTRA;
+
+    const cocktailVal = parseFloat(formData.cocktailPrice || 0);
+    const pauseVal = parseFloat(formData.pausePrice || 0);
+    const terroirVal = parseFloat(formData.terroirPrice || 0);
+    const galaVal = parseFloat(formData.galaPrice || 0);
+    const studentVal = parseFloat(formData.studentFees || 0);
+    const prizeVal = parseFloat(formData.prizeProvidedValue || 0);
+    const prizePartVal = parseFloat(formData.prizeParticipation || 0);
+    const adVal = parseFloat(formData.adPrice || 0);
+
+    const boothPrice = boothCount * PRICE_BOOTH;
+
+    const grandTotal = boothPrice + cocktailVal + pauseVal + terroirVal + galaVal 
+        + studentVal + prizePartVal + mealsExtraPrice + terroirPrice 
+        + galaExtraPrice + adVal;
+
+    const fmt = (val) => `${val.toFixed(2).replace('.', ',')} € TTC`;
+
+    return {
+        date: new Date().toLocaleDateString('fr-FR'),
+        reference: formData.token || 'N/A',
+        companyName: formData.companyName || '-',
+        billingAddress: formData.billingAddress || '-',
+        decisionMakerName: formData.decisionMakerName || '-',
+        billingContactName: formData.billingContactName || '-',
+
+        boothText: `${boothCount} emplacement${boothCount > 1 ? 's' : ''} ${boothCount === 2 ? '6x2m' : '3x2m'}`,
+        boothPriceText: fmt(boothPrice),
+
+        cocktailText: fmt(cocktailVal),
+        pauseText: fmt(pauseVal),
+        terroirText: fmt(terroirVal),
+        galaText: fmt(galaVal),
+        studentFeesText: fmt(studentVal),
+        prizeProvidedValueText: fmt(prizeVal),
+        prizeParticipationText: fmt(prizePartVal),
+
+        mealsDetailText: `MER. ${wedTotal} repas (dont ${includedMealsPerDay} inclus) / JEU. ${thuTotal} repas (dont ${includedMealsPerDay} inclus)`,
+        mealsExtraPriceText: fmt(mealsExtraPrice),
+
+        terroirDinnerCountText: String(terroirCount),
+        terroirDinnerPriceText: fmt(terroirPrice),
+
+        galaTicketsText: `${galaTotal} soirée${galaTotal > 1 ? 's' : ''} de gala (dont ${galaFree} gratuite${galaFree > 1 ? 's' : ''})`,
+        galaExtraPriceText: fmt(galaExtraPrice),
+
+        noPorkDetailsText: formData.noPorkText || 'Aucun',
+        vegetarianDetailsText: formData.vegetarianText || 'Aucun',
+        glutenFreeDetailsText: formData.glutenFreeText || 'Aucun',
+
+        adPriceText: fmt(adVal),
+        suppliesDetailsText: formData.suppliesText || 'Aucune',
+
+        totalText: fmt(grandTotal)
+    };
+}
+
+// --- 2. GÉNÉRATION DU PDF VECTORIEL STRUCTURÉ ---
+async function generatePDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const recapData = buildRecapData(window.formData || {});
+
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+
+        const primaryColor = [30, 58, 95];
+        const borderColor = [220, 224, 230];
+        const textDark = [40, 40, 40];
+        const textMuted = [100, 100, 100];
+        const priceRed = [217, 83, 79];
+
+        let y = 12;
+
+        // En-tête
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.setTextColor(...primaryColor);
+        doc.text("BON DE COMMANDE", 105, y, { align: "center" });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(...textMuted);
+        doc.text("AAMB - Journées Techniques du Bâtiment 2026", 105, y + 5, { align: "center" });
+        doc.text("Besançon - 17, 18 et 19 novembre 2026", 105, y + 9, { align: "center" });
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...textDark);
+        doc.text(`Date : ${recapData.date} | Référence : ${recapData.reference}`, 105, y + 14, { align: "center" });
+
+        y += 18;
+        doc.setDrawColor(...borderColor);
+        doc.setLineWidth(0.5);
+        doc.line(10, y, 200, y);
+        y += 6;
+
+        function drawSectionHeader(title) {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.setTextColor(...primaryColor);
+            doc.text(title, 12, y);
+            y += 2;
+            doc.setDrawColor(...primaryColor);
+            doc.setLineWidth(0.4);
+            doc.line(12, y, 200, y);
+            y += 4.5;
+        }
+
+        function drawRow(label, value, isPrice = false) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.setTextColor(...textMuted);
+            doc.text(label, 14, y);
+
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(...(isPrice ? priceRed : textDark));
+            doc.text(String(value ?? ''), 198, y, { align: "right" });
+            y += 5.2;
+        }
+
+        // 1. Société & Facturation
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(...primaryColor);
+        doc.text("Société & Responsable", 12, y);
+        doc.text("Facturation", 108, y);
+        y += 2;
+        doc.setDrawColor(...primaryColor);
+        doc.setLineWidth(0.4);
+        doc.line(12, y, 100, y);
+        doc.line(108, y, 200, y);
+        y += 5;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...textMuted);
+        doc.text("Société :", 14, y);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...textDark);
+        doc.text(recapData.companyName, 100, y, { align: "right" });
+
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(...textMuted);
+        doc.text("Adresse :", 110, y);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...textDark);
+        doc.text(recapData.billingAddress.replace(/\n/g, ' '), 198, y, { align: "right" });
+        y += 5.5;
+
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(...textMuted);
+        doc.text("Responsable :", 14, y);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...textDark);
+        doc.text(recapData.decisionMakerName, 100, y, { align: "right" });
+
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(...textMuted);
+        doc.text("Référent :", 110, y);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...textDark);
+        doc.text(recapData.billingContactName, 198, y, { align: "right" });
+        y += 9;
+
+        // 2. Emplacement & Logistique
+        drawSectionHeader("📍 Emplacement & Logistique");
+        drawRow("Emplacements :", recapData.boothText);
+        drawRow("Coût emplacement :", recapData.boothPriceText, true);
+        y += 2.5;
+
+        // 3. Participations Financières
+        drawSectionHeader("💰 Participations Financières");
+        drawRow("Cocktail de bienvenue :", recapData.cocktailText, true);
+        drawRow("Pause :", recapData.pauseText, true);
+        drawRow("Soirée Terroir :", recapData.terroirText, true);
+        drawRow("Soirée de Gala :", recapData.galaText, true);
+        drawRow("Frais étudiants :", recapData.studentFeesText, true);
+        drawRow("Lot fourni (valeur) :", recapData.prizeProvidedValueText, true);
+        drawRow("Participation financière lot :", recapData.prizeParticipationText, true);
+        y += 2.5;
+
+        // 4. Repas et Soirées
+        drawSectionHeader("🍽️ Repas et Soirées");
+        drawRow("Repas mercredi midi et jeudi midi :", recapData.mealsDetailText);
+        drawRow("Coût repas supplémentaires :", recapData.mealsExtraPriceText, true);
+        drawRow("Soirée Terroir (repas) :", recapData.terroirDinnerCountText);
+        drawRow("Coût soirée Terroir :", recapData.terroirDinnerPriceText, true);
+        drawRow("Entrées gala :", recapData.galaTicketsText);
+        drawRow("Coût entrées gala suppl. :", recapData.galaExtraPriceText, true);
+        drawRow("Repas sans porc :", recapData.noPorkDetailsText);
+        drawRow("Repas sans viande :", recapData.vegetarianDetailsText);
+        drawRow("Repas sans gluten :", recapData.glutenFreeDetailsText);
+        y += 2.5;
+
+        // 5. Documents & Services
+        drawSectionHeader("📄 Documents & Services");
+        drawRow("Coût documents publicitaires :", recapData.adPriceText, true);
+        drawRow("Fournitures :", recapData.suppliesDetailsText);
+        y += 5;
+
+        // Total TTC
+        doc.setFillColor(...primaryColor);
+        doc.rect(10, y, 190, 10, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("MONTANT TOTAL TTC :", 15, y + 6.5);
+        doc.setFontSize(12);
+        doc.text(recapData.totalText, 198, y + 6.5, { align: "right" });
+        y += 15;
+
+        // Cachet
+        doc.setDrawColor(180, 180, 180);
+        doc.setLineDashPattern([2, 2], 0);
+        doc.rect(10, y, 190, 22);
+        doc.setLineDashPattern([], 0);
+        doc.setTextColor(120, 120, 120);
+        doc.setFontSize(8.5);
+        doc.setFont("helvetica", "italic");
+        doc.text("Cachet de l'entreprise", 105, y + 9, { align: "center" });
+        doc.text("(à apposer et signer)", 105, y + 14, { align: "center" });
+
+        // Pied de page
+        doc.setFontSize(7);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(150, 150, 150);
+        doc.text("AAMB - Association des Ambulanciers de la Médecine du Bâtiment", 105, 287, { align: "center" });
+        doc.text("JTB 2026 - Besançon - 17, 18 et 19 novembre 2026 | Email : jtb.partenaire@aamb.asso.fr", 105, 290, { align: "center" });
+
+        return doc.output('datauristring');
+    } catch (e) {
+        console.error("Erreur PDF:", e);
+        return null;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+        
 
         async function submitForm() {
             const submitBtn = document.querySelector('#section6 .btn-primary');
