@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.62</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.63</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1988,234 +1988,261 @@
 
         
 
-          async function generatePDF() {
-        console.log("📄 Début de la génération du PDF vectoriel pur (complet)...");
-    
-        try {
-            const recapData = fillRecap();
-            if (!recapData) {
-                console.error("❌ Impossible de récupérer les données du récapitulatif");
-                return null;
-            }
-    
-            const {
-                data,
-                boothPrice,
-                cocktail,
-                pause,
-                terroir,
-                gala,
-                studentFees,
-                prizeParticipation,
-                prizeProvidedValue,
-                mealsPrice,
-                terroirDinner,
-                galaExtra,
-                adPrice,
-                total,
-                boothVal,
-                lunchWed,
-                lunchThu,
-                galaFree,
-                terroirFree,
-                electric,
-                tables,
-                chairs,
-                gridCount,
-                hasAdditionalEquipment
-            } = recapData;
-    
-            const { jsPDF } = window.jspdf;
-    
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-                compress: true
-            });
-    
-            // Palette de couleurs
-            const primaryColor = [30, 58, 95];      // #1e3a5f
-            const secondaryBg = [240, 244, 248];    // En-têtes de section
-            const darkTextColor = [40, 40, 40];
-            const redColor = [220, 53, 69];         // Pour les prix
-            const greenColor = [40, 167, 69];       // Pour les éléments gratuits/inclus
-    
-            let y = 12; // Position verticale initiale
-    
-            // --- EN-TÊTE DU DOCUMENT ---
-            doc.setFillColor(...primaryColor);
-            doc.rect(10, y, 190, 20, 'F');
-    
-            doc.setTextColor(255, 255, 255);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(15);
-            doc.text("BON DE COMMANDE - RÉCAPITULATIF", 105, y + 8, { align: "center" });
-    
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            doc.text("AAMB - Journées Techniques du Bâtiment 2026 - Besançon", 105, y + 13, { align: "center" });
-            doc.setFontSize(8);
-            doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')} | Référence : ${data.token || 'N/A'}`, 105, y + 17, { align: "center" });
-    
-            y += 24;
-    
-            // --- FONCTIONS UTILITAIRES DE RENDU ---
-            function checkPageOverflow(neededSpace = 10) {
-                if (y + neededSpace > 280) { // bas de page A4
-                    doc.addPage();
-                    y = 15;
+        async function generatePDF() {
+            console.log("📄 Début de la génération du PDF vectoriel pur...");
+        
+            try {
+                const recapData = fillRecap();
+                if (!recapData) {
+                    console.error("❌ Impossible de récupérer les données du récapitulatif");
+                    return null;
                 }
-            }
-    
-            function drawSectionHeader(title) {
-                checkPageOverflow(12);
-                doc.setFillColor(...secondaryBg);
-                doc.rect(10, y, 190, 6.5, 'F');
+        
+                // On récupère exactement l'ensemble des champs du récapitulatif
+                const {
+                    data,
+                    boothPrice,
+                    cocktail,
+                    pause,
+                    terroir,
+                    gala,
+                    studentFees,
+                    prizeProvidedValue,
+                    prizeParticipation,
+                    mealsPrice,
+                    terroirDinner,
+                    galaExtra,
+                    adPrice,
+                    total,
+                    boothVal,
+                    lunchWed,
+                    lunchThu,
+                    galaFree,
+                    terroirFree,
+                    suppWed,
+                    suppThu,
+                    noPorkDetails,
+                    vegetarianDetails,
+                    glutenFreeDetails,
+                    suppliesDetails
+                } = recapData;
+        
+                const { jsPDF } = window.jspdf;
+        
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4',
+                    compress: true
+                });
+        
+                // Couleurs
+                const primaryColor = [30, 58, 95];       // #1e3a5f (En-têtes)
+                const lightBgColor = [248, 249, 250];    // Fond des blocs
+                const borderColor = [220, 224, 230];    // Lignes & bordures
+                const textDark = [40, 40, 40];
+                const textMuted = [100, 100, 100];
+                const priceRed = [217, 83, 79];
+        
+                let y = 12;
+        
+                // --- EN-TÊTE ---
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(9.5);
+                doc.setFontSize(16);
                 doc.setTextColor(...primaryColor);
-                doc.text(title, 12, y + 4.5);
-                y += 8.5;
-            }
-    
-            function drawRow(label, value, isPrice = false, priceValue = null) {
-                checkPageOverflow(6);
+                doc.text("BON DE COMMANDE", 105, y, { align: "center" });
+        
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(...textMuted);
+                doc.text("AAMB - Journées Techniques du Bâtiment 2026", 105, y + 5, { align: "center" });
+                doc.text("Besançon - 17, 18 et 19 novembre 2026", 105, y + 9, { align: "center" });
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(...textDark);
+                doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')} | Référence : ${data.token || 'N/A'}`, 105, y + 14, { align: "center" });
+        
+                // Ligne horizontale sous en-tête
+                y += 18;
+                doc.setDrawColor(...borderColor);
+                doc.setLineWidth(0.5);
+                doc.line(10, y, 200, y);
+                y += 6;
+        
+                // --- FONCTIONS UTILITAIRES ---
+                function drawSectionHeader(title) {
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(10);
+                    doc.setTextColor(...primaryColor);
+                    doc.text(title, 12, y);
+                    
+                    y += 2;
+                    doc.setDrawColor(...primaryColor);
+                    doc.setLineWidth(0.4);
+                    doc.line(12, y, 200, y);
+                    y += 4;
+                }
+        
+                function drawRow(label, value, isPrice = false) {
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(...textMuted);
+                    doc.text(label, 14, y);
+        
+                    if (isPrice) {
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(...priceRed);
+                    } else {
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(...textDark);
+                    }
+        
+                    const valStr = String(value ?? '');
+                    doc.text(valStr, 198, y, { align: "right" });
+                    y += 5.5;
+                }
+        
+                // --- 1. SOCIÉTÉ & RESPONSABLE / FACTURATION (SUR 2 COLONNES) ---
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(...primaryColor);
+                doc.text("Société & Responsable", 12, y);
+                doc.text("Facturation", 108, y);
+                
+                y += 2;
+                doc.setDrawColor(...primaryColor);
+                doc.setLineWidth(0.4);
+                doc.line(12, y, 100, y);
+                doc.line(108, y, 200, y);
+                y += 5;
+        
+                // Colonne Gauche
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(8.5);
-                doc.setTextColor(...darkTextColor);
-    
-                // Découpage du label si trop long pour éviter les chevauchements
-                const splitLabel = doc.splitTextToSize(label, 130);
-                doc.text(splitLabel, 14, y);
-    
-                if (isPrice) {
-                    doc.setFont("helvetica", "bold");
-                    const valStr = String(value);
-                    if (valStr.includes('Offert') || valStr.includes('Inclus') || valStr.includes('Gratuit')) {
-                        doc.setTextColor(...greenColor);
-                    } else if (priceValue === 0 || valStr === '0,00 €' || valStr === '0 €') {
-                        doc.setTextColor(120, 120, 120);
-                    } else {
-                        doc.setTextColor(...redColor);
-                    }
-                } else {
-                    doc.setFont("helvetica", "normal");
-                    doc.setTextColor(...darkTextColor);
-                }
-    
-                const valText = String(value);
-                const splitVal = doc.splitTextToSize(valText, 55);
-                doc.text(splitVal, 196, y, { align: "right" });
-    
-                const rowHeight = Math.max(splitLabel.length, splitVal.length) * 4;
-    
-                // Ligne séparatrice fine
-                doc.setDrawColor(230, 230, 230);
-                doc.setLineDashPattern([0.8, 0.8], 0);
-                doc.line(14, y + rowHeight - 2, 196, y + rowHeight - 2);
+                doc.setTextColor(...textMuted);
+                doc.text("Société :", 14, y);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(...textDark);
+                doc.text(data.companyName || '-', 100, y, { align: "right" });
+        
+                // Colonne Droite
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(...textMuted);
+                doc.text("Adresse :", 110, y);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(...textDark);
+                doc.text((data.billingAddress || '-').replace(/\n/g, ' '), 198, y, { align: "right" });
+        
+                y += 5.5;
+        
+                // Ligne 2 (Responsable / Référent)
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(...textMuted);
+                doc.text("Responsable :", 14, y);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(...textDark);
+                doc.text(data.decisionMakerName || '-', 100, y, { align: "right" });
+        
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(...textMuted);
+                doc.text("Référent :", 110, y);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(...textDark);
+                doc.text(data.billingContactName || '-', 198, y, { align: "right" });
+        
+                y += 9;
+        
+                // --- 2. EMPLACEMENT & LOGISTIQUE ---
+                drawSectionHeader("📍 Emplacement & Logistique");
+                drawRow("Emplacements :", boothVal || 'Aucun');
+                drawRow("Coût emplacement :", formatPrice(boothPrice), true);
+                y += 3;
+        
+                // --- 3. PARTICIPATIONS FINANCIÈRES ---
+                drawSectionHeader("💰 Participations Financières");
+                drawRow("Cocktail de bienvenue :", cocktail.text, true);
+                drawRow("Pause :", pause.text, true);
+                drawRow("Soirée Terroir :", terroir.text, true);
+                drawRow("Soirée de Gala :", gala.text, true);
+                drawRow("Frais étudiants :", studentFees.text, true);
+                drawRow("Lot fourni (valeur) :", formatPrice(prizeProvidedValue), true);
+                drawRow("Participation financière lot :", prizeParticipation.text, true);
+                y += 3;
+        
+                // --- 4. REPAS ET SOIRÉES ---
+                drawSectionHeader("🍽️ Repas et Soirées");
+                
+                // Repas midi
+                const totalWed = (data.boothCount || 0) * 2 + suppWed;
+                const totalThu = (data.boothCount || 0) * 2 + suppThu;
+                const incWed = (data.boothCount || 0) * 2;
+                const incThu = (data.boothCount || 0) * 2;
+                
+                drawRow("Repas mercredi midi et jeudi midi :", `MER. ${totalWed} repas (dont ${incWed} inclus) / JEU. ${totalThu} repas (dont ${incThu} inclus)`);
+                drawRow("Coût repas supplémentaires :", formatPrice(mealsPrice), true);
+                
+                // Terroir
+                drawRow("Soirée Terroir (repas) :", terroirDinner);
+                drawRow("Coût soirée Terroir :", formatPrice(terroirDinner * PRICE_TERROIR_DINNER), true);
+                
+                // Gala
+                drawRow("Entrées gala :", `${galaExtra + galaFree} soirées de gala (dont ${galaFree} gratuites)`);
+                drawRow("Coût entrées gala suppl. :", formatPrice(galaExtra * PRICE_GALA_EXTRA), true);
+                
+                // Régimes alimentaires
+                drawRow("Repas sans porc :", noPorkDetails || 'Aucun');
+                drawRow("Repas sans viande :", vegetarianDetails || 'Aucun');
+                drawRow("Repas sans gluten :", glutenFreeDetails || 'Aucun');
+                y += 3;
+        
+                // --- 5. DOCUMENTS & SERVICES ---
+                drawSectionHeader("📄 Documents & Services");
+                drawRow("Coût documents publicitaires :", formatPrice(adPrice), true);
+                drawRow("Fournitures :", suppliesDetails || 'Aucune');
+                y += 6;
+        
+                // --- MONTANT TOTAL TTC ---
+                doc.setFillColor(...primaryColor);
+                doc.rect(10, y, 190, 10, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.text("MONTANT TOTAL TTC :", 15, y + 6.5);
+                doc.setFontSize(12);
+                doc.text(formatPrice(total), 198, y + 6.5, { align: "right" });
+        
+                y += 16;
+        
+                // --- CACHET DE L'ENTREPRISE ---
+                doc.setDrawColor(180, 180, 180);
+                doc.setLineDashPattern([2, 2], 0);
+                doc.rect(10, y, 190, 22);
                 doc.setLineDashPattern([], 0);
-    
-                y += rowHeight + 1;
+        
+                doc.setTextColor(120, 120, 120);
+                doc.setFontSize(8.5);
+                doc.setFont("helvetica", "italic");
+                doc.text("Cachet de l'entreprise", 105, y + 9, { align: "center" });
+                doc.text("(à apposer et signer)", 105, y + 14, { align: "center" });
+        
+                // --- PIED DE PAGE ---
+                doc.setFontSize(7);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(150, 150, 150);
+                doc.text("AAMB - Association des Ambulanciers de la Médecine du Bâtiment", 105, 287, { align: "center" });
+                doc.text("JTB 2026 - Besançon - 17, 18 et 19 novembre 2026 | Email : jtb.partenaire@aamb.asso.fr", 105, 290, { align: "center" });
+        
+                const pdfOutput = doc.output('datauristring');
+                console.log(`✅ PDF vectoriel exact généré avec succès ! (${Math.round(pdfOutput.length / 1024)} Ko)`);
+                
+                return pdfOutput;
+        
+            } catch (error) {
+                console.error("❌ Erreur génération PDF vectoriel:", error);
+                return null;
             }
-    
-            // --- 1. INFORMATIONS SOCIÉTÉ ET CONTACTS ---
-            drawSectionHeader("1. INFORMATIONS SOCIÉTÉ & FACTURATION");
-            drawRow("Société :", data.companyName || '-');
-            drawRow("Responsable décisionnel :", `${data.decisionMakerName || '-'} (${data.decisionMakerEmail || '-'})`);
-            drawRow("Adresse de facturation :", `${data.billingAddress || '-'}, ${data.billingPostalCode || ''} ${data.billingCity || ''}`);
-            drawRow("Référent facturation :", `${data.billingContactName || '-'} (${data.billingContactEmail || '-'})`);
-            drawRow("TVA Intracommunautaire :", data.vatNumber || 'Non renseigné');
-            drawRow("Bon de commande (PO / N° Engagement) :", data.poNumber || 'Non fourni');
-            y += 2;
-    
-            // --- 2. EMPLACEMENT & FOURNITURES DU STAND ---
-            drawSectionHeader("2. EMPLACEMENT & FOURNITURES DU STAND");
-            drawRow("Choix de l'emplacement :", boothVal || 'Aucun emplacement sélectionné', true, boothPrice);
-            
-            // Matériel & Électricité inclus / demandés
-            drawRow("Branchement électrique (3kW) :", electric ? 'Oui (demandé)' : 'Non');
-            drawRow("Tables fournies :", `${tables || 0} table(s)`);
-            drawRow("Chaises fournies :", `${chairs || 0} chaise(s)`);
-            drawRow("Grilles d'exposition :", `${gridCount || 0} grille(s)`);
-            if (hasAdditionalEquipment && data.additionalEquipmentDetails) {
-                drawRow("Besoins matériels spécifiques :", data.additionalEquipmentDetails);
-            }
-            y += 2;
-    
-            // --- 3. PARTICIPATIONS FINANCIÈRES & SPERONSORING ---
-            drawSectionHeader("3. PARTICIPATIONS FINANCIÈRES & SPONSORING");
-            drawRow("Sponsoring Cocktail de bienvenue :", cocktail.text, true, cocktail.val);
-            drawRow("Sponsoring Pause-café :", pause.text, true, pause.val);
-            drawRow("Sponsoring Soirée Terroir :", terroir.text, true, terroir.val);
-            drawRow("Sponsoring Soirée de Gala :", gala.text, true, gala.val);
-            drawRow("Parrainage / Frais d'étudiants :", studentFees.text, true, studentFees.val);
-            drawRow("Participation financière lot tombolas :", prizeParticipation.text, true, prizeParticipation.val);
-            if (prizeProvidedValue > 0 || data.prizeProvided) {
-                drawRow("Lot physique fourni par la société :", `${data.prizeProvided || 'Oui'} (Valeur estimée : ${formatPrice(prizeProvidedValue)})`);
-            }
-            y += 2;
-    
-            // --- 4. REPAS & SOIRÉES (COMPLET) ---
-            drawSectionHeader("4. REPAS & SOIRÉES");
-            drawRow("Repas du Mercredi midi :", `${lunchWed || 0} repas sélectionné(s)`);
-            drawRow("Repas du Jeudi midi :", `${lunchThu || 0} repas sélectionné(s)`);
-            drawRow("Sous-total Repas du midi supplémentaires :", formatPrice(mealsPrice), true, mealsPrice);
-    
-            drawRow("Soirée Terroir - Accès offert / inclus :", `${terroirFree || 0} accès inclus (Stand)`);
-            drawRow("Soirée Terroir - Repas payants supplémentaires :", `${terroirDinner || 0} repas à ${PRICE_TERROIR_DINNER} € = ${formatPrice(terroirDinner * PRICE_TERROIR_DINNER)}`, true, terroirDinner * PRICE_TERROIR_DINNER);
-    
-            drawRow("Soirée de Gala - Accès offert / inclus :", `${galaFree || 0} entrée(s) offerte(s) (Stand)`);
-            drawRow("Soirée de Gala - Entrées payantes supplémentaires :", `${galaExtra || 0} entrée(s) à ${PRICE_GALA_EXTRA} € = ${formatPrice(galaExtra * PRICE_GALA_EXTRA)}`, true, galaExtra * PRICE_GALA_EXTRA);
-            y += 2;
-    
-            // --- 5. PUBLICITÉ & SERVICES ---
-            drawSectionHeader("5. PUBLICITÉ & INSERTION DOCUMENTS");
-            const adStatus = data.adDocuments === 'Oui' ? (boothPrice > 0 ? 'Oui (Inclus avec le stand)' : 'Oui (Payant sans stand)') : 'Non';
-            drawRow("Insertion de documents publicitaires :", adStatus, true, adPrice);
-            y += 4;
-    
-            // --- TOTAL TTC ---
-            checkPageOverflow(20);
-            doc.setFillColor(...primaryColor);
-            doc.rect(10, y, 190, 11, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(11);
-            doc.text("TOTAL GÉNÉRAL TTC :", 14, y + 7.5);
-            doc.setFontSize(13);
-            doc.text(formatPrice(total), 195, y + 7.5, { align: "right" });
-    
-            y += 16;
-    
-            // --- CADRE DE VALIDATION & SIGNATURE ---
-            checkPageOverflow(30);
-            doc.setDrawColor(180, 180, 180);
-            doc.setLineDashPattern([2, 2], 0);
-            doc.rect(10, y, 190, 26);
-            doc.setLineDashPattern([], 0);
-    
-            doc.setTextColor(100, 100, 100);
-            doc.setFontSize(8.5);
-            doc.setFont("helvetica", "italic");
-            doc.text("Cadre réservé au bon pour accord (Date, Nom, Signature du responsable et Cachet de la société) :", 13, y + 6);
-    
-            // --- PIED DE PAGE ---
-            doc.setFontSize(7);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(150, 150, 150);
-            doc.text("AAMB - Association des Agents de Maintenance Biomédicale | Document vectoriel généré automatiquement", 105, 289, { align: "center" });
-    
-            const pdfOutput = doc.output('datauristring');
-            console.log(`✅ PDF vectoriel complet généré avec succès ! (Taille : ${Math.round(pdfOutput.length / 1024)} Ko)`);
-            
-            return pdfOutput;
-    
-        } catch (error) {
-            console.error("❌ Erreur lors de la génération du PDF vectoriel complet:", error);
-            return null;
         }
-    }
 
 
 
