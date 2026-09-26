@@ -460,7 +460,7 @@
     <div class="container">
         <div class="header">
             <img src="logo-aamb.png" alt="AAMB Logo">
-            <h1>AAMB - JTB 2026 - Besançon v0.57</h1>
+            <h1>AAMB - JTB 2026 - Besançon v0.58</h1>
             <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
             <p class="subtitle">v.2.3</p>
         </div>
@@ -1982,6 +1982,7 @@
             `;
         }
         
+
         async function generatePDF() {
             console.log("📄 Début génération PDF vectoriel...");
             
@@ -1991,11 +1992,10 @@
                 bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
                 
                 // Attendre que le DOM soit bien rendu
-                await new Promise(resolve => setTimeout(resolve, 300));
+                await new Promise(resolve => setTimeout(resolve, 500));
                 
                 const { jsPDF } = window.jspdf;
                 
-                // Créer un nouveau PDF A4
                 const pdf = new jsPDF({
                     orientation: 'portrait',
                     unit: 'mm',
@@ -2003,50 +2003,52 @@
                     compress: true
                 });
                 
-                // Configuration pour pdf.html()
-                const opt = {
-                    margin: [10, 10, 10, 10], // Marges en mm (haut, gauche, bas, droite)
-                    filename: 'Bon_de_Commande.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { 
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        letterRendering: true,
-                        backgroundColor: '#ffffff'
-                    },
-                    jsPDF: { 
-                        unit: 'mm', 
-                        format: 'a4', 
-                        orientation: 'portrait',
-                        compress: true
-                    },
-                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-                };
+                console.log("🔄 Appel de pdf.html()...");
                 
-                console.log("🔄 Génération du PDF vectoriel en cours...");
-                
-                // Générer le PDF à partir du HTML
-                await pdf.html(bonDiv, opt);
+                // ⚠️ CORRECTION : Utiliser le callback au lieu de await
+                await new Promise((resolve, reject) => {
+                    pdf.html(bonDiv, {
+                        margin: [10, 10, 10, 10],
+                        callback: function(doc) {
+                            console.log("✅ Callback pdf.html() appelé");
+                            resolve(doc);
+                        },
+                        x: 10,
+                        y: 10,
+                        width: 190,
+                        windowWidth: 800,
+                        html2canvas: {
+                            scale: 0.5,  // ⚠️ IMPORTANT : scale bas pour du vrai vectoriel
+                            useCORS: true,
+                            logging: false,
+                            backgroundColor: '#ffffff'
+                        },
+                        jsPDF: pdf,
+                        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                    }).catch(reject);
+                });
                 
                 const pdfOutput = pdf.output('datauristring');
-                const pdfSizeKB = Math.round(pdfOutput.length / 1024);
                 
-                console.log(`✅ PDF vectoriel généré avec succès (${pdfSizeKB} Ko)`);
-                console.log("📊 Texte sélectionnable : OUI");
-                console.log(" Qualité vectorielle : OUI");
+                if (!pdfOutput || pdfOutput.length < 100) {
+                    console.error("❌ PDF vide ou trop petit !");
+                    return null;
+                }
+                
+                const pdfSizeKB = Math.round(pdfOutput.length / 1024);
+                console.log(`✅ PDF généré : ${pdfSizeKB} Ko`);
+                console.log(`📊 Longueur base64 : ${pdfOutput.length} caractères`);
                 
                 return pdfOutput;
                 
             } catch (error) {
-                console.error(" Erreur critique génération PDF:", error);
-                console.error("Stack trace:", error.stack);
-                
-                // Fallback : retourner null pour envoyer sans PDF
-                alert("Erreur lors de la génération du PDF. Le formulaire sera envoyé sans pièce jointe.");
+                console.error("❌ Erreur génération PDF:", error);
+                console.error("Stack:", error.stack);
                 return null;
             }
         }
+
+        
 
         
         
