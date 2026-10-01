@@ -10,449 +10,98 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #0a4c6a 0%, #2e5b70 100%);
-  min-height: 100vh;
-  padding: 20px;
-}
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  overflow: hidden;
-}
-.header {
-  background: linear-gradient(135deg, #0a4c6a 0%, #1a3a4b 100%);
-  color: white;
-  padding: 30px;
-  text-align: center;
-}
-.header-logo-wrapper {
-  background: white;
-  display: inline-block;
-  padding: 12px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  margin-bottom: 15px;
-}
-.header-logo-wrapper img {
-  max-width: 140px;
-  height: auto;
-  display: block;
-}
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0a4c6a 0%, #2e5b70 100%); min-height: 100vh; padding: 20px; }
+.container { max-width: 900px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden; }
+.header { background: linear-gradient(135deg, #0a4c6a 0%, #1a3a4b 100%); color: white; padding: 30px; text-align: center; }
+.header-logo-wrapper { background: white; display: inline-block; padding: 12px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 15px; }
+.header-logo-wrapper img { max-width: 140px; height: auto; display: block; }
 .header h1 { font-size: 28px; margin-bottom: 8px; }
 .header .subtitle { font-size: 14px; opacity: 0.9; }
 .form-container { padding: 40px; }
 .section { display: none; animation: fadeIn 0.5s; }
 .section.active { display: block; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.section-title {
-  color: #0a4c6a;
-  font-size: 24px;
-  margin-bottom: 25px;
-  padding-bottom: 10px;
-  border-bottom: 3px solid #4a8b38;
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.section-title { color: #0a4c6a; font-size: 24px; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 3px solid #4a8b38; }
 .form-group { margin-bottom: 20px; }
-label {
-  display: block;
-  color: #333;
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
+label { display: block; color: #333; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
 .required::after { content: " *"; color: #e74c3c; }
-input[type="text"], input[type="email"], input[type="tel"],
-input[type="number"], select, textarea {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: border-color 0.3s;
-  font-family: inherit;
-}
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #0a4c6a;
-}
-.checkbox-group, .radio-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 8px;
-}
-.checkbox-item, .radio-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #f8f9fa;
-  padding: 10px 15px;
-  border-radius: 6px;
-  border: 2px solid #e9ecef;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.checkbox-item:hover, .radio-item:hover {
-  border-color: #0a4c6a;
-  background: #eef2f7;
-}
-.checkbox-item input[type="checkbox"],
-.radio-item input[type="radio"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-.sub-section {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border-left: 4px solid #0a4c6a;
-}
-.sub-section-title {
-  color: #0a4c6a;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-.person-group {
-  background: white;
-  padding: 15px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-}
-.person-title {
-  font-weight: 600;
-  color: #0a4c6a;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-.inline-fields {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-}
-.price-info {
-  background: #fff3cd;
-  border: 1px solid #ffc107;
-  color: #856404;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-.price-display {
-  color: #e74c3c;
-  font-weight: bold;
-  font-size: 16px;
-  margin-left: 15px;
-}
-.price-display-right {
-  color: #e74c3c;
-  font-weight: bold;
-  font-size: 16px;
-  text-align: right;
-  margin-top: 8px;
-  width: 100%;
-}
-.price-info-red {
-  color: #e74c3c;
-  font-weight: bold;
-  margin-top: 10px;
-  padding: 10px;
-  background: #ffe6e6;
-  border-radius: 6px;
-  border-left: 4px solid #e74c3c;
-}
-.select-with-price {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.select-with-price select,
-.select-with-price input[type="text"] {
-  flex: 1;
-  min-width: 250px;
-}
-.select-with-price .price-display {
-  margin-left: 15px;
-  white-space: nowrap;
-}
-.radio-with-price {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.radio-with-price .radio-group {
-  flex: 1;
-  margin-top: 0;
-}
-.radio-with-price .price-display {
-  margin-left: 15px;
-  white-space: nowrap;
-}
-.dropdown-with-price {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.dropdown-with-price select {
-  width: 100%;
-}
-.dropdown-with-price .price-display-right {
-  text-align: right;
-}
-.buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
-  gap: 15px;
-}
-button {
-  padding: 14px 30px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.btn-primary {
-  background: linear-gradient(135deg, #0a4c6a 0%, #2e5b70 100%);
-  color: white;
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(10, 76, 106, 0.4);
-}
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
+input[type="text"], input[type="email"], input[type="tel"], input[type="number"], select, textarea { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; font-family: inherit; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #0a4c6a; }
+.checkbox-group, .radio-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 8px; }
+.checkbox-item, .radio-item { display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 10px 15px; border-radius: 6px; border: 2px solid #e9ecef; cursor: pointer; transition: all 0.3s; }
+.checkbox-item:hover, .radio-item:hover { border-color: #0a4c6a; background: #eef2f7; }
+.checkbox-item input[type="checkbox"], .radio-item input[type="radio"] { width: 18px; height: 18px; cursor: pointer; }
+.sub-section { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #0a4c6a; }
+.sub-section-title { color: #0a4c6a; font-size: 16px; font-weight: 600; margin-bottom: 15px; }
+.person-group { background: white; padding: 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #ddd; }
+.person-title { font-weight: 600; color: #0a4c6a; margin-bottom: 10px; font-size: 14px; }
+.inline-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.price-info { background: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; }
+.price-display { color: #e74c3c; font-weight: bold; font-size: 16px; margin-left: 15px; }
+.price-display-right { color: #e74c3c; font-weight: bold; font-size: 16px; text-align: right; margin-top: 8px; width: 100%; }
+.price-info-red { color: #e74c3c; font-weight: bold; margin-top: 10px; padding: 10px; background: #ffe6e6; border-radius: 6px; border-left: 4px solid #e74c3c; }
+.select-with-price { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.select-with-price select, .select-with-price input[type="text"] { flex: 1; min-width: 250px; }
+.select-with-price .price-display { margin-left: 15px; white-space: nowrap; }
+.radio-with-price { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.radio-with-price .radio-group { flex: 1; margin-top: 0; }
+.radio-with-price .price-display { margin-left: 15px; white-space: nowrap; }
+.dropdown-with-price { display: flex; flex-direction: column; gap: 5px; }
+.dropdown-with-price select { width: 100%; }
+.dropdown-with-price .price-display-right { text-align: right; }
+.buttons { display: flex; justify-content: space-between; margin-top: 30px; gap: 15px; }
+button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.btn-primary { background: linear-gradient(135deg, #0a4c6a 0%, #2e5b70 100%); color: white; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(10, 76, 106, 0.4); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 .btn-secondary { background: #6c757d; color: white; }
 .btn-secondary:hover { background: #5a6268; }
-.progress-bar {
-  background: #e9ecef;
-  height: 8px;
-  margin-bottom: 30px;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.progress-fill {
-  background: linear-gradient(90deg, #0a4c6a 0%, #4a8b38 100%);
-  height: 100%;
-  transition: width 0.3s;
-}
-.success-message {
-  display: none;
-  text-align: center;
-  padding: 60px 40px;
-}
+.btn-add-person { width: 100%; margin-top: 10px; background: #e8f4fd; color: #0a4c6a; border: 2px dashed #0a4c6a; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.btn-add-person:hover { background: #d0e7f9; }
+.btn-remove-person { float: right; background: #ffe6e6; color: #e74c3c; border: 1px solid #e74c3c; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; line-height: 1; }
+.progress-bar { background: #e9ecef; height: 8px; margin-bottom: 30px; border-radius: 4px; overflow: hidden; }
+.progress-fill { background: linear-gradient(90deg, #0a4c6a 0%, #4a8b38 100%); height: 100%; transition: width 0.3s; }
+.success-message { display: none; text-align: center; padding: 60px 40px; }
 .success-message.show { display: block; animation: fadeIn 0.5s; }
-.success-icon {
-  font-size: 80px;
-  color: #28a745;
-  margin-bottom: 20px;
-}
+.success-icon { font-size: 80px; color: #28a745; margin-bottom: 20px; }
 .success-message h2 { color: #0a4c6a; margin-bottom: 15px; }
-#loadingOverlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 76, 106, 0.98);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  color: white;
-}
-#loadingOverlay.active {
-  display: flex;
-  animation: fadeIn 0.3s;
-}
-.loading-spinner {
-  width: 60px;
-  height: 60px;
-  border: 5px solid rgba(255,255,255,0.3);
-  border-top: 5px solid #4a8b38;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 25px;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+#loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 76, 106, 0.98); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; color: white; }
+#loadingOverlay.active { display: flex; animation: fadeIn 0.3s; }
+.loading-spinner { width: 60px; height: 60px; border: 5px solid rgba(255,255,255,0.3); border-top: 5px solid #4a8b38; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .loading-text { font-size: 22px; font-weight: 600; margin-bottom: 10px; }
 .loading-subtext { font-size: 15px; opacity: 0.9; }
-.loading-error {
-  color: #ff6b6b;
-  font-size: 16px;
-  margin-top: 20px;
-  display: none;
-  text-align: center;
-  max-width: 80%;
-}
-.recap-section {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 2px solid #e9ecef;
-}
-.recap-section h3 {
-  color: #0a4c6a;
-  border-bottom: 2px solid #4a8b38;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-}
-.recap-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
+.loading-error { color: #ff6b6b; font-size: 16px; margin-top: 20px; display: none; text-align: center; max-width: 80%; }
+.recap-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #e9ecef; }
+.recap-section h3 { color: #0a4c6a; border-bottom: 2px solid #4a8b38; padding-bottom: 10px; margin-bottom: 15px; }
+.recap-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
 .recap-item:last-child { border-bottom: none; }
 .recap-label { color: #555; }
 .recap-value { font-weight: 600; color: #0a4c6a; }
-.recap-total {
-  background: linear-gradient(135deg, #0a4c6a 0%, #1a3a4b 100%);
-  color: white;
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 20px;
-}
+.recap-total { background: linear-gradient(135deg, #0a4c6a 0%, #1a3a4b 100%); color: white; padding: 20px; border-radius: 8px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; }
 .recap-total-label { font-weight: 600; }
 .recap-total-value { font-size: 28px; font-weight: bold; }
-#bonDeCommande {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  width: 750px;
-  background: white;
-  padding: 20px 25px;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  color: #333;
-  font-size: 11px;
-  line-height: 1.2;
-}
-#bonDeCommande .bc-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 2px solid #0a4c6a;
-  padding-bottom: 8px;
-  margin-bottom: 10px;
-}
-#bonDeCommande .bc-header-logo {
-  width: 100px;
-  height: auto;
-}
-#bonDeCommande .bc-header-title {
-  text-align: right;
-}
-#bonDeCommande .bc-header h1 {
-  color: #0a4c6a;
-  font-size: 20px;
-  margin-bottom: 3px;
-}
-#bonDeCommande .bc-header p {
-  color: #666;
-  font-size: 10px;
-  margin: 2px 0;
-}
-#bonDeCommande .bc-section {
-  margin-bottom: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 6px 10px;
-  page-break-inside: avoid;
-}
-#bonDeCommande .bc-section h3 {
-  color: #0a4c6a;
-  border-bottom: 1px solid #4a8b38;
-  padding-bottom: 3px;
-  margin-bottom: 4px;
-  font-size: 13px;
-}
-#bonDeCommande .bc-two-columns {
-  display: flex;
-  gap: 15px;
-}
-#bonDeCommande .bc-col {
-  flex: 1;
-  min-width: 0;
-}
-#bonDeCommande .bc-col + .bc-col {
-  border-left: 1px solid #e0e0e0;
-  padding-left: 15px;
-}
-#bonDeCommande .bc-col h4 {
-  color: #0a4c6a;
-  font-size: 13px;
-  margin: 0 0 4px 0;
-  padding-bottom: 3px;
-  border-bottom: 1px solid #4a8b38;
-  font-weight: 600;
-}
-#bonDeCommande .bc-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 2px 0;
-  border-bottom: 1px dotted #eee;
-  font-size: 10px;
-}
+#bonDeCommande { position: absolute; left: -9999px; top: 0; width: 750px; background: white; padding: 20px 25px; font-family: 'Segoe UI', Arial, sans-serif; color: #333; font-size: 11px; line-height: 1.2; }
+#bonDeCommande .bc-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #0a4c6a; padding-bottom: 8px; margin-bottom: 10px; }
+#bonDeCommande .bc-header-logo { width: 100px; height: auto; }
+#bonDeCommande .bc-header-title { text-align: right; }
+#bonDeCommande .bc-header h1 { color: #0a4c6a; font-size: 20px; margin-bottom: 3px; }
+#bonDeCommande .bc-header p { color: #666; font-size: 10px; margin: 2px 0; }
+#bonDeCommande .bc-section { margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px; padding: 6px 10px; page-break-inside: avoid; }
+#bonDeCommande .bc-section h3 { color: #0a4c6a; border-bottom: 1px solid #4a8b38; padding-bottom: 3px; margin-bottom: 4px; font-size: 13px; }
+#bonDeCommande .bc-two-columns { display: flex; gap: 15px; }
+#bonDeCommande .bc-col { flex: 1; min-width: 0; }
+#bonDeCommande .bc-col + .bc-col { border-left: 1px solid #e0e0e0; padding-left: 15px; }
+#bonDeCommande .bc-col h4 { color: #0a4c6a; font-size: 13px; margin: 0 0 4px 0; padding-bottom: 3px; border-bottom: 1px solid #4a8b38; font-weight: 600; }
+#bonDeCommande .bc-item { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px dotted #eee; font-size: 10px; }
 #bonDeCommande .bc-item:last-child { border-bottom: none; }
 #bonDeCommande .bc-item .bc-label { color: #555; }
 #bonDeCommande .bc-item .bc-value { font-weight: 600; color: #0a4c6a; }
 #bonDeCommande .bc-item .bc-price { color: #e74c3c; font-weight: bold; }
-#bonDeCommande .bc-total {
-  background: #0a4c6a;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  margin-top: 10px;
-}
+#bonDeCommande .bc-total { background: #0a4c6a; color: white; padding: 8px 12px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-top: 10px; }
 #bonDeCommande .bc-total-value { font-size: 16px; font-weight: bold; }
-#bonDeCommande .bc-cachet {
-  margin-top: 15px;
-  border: 1.5px dashed #999;
-  padding: 12px;
-  text-align: center;
-  color: #666;
-  font-size: 10px;
-  min-height: 50px;
-}
-#bonDeCommande .bc-footer {
-  margin-top: 10px;
-  text-align: center;
-  color: #999;
-  font-size: 8px;
-  border-top: 1px solid #eee;
-  padding-top: 6px;
-}
+#bonDeCommande .bc-cachet { margin-top: 15px; border: 1.5px dashed #999; padding: 12px; text-align: center; color: #666; font-size: 10px; min-height: 50px; }
+#bonDeCommande .bc-footer { margin-top: 10px; text-align: center; color: #999; font-size: 8px; border-top: 1px solid #eee; padding-top: 6px; }
 @media (max-width: 768px) {
   .form-container { padding: 20px; }
   .inline-fields { grid-template-columns: 1fr; }
@@ -474,26 +123,19 @@ button {
 <div id="bonDeCommande"></div>
 <div class="container">
   <div class="header">
-    <div class="header-logo-wrapper">
-      <img id="aambLogo" src="logo-aamb.png" alt="Logo AAMB">
-    </div>
-    <h1>AAMB - JTB 2026 - Besançon v0.85</h1>
+    <div class="header-logo-wrapper"><img id="aambLogo" src="logo-aamb.png" alt="Logo AAMB"></div>
+    <h1>AAMB - JTB 2026 - Besançon v0.91</h1>
     <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
   </div>
   <div class="form-container">
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressBar" style="width: 16.66%"></div>
-    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressBar" style="width: 16.66%"></div></div>
     <form id="partnerForm">
-      <!-- SECTION 1: INFORMATIONS GENERALES -->
+      <!-- SECTION 1 -->
       <div class="section active" id="section1">
         <h2 class="section-title">📋 Informations Générales</h2>
         <div class="sub-section">
           <div class="sub-section-title">Identité de la Société</div>
-          <div class="form-group">
-            <label class="required">Nom de la société</label>
-            <input type="text" name="companyName" required>
-          </div>
+          <div class="form-group"><label class="required">Nom de la société</label><input type="text" name="companyName" required></div>
           <div class="form-group">
             <label class="required">Qualité</label>
             <div class="checkbox-group">
@@ -549,19 +191,16 @@ button {
           </div>
         </div>
         <div class="sub-section">
-          <div class="sub-section-title">Personnes représentants votre société durant les journées</div>
+          <div class="sub-section-title">Personnes représentant votre société durant les journées</div>
           <div id="representativesContainer"></div>
-        </div>
-        <div class="sub-section">
-          <div class="sub-section-title">Autres personnes présentes sur le stand</div>
-          <div id="otherPeopleContainer"></div>
+          <button type="button" class="btn-add-person" onclick="addPerson()">+ Ajouter une personne</button>
         </div>
         <div class="buttons">
           <button type="button" class="btn-primary" onclick="nextSection(1)">Continuer vers les Emplacements →</button>
         </div>
       </div>
 
-      <!-- SECTION 2: EMPLACEMENTS ET LOGISTIQUE -->
+      <!-- SECTION 2 -->
       <div class="section" id="section2">
         <h2 class="section-title">📍 Emplacements et Logistique</h2>
         <div class="sub-section">
@@ -609,7 +248,7 @@ button {
         </div>
       </div>
 
-      <!-- SECTION 3: PARTICIPATIONS FINANCIERES -->
+      <!-- SECTION 3 -->
       <div class="section" id="section3">
         <h2 class="section-title">💰 Participations Financières</h2>
         <div class="sub-section">
@@ -708,9 +347,7 @@ button {
           </div>
           <div class="form-group">
             <label>Valeur approximative du lot fourni</label>
-            <div class="select-with-price">
-              <input type="text" name="prizeValue" placeholder="Montant"><span>€</span>
-            </div>
+            <div class="select-with-price"><input type="text" name="prizeValue" placeholder="Montant"><span>€</span></div>
           </div>
           <div class="form-group">
             <label class="required">Souhaitez-vous une participation financière à un lot ?</label>
@@ -733,15 +370,23 @@ button {
         </div>
       </div>
 
-      <!-- SECTION 4: REPAS ET SOIREES -->
+      <!-- SECTION 4 -->
       <div class="section" id="section4">
-        <h2 class="section-title">️ Repas de midi et Soirées Dînatoires</h2>
+        <h2 class="section-title">🍽️ Repas de midi et Soirées Dînatoires</h2>
         <div class="sub-section">
-          <div class="sub-section-title">Repas de Midi Supplémentaires</div>
-          <div class="price-info">Tarif : 36,00 € TTC/repas. Le tarif de l'emplacement comprend 2 repas par jour pour un stand de 3m, 3 repas par jour pour un stand de 4,5m ou 4 repas par jour pour un stand de 6m.</div>
+          <div class="sub-section-title">Repas de Midi</div>
+          <div class="price-info">Tarif : 36,00 € TTC/repas supplémentaire. La réservation d'1 emplacement comprend 2 repas le mercredi midi et 2 repas le jeudi midi. La réservation de 2 emplacements comprend 4 repas le mercredi midi et 4 repas le jeudi midi. Sans emplacement, aucun repas inclus.</div>
           <div id="mealsIncludedInfo" class="price-info-red" style="display: none;"></div>
           <div class="form-group">
-            <label>Mercredi 18 novembre 2026 - midi (repas supplémentaires)</label>
+            <label>Repas inclus utilisés - mercredi midi</label>
+            <select name="wedIncludedMeals" id="wedIncludedMeals"><option value="0">0</option></select>
+          </div>
+          <div class="form-group">
+            <label>Repas inclus utilisés - jeudi midi</label>
+            <select name="thuIncludedMeals" id="thuIncludedMeals"><option value="0">0</option></select>
+          </div>
+          <div class="form-group">
+            <label>Repas supplémentaires payants - mercredi midi</label>
             <div class="dropdown-with-price">
               <select name="lunchWednesday" id="lunchWednesday" onchange="updateMealsTotal()">
                 <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
@@ -749,7 +394,7 @@ button {
             </div>
           </div>
           <div class="form-group">
-            <label>Jeudi 19 novembre 2026 - midi (repas supplémentaires)</label>
+            <label>Repas supplémentaires payants - jeudi midi</label>
             <div class="dropdown-with-price">
               <select name="lunchThursday" id="lunchThursday" onchange="updateMealsTotal()">
                 <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
@@ -831,9 +476,9 @@ button {
         </div>
       </div>
 
-      <!-- SECTION 5: DOCUMENTS, FOURNITURES ET SERVICES -->
+      <!-- SECTION 5 -->
       <div class="section" id="section5">
-        <h2 class="section-title"> Documents, Fournitures et Services</h2>
+        <h2 class="section-title">📄 Documents, Fournitures et Services</h2>
         <div class="sub-section">
           <div class="sub-section-title">Documents Publicitaires</div>
           <div class="price-info">Montant de la prestation : 250,00 € TTC si vous avez un stand sinon 500,00 € TTC si vous n'avez pas de stand</div>
@@ -906,10 +551,7 @@ button {
               <label class="radio-item"><input type="radio" name="workshopInterest" value="Non" required><span>Non</span></label>
             </div>
           </div>
-          <div class="form-group">
-            <label>Thème abordé</label>
-            <input type="text" name="workshopTheme" placeholder="Thème de l'atelier">
-          </div>
+          <div class="form-group"><label>Thème abordé</label><input type="text" name="workshopTheme" placeholder="Thème de l'atelier"></div>
         </div>
         <div class="buttons">
           <button type="button" class="btn-secondary" onclick="previousSection(5)">← Retour aux repas</button>
@@ -917,9 +559,9 @@ button {
         </div>
       </div>
 
-      <!-- SECTION 6: RÉCAPITULATIF -->
+      <!-- SECTION 6 -->
       <div class="section" id="section6">
-        <h2 class="section-title"> Récapitulatif de votre inscription</h2>
+        <h2 class="section-title">📊 Récapitulatif de votre inscription</h2>
         <div style="text-align: center; margin-bottom: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
           <img src="logo-aamb.png" alt="Logo AAMB" style="max-width: 120px; height: auto;">
         </div>
@@ -985,45 +627,58 @@ button {
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiF-kbnMe8BtLoEa7k5V3T2h7SKcFe1Qb6EygqtkXaoKJzboXvJciZGKLWPcmGKjhR/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-T0R2vBccZLw12pF80yEhaEMXwjWZI0d9o6xb6q2Hs94V07eT6RzWsPZOOVoQzU7y/exec';
 const PRICE_BOOTH_1 = 1800;
 const PRICE_BOOTH_2 = 3600;
 const PRICE_MEAL = 36;
 const PRICE_TERROIR_DINNER = 33;
 const PRICE_GALA_EXTRA = 65;
 const LOGO_URL = 'https://aamb-accescontrole.github.io/Inscription_partenaires/logo-aamb.png';
+const MAX_PERSONS = 10;
 
 function initBadgesSelect() {
   const select = document.getElementById('badges');
   for (let i = 0; i <= 20; i++) {
     const option = document.createElement('option');
-    option.value = i;
-    option.textContent = i;
+    option.value = i; option.textContent = i;
     select.appendChild(option);
   }
 }
-function generateRepresentatives() {
+
+// ===== PERSONNES DYNAMIQUES =====
+let personCount = 0;
+function addPerson() {
+  if (personCount >= MAX_PERSONS) { alert('Maximum ' + MAX_PERSONS + ' personnes.'); return; }
+  personCount++;
   const container = document.getElementById('representativesContainer');
-  if (!container) return;
-  container.innerHTML = '';
-  for (let i = 1; i <= 5; i++) {
-    const div = document.createElement('div');
-    div.className = 'person-group';
-    div.innerHTML = `<div class="person-title">Personne ${i}</div><div class="inline-fields"><div class="form-group"><label>NOM et Prénom</label><input type="text" name="repName${i}"></div><div class="form-group"><label>Téléphone</label><input type="tel" name="repPhone${i}"></div><div class="form-group"><label>Adresse email</label><input type="email" name="repEmail${i}"></div></div>`;
-    container.appendChild(div);
-  }
+  const div = document.createElement('div');
+  div.className = 'person-group';
+  div.innerHTML = `
+    <div class="person-title"><span class="person-number">Personne ${personCount}</span><button type="button" class="btn-remove-person" onclick="removePerson(this)" title="Supprimer cette personne">✕</button></div>
+    <div class="inline-fields">
+      <div class="form-group"><label>NOM et Prénom</label><input type="text" name="repName${personCount}"></div>
+      <div class="form-group"><label>Téléphone</label><input type="tel" name="repPhone${personCount}"></div>
+      <div class="form-group"><label>Adresse email</label><input type="email" name="repEmail${personCount}"></div>
+    </div>`;
+  container.appendChild(div);
 }
-function generateOtherPeople() {
-  const container = document.getElementById('otherPeopleContainer');
-  if (!container) return;
-  container.innerHTML = '';
-  for (let i = 1; i <= 10; i++) {
-    const div = document.createElement('div');
-    div.className = 'form-group';
-    div.innerHTML = `<label>Personne ${i}</label><input type="text" name="otherPerson${i}" placeholder="NOM et Prénom">`;
-    container.appendChild(div);
-  }
+function removePerson(btn) {
+  const groups = document.querySelectorAll('#representativesContainer .person-group');
+  if (groups.length > 1) { btn.closest('.person-group').remove(); reindexPersons(); }
+  else { alert('Il doit rester au moins une personne.'); }
 }
+function reindexPersons() {
+  const groups = document.querySelectorAll('#representativesContainer .person-group');
+  personCount = groups.length;
+  groups.forEach((group, idx) => {
+    const n = idx + 1;
+    group.querySelector('.person-number').textContent = 'Personne ' + n;
+    group.querySelector('input[type="text"]').name = 'repName' + n;
+    group.querySelector('input[type="tel"]').name = 'repPhone' + n;
+    group.querySelector('input[type="email"]').name = 'repEmail' + n;
+  });
+}
+
 function getBoothCount() {
   const val = document.getElementById('boothSpaces').value;
   if (val === '0') return 0;
@@ -1031,9 +686,8 @@ function getBoothCount() {
   if (val === '2 emplacements 3x2m soit 6x2m') return 2;
   return -1;
 }
-function formatPrice(amount) {
-  return amount.toFixed(2).replace('.', ',') + ' € TTC';
-}
+function formatPrice(amount) { return amount.toFixed(2).replace('.', ',') + ' € TTC'; }
+
 function updateBoothInfo() {
   const count = getBoothCount();
   const priceEl = document.getElementById('boothPrice');
@@ -1050,11 +704,9 @@ function updateBoothInfo() {
     priceEl.textContent = '+ ' + formatPrice(PRICE_BOOTH_2);
     infoEl.style.display = 'block';
     infoEl.innerHTML = '✅ Inclus avec votre réservation : <strong>4 repas de midi le mercredi</strong>, <strong>4 repas de midi le jeudi</strong> et <strong>2 soirées de gala</strong>.';
-  } else {
-    priceEl.textContent = '';
-    infoEl.style.display = 'none';
-  }
+  } else { priceEl.textContent = ''; infoEl.style.display = 'none'; }
   updateGalaFreeEntries();
+  updateIncludedMealsEntries();
   updateMealsIncludedInfo();
 }
 function updateGalaFreeEntries() {
@@ -1062,21 +714,35 @@ function updateGalaFreeEntries() {
   const select = document.getElementById('galaFreeEntries');
   const currentVal = select.value;
   select.innerHTML = '';
-  const maxEntries = count;
-  for (let i = 0; i <= maxEntries; i++) {
+  for (let i = 0; i <= count; i++) {
     const option = document.createElement('option');
-    option.value = i;
-    option.textContent = i;
+    option.value = i; option.textContent = i;
     select.appendChild(option);
   }
-  if (parseInt(currentVal) <= maxEntries) select.value = currentVal;
+  if (parseInt(currentVal) <= count) select.value = currentVal;
+}
+function updateIncludedMealsEntries() {
+  const count = getBoothCount();
+  const maxIncluded = count === 2 ? 4 : (count === 1 ? 2 : 0);
+  ['wedIncludedMeals', 'thuIncludedMeals'].forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const currentVal = parseInt(select.value) || 0;
+    select.innerHTML = '';
+    for (let i = 0; i <= maxIncluded; i++) {
+      const option = document.createElement('option');
+      option.value = i; option.textContent = i;
+      select.appendChild(option);
+    }
+    select.value = String(Math.min(currentVal, maxIncluded));
+  });
 }
 function updateMealsIncludedInfo() {
   const count = getBoothCount();
   const infoEl = document.getElementById('mealsIncludedInfo');
   if (count === 0) { infoEl.style.display = 'block'; infoEl.textContent = '⚠️ Vous ne disposez d\'aucun repas inclus avec votre réservation.'; }
-  else if (count === 1) { infoEl.style.display = 'block'; infoEl.textContent = '✅ Vous disposez de 2 repas pour le mercredi midi et 2 pour le jeudi midi inclus.'; }
-  else if (count === 2) { infoEl.style.display = 'block'; infoEl.textContent = '✅ Vous disposez de 4 repas pour le mercredi midi et 4 pour le jeudi midi inclus.'; }
+  else if (count === 1) { infoEl.style.display = 'block'; infoEl.textContent = '✅ Vous disposez de 2 repas inclus le mercredi midi et 2 le jeudi midi. Indiquez ci-dessus combien vous en utiliserez.'; }
+  else if (count === 2) { infoEl.style.display = 'block'; infoEl.textContent = '✅ Vous disposez de 4 repas inclus le mercredi midi et 4 le jeudi midi. Indiquez ci-dessus combien vous en utiliserez.'; }
   else { infoEl.style.display = 'none'; }
 }
 function updateFinancialDisplay() {
@@ -1092,35 +758,29 @@ function updateFinancialDisplay() {
     const radio = document.querySelector(`input[name="${item.radio}"]:checked`);
     const amount = document.getElementById(item.amount).value;
     const display = document.getElementById(item.display);
-    if (radio && radio.value === 'Oui' && amount && !isNaN(parseFloat(amount))) {
-      display.textContent = '+ ' + formatPrice(parseFloat(amount));
-    } else {
-      display.textContent = '';
-    }
+    if (radio && radio.value === 'Oui' && amount && !isNaN(parseFloat(amount))) display.textContent = '+ ' + formatPrice(parseFloat(amount));
+    else display.textContent = '';
   });
 }
 function updateMealsTotal() {
   const wed = parseInt(document.getElementById('lunchWednesday').value) || 0;
   const thu = parseInt(document.getElementById('lunchThursday').value) || 0;
-  const total = (wed + thu) * PRICE_MEAL;
-  document.getElementById('mealsTotalPrice').textContent = '+ ' + formatPrice(total);
+  document.getElementById('mealsTotalPrice').textContent = '+ ' + formatPrice((wed + thu) * PRICE_MEAL);
 }
 function updateTerroirTotal() {
   const count = parseInt(document.getElementById('terroirDinner').value) || 0;
-  const total = count * PRICE_TERROIR_DINNER;
-  document.getElementById('terroirDinnerPrice').textContent = '+ ' + formatPrice(total);
+  document.getElementById('terroirDinnerPrice').textContent = '+ ' + formatPrice(count * PRICE_TERROIR_DINNER);
 }
 function updateGalaTotal() {
   const count = parseInt(document.getElementById('galaExtraEntries').value) || 0;
-  const total = count * PRICE_GALA_EXTRA;
-  document.getElementById('galaExtraPrice').textContent = '+ ' + formatPrice(total);
+  document.getElementById('galaExtraPrice').textContent = '+ ' + formatPrice(count * PRICE_GALA_EXTRA);
 }
 function updateGalaInfo() { updateGalaTotal(); }
 function updateAdPrice() {
   const radio = document.querySelector('input[name="adDocuments"]:checked');
   const display = document.getElementById('adPrice');
   if (!radio) { display.textContent = ''; return; }
-  if (radio.value === 'Non') { display.textContent = '+ ' + formatPrice(0); }
+  if (radio.value === 'Non') display.textContent = '+ ' + formatPrice(0);
   else {
     const count = getBoothCount();
     display.textContent = count > 0 ? '+ ' + formatPrice(250) : '+ ' + formatPrice(500);
@@ -1135,9 +795,9 @@ function nextSection(current) {
       const name = field.name;
       const isChecked = currentSection.querySelector(`input[name="${name}"]:checked`);
       if (!isChecked) { valid = false; field.closest('.radio-group').style.border = '2px solid #e74c3c'; field.closest('.radio-group').style.padding = '10px'; field.closest('.radio-group').style.borderRadius = '8px'; }
-      else { field.closest('.radio-group').style.border = 'none'; }
+      else field.closest('.radio-group').style.border = 'none';
     } else if (!field.value.trim()) { valid = false; field.style.borderColor = '#e74c3c'; }
-    else { field.style.borderColor = '#ddd'; }
+    else field.style.borderColor = '#ddd';
   });
   if (!valid) { alert('Veuillez remplir tous les champs obligatoires'); return; }
   if (current === 5) fillRecap();
@@ -1153,14 +813,13 @@ function previousSection(current) {
   window.scrollTo(0, 0);
 }
 function updateProgressBar(section) {
-  const progress = (section / 6) * 100;
-  document.getElementById('progressBar').style.width = progress + '%';
+  document.getElementById('progressBar').style.width = (section / 6) * 100 + '%';
 }
 function getFormData() {
   const form = document.getElementById('partnerForm');
   const formData = new FormData(form);
   const formDataObj = Object.fromEntries(formData.entries());
-  const checkboxFields = ['quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre', 'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement', 'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire', 'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique', 'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils', 'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'];
+  const checkboxFields = ['quality_fabricant','quality_distributeur','quality_maintenance','quality_service','quality_autre','sector_endoscopie','sector_perfusion','sector_ventilation','sector_rechauffement','sector_imagerie','sector_desinfection','sector_exploration','sector_laboratoire','sector_metrologie','sector_batterie','sector_odontologie','sector_optique','sector_accessoires','sector_monitorage','sector_instrumentation','sector_appareils','sector_humanitaire','sector_maintenances','sector_bras','sector_autres'];
   checkboxFields.forEach(field => {
     const cb = document.querySelector(`input[name="${field}"]`);
     formDataObj[field] = cb && cb.checked ? 'Oui' : '';
@@ -1206,14 +865,15 @@ function fillRecap() {
       prizeProvidedValue = prizeValueEl ? (parseFloat(prizeValueEl.value) || 0) : 0;
     }
     setRecap('recapPrizeProvided', formatPrice(prizeProvidedValue));
-    const mealsIncludedPerDay = count === 0 ? 0 : count === 1 ? 2 : 4;
     const lunchWed = parseInt(document.getElementById('lunchWednesday').value) || 0;
     const lunchThu = parseInt(document.getElementById('lunchThursday').value) || 0;
-    const totalMealsWed = mealsIncludedPerDay + lunchWed;
-    const totalMealsThu = mealsIncludedPerDay + lunchThu;
+    const wedIncluded = parseInt(document.getElementById('wedIncludedMeals').value) || 0;
+    const thuIncluded = parseInt(document.getElementById('thuIncludedMeals').value) || 0;
+    const totalMealsWed = wedIncluded + lunchWed;
+    const totalMealsThu = thuIncluded + lunchThu;
     const merLabel = lunchWed === 1 ? 'payant' : 'payants';
     const jeuLabel = lunchThu === 1 ? 'payant' : 'payants';
-    setRecap('recapLunchWed', `MER. ${totalMealsWed} repas (${lunchWed} ${merLabel} et ${mealsIncludedPerDay} inclus) / JEU. ${totalMealsThu} repas (${lunchThu} ${jeuLabel} et ${mealsIncludedPerDay} inclus)`);
+    setRecap('recapLunchWed', `MER. ${totalMealsWed} repas (${lunchWed} ${merLabel} et ${wedIncluded} inclus) / JEU. ${totalMealsThu} repas (${lunchThu} ${jeuLabel} et ${thuIncluded} inclus)`);
     const mealsPrice = (lunchWed + lunchThu) * PRICE_MEAL;
     setRecap('recapMealsPrice', formatPrice(mealsPrice));
     const terroirDinner = parseInt(document.getElementById('terroirDinner').value) || 0;
@@ -1247,7 +907,7 @@ function fillRecap() {
     if (adRadio) {
       if (adRadio.value === 'Non') { setRecap('recapAd', 'Non'); adPrice = 0; }
       else { setRecap('recapAd', count > 0 ? 'Oui (avec stand)' : 'Oui (sans stand)'); adPrice = count > 0 ? 250 : 500; }
-    } else { setRecap('recapAd', '-'); }
+    } else setRecap('recapAd', '-');
     setRecap('recapAdPrice', formatPrice(adPrice));
     const fournitures = [];
     if (data.provideNotepads === 'Oui') fournitures.push('200 blocs-notes');
@@ -1261,7 +921,7 @@ function fillRecap() {
     setRecap('recapWorkshopTheme', data.workshopTheme || '-');
     const total = boothPrice + cocktail.value + pause.value + terroir.value + gala.value + studentFees.value + prizeParticipation.value + prizeProvidedValue + mealsPrice + (terroirDinner * PRICE_TERROIR_DINNER) + (galaExtra * PRICE_GALA_EXTRA) + adPrice;
     setRecap('recapTotal', formatPrice(total));
-    return { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, mealsIncludedPerDay, totalMealsWed, totalMealsThu };
+    return { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, wedIncluded, thuIncluded, galaFree };
   } catch (error) {
     console.error("❌ Erreur dans fillRecap():", error);
     alert("Erreur lors du remplissage du récapitulatif: " + error.message);
@@ -1282,13 +942,12 @@ function getRegimeText(type, data) {
   return items.length > 0 ? items.join(', ') : '-';
 }
 function generateBonDeCommandeHTML(recapData) {
-  const { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, count, boothVal, lunchWed, lunchThu, galaFree, mealsIncludedPerDay, totalMealsWed, totalMealsThu } = recapData;
+  const { data, boothPrice, cocktail, pause, terroir, gala, studentFees, prizeParticipation, prizeProvidedValue, mealsPrice, terroirDinner, galaExtra, adPrice, total, boothVal, lunchWed, lunchThu, wedIncluded, thuIncluded, galaFree } = recapData;
   const companyName = data.companyName || 'Non renseigné';
   const decisionMaker = data.decisionMakerName || '-';
   const billingAddress = data.billingAddress || '-';
   const billingContact = data.billingContactName || '-';
-  const today = new Date();
-  const dateStr = today.toLocaleDateString('fr-FR');
+  const dateStr = new Date().toLocaleDateString('fr-FR');
   const token = data.token || 'N/A';
   const totalGalaEntries = parseInt(galaFree) + parseInt(galaExtra);
   const fournitures = [];
@@ -1298,7 +957,7 @@ function generateBonDeCommandeHTML(recapData) {
   const fournituresText = fournitures.length > 0 ? fournitures.join(', ') : '-';
   const merLabel = lunchWed === 1 ? 'payant' : 'payants';
   const jeuLabel = lunchThu === 1 ? 'payant' : 'payants';
-  const repasMerJeuText = `MER. ${totalMealsWed} repas (${lunchWed} ${merLabel} et ${mealsIncludedPerDay} inclus) / JEU. ${totalMealsThu} repas (${lunchThu} ${jeuLabel} et ${mealsIncludedPerDay} inclus)`;
+  const repasMerJeuText = `MER. ${wedIncluded + lunchWed} repas (${lunchWed} ${merLabel} et ${wedIncluded} inclus) / JEU. ${thuIncluded + lunchThu} repas (${lunchThu} ${jeuLabel} et ${thuIncluded} inclus)`;
   const terroirLabel = terroirDinner === 1 ? 'payant' : 'payants';
   const terroirText = terroirDinner > 0 ? `${terroirDinner} ${terroirLabel}` : '0';
   const galaExtraLabel = galaExtra === 1 ? 'payante' : 'payantes';
@@ -1337,7 +996,7 @@ function generateBonDeCommandeHTML(recapData) {
       <div class="bc-item"><span class="bc-label">Participation financière lot :</span><span class="bc-price">${formatPrice(prizeParticipation.value)}</span></div>
     </div>
     <div class="bc-section">
-      <h3>️ Repas et Soirées</h3>
+      <h3>🍽️ Repas et Soirées</h3>
       <div class="bc-item"><span class="bc-label">Repas mercredi midi et jeudi midi :</span><span class="bc-value">${repasMerJeuText}</span></div>
       <div class="bc-item"><span class="bc-label">Coût repas supplémentaires :</span><span class="bc-price">${formatPrice(mealsPrice)}</span></div>
       <div class="bc-item"><span class="bc-label">Soirée Terroir (repas) :</span><span class="bc-value">${terroirText}</span></div>
@@ -1365,15 +1024,7 @@ async function generatePDF() {
     const bonDiv = document.getElementById('bonDeCommande');
     bonDiv.innerHTML = generateBonDeCommandeHTML(recapData);
     await new Promise(resolve => setTimeout(resolve, 300));
-    const canvas = await html2canvas(bonDiv, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      width: 800,
-      logging: false,
-      letterRendering: true,
-      removeContainer: true
-    });
+    const canvas = await html2canvas(bonDiv, { scale: 2, useCORS: true, backgroundColor: '#ffffff', width: 800, logging: false, letterRendering: true, removeContainer: true });
     const imgData = canvas.toDataURL('image/jpeg', 0.9);
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -1409,27 +1060,18 @@ async function submitForm() {
     data.timestamp = new Date().toISOString();
     data.token = window.editToken || generateToken();
     data.action = window.editToken ? 'update' : 'create';
-    if (pdfBase64 && pdfBase64.length > 10000000) {
-      console.warn("⚠️ PDF trop lourd. Envoi sans pièce jointe.");
-    } else {
-      data.pdfBase64 = pdfBase64;
-    }
+    if (pdfBase64 && pdfBase64.length > 10000000) console.warn("⚠️ PDF trop lourd. Envoi sans pièce jointe.");
+    else data.pdfBase64 = pdfBase64;
     submitBtn.innerText = 'Envoi en cours...';
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(data)
-    });
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(data) });
+    document.querySelectorAll('.section').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
     document.querySelector('.buttons').style.display = 'none';
     document.querySelector('.progress-bar').style.display = 'none';
     document.getElementById('successMessage').classList.add('show');
     document.getElementById('successMessage').style.display = 'block';
     window.scrollTo(0, 0);
   } catch (error) {
-    console.error(' Erreur:', error);
+    console.error('❌ Erreur:', error);
     alert('Erreur lors de la génération ou de l\'envoi. Veuillez réessayer.');
     submitBtn.innerText = originalText;
     submitBtn.disabled = false;
@@ -1443,66 +1085,81 @@ function generateToken() {
   });
 }
 document.addEventListener('DOMContentLoaded', function() {
-  generateRepresentatives();
-  generateOtherPeople();
+  addPerson();
   initBadgesSelect();
 });
 window.addEventListener('load', async function() {
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
-  if (token) {
-    window.editToken = token;
-    const overlay = document.getElementById('loadingOverlay');
-    const loadingError = document.getElementById('loadingError');
-    overlay.classList.add('active');
-    try {
-      const response = await fetch(`${SCRIPT_URL}?token=${token}`);
-      const data = await response.json();
-      if (data.error) {
-        loadingError.textContent = "❌ " + data.error;
-        loadingError.style.display = 'block';
-        setTimeout(() => overlay.classList.remove('active'), 3000);
-        return;
-      }
-      Object.keys(data).forEach(key => {
-        const input = document.querySelector(`[name="${key}"]`);
-        if (input) {
-          const value = data[key];
-          if (value !== undefined && value !== null) {
-            if (input.type === 'radio') {
-              const radio = document.querySelector(`input[name="${key}"][value="${value}"]`);
-              if (radio) radio.checked = true;
-            } else if (input.tagName === 'SELECT' || input.tagName === 'TEXTAREA') {
-              input.value = value;
-            } else if (input.type === 'number') {
-              input.value = value === '' ? 0 : value;
-            } else if (input.type !== 'file' && input.type !== 'checkbox') {
-              input.value = value;
-            }
-          }
-        }
-      });
-      const checkboxFields = ['quality_fabricant', 'quality_distributeur', 'quality_maintenance', 'quality_service', 'quality_autre', 'sector_endoscopie', 'sector_perfusion', 'sector_ventilation', 'sector_rechauffement', 'sector_imagerie', 'sector_desinfection', 'sector_exploration', 'sector_laboratoire', 'sector_metrologie', 'sector_batterie', 'sector_odontologie', 'sector_optique', 'sector_accessoires', 'sector_monitorage', 'sector_instrumentation', 'sector_appareils', 'sector_humanitaire', 'sector_maintenances', 'sector_bras', 'sector_autres'];
-      checkboxFields.forEach(field => {
-        if (data[field] === 'Oui') {
-          const cb = document.querySelector(`input[name="${field}"]`);
-          if (cb) cb.checked = true;
-        }
-      });
-      updateBoothInfo();
-      updateFinancialDisplay();
-      updateMealsTotal();
-      updateTerroirTotal();
-      updateGalaTotal();
-      updateAdPrice();
-      const btn = document.querySelector('#section6 .btn-primary');
-      if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
-      setTimeout(() => overlay.classList.remove('active'), 500);
-    } catch (err) {
-      loadingError.textContent = " Erreur lors du chargement des données.";
+  if (!token) return;
+  window.editToken = token;
+  const overlay = document.getElementById('loadingOverlay');
+  const loadingError = document.getElementById('loadingError');
+  overlay.classList.add('active');
+  try {
+    const response = await fetch(`${SCRIPT_URL}?token=${token}`);
+    const data = await response.json();
+    if (data.error) {
+      loadingError.textContent = "❌ " + data.error;
       loadingError.style.display = 'block';
       setTimeout(() => overlay.classList.remove('active'), 3000);
+      return;
     }
+    // 1. Reconstruire les personnes
+    const repContainer = document.getElementById('representativesContainer');
+    repContainer.innerHTML = '';
+    personCount = 0;
+    let repCount = 0;
+    for (let i = 1; i <= MAX_PERSONS; i++) {
+      if (data['repName' + i] || data['repPhone' + i] || data['repEmail' + i]) repCount = i;
+    }
+    for (let i = 0; i < Math.max(1, repCount); i++) addPerson();
+    // 2. Emplacement d'abord (initialise les menus dépendants)
+    if (data.boothSpaces) {
+      document.getElementById('boothSpaces').value = data.boothSpaces;
+      updateBoothInfo();
+    }
+    // 3. Remplir tous les champs
+    Object.keys(data).forEach(key => {
+      const input = document.querySelector(`[name="${key}"]`);
+      if (input) {
+        const value = data[key];
+        if (value !== undefined && value !== null) {
+          if (input.type === 'radio') {
+            const radio = document.querySelector(`input[name="${key}"][value="${value}"]`);
+            if (radio) radio.checked = true;
+          } else if (input.tagName === 'SELECT' || input.tagName === 'TEXTAREA') {
+            input.value = value;
+          } else if (input.type === 'number') {
+            input.value = value === '' ? 0 : value;
+          } else if (input.type !== 'file' && input.type !== 'checkbox') {
+            input.value = value;
+          }
+        }
+      }
+    });
+    // 4. Cases à cocher
+    const checkboxFields = ['quality_fabricant','quality_distributeur','quality_maintenance','quality_service','quality_autre','sector_endoscopie','sector_perfusion','sector_ventilation','sector_rechauffement','sector_imagerie','sector_desinfection','sector_exploration','sector_laboratoire','sector_metrologie','sector_batterie','sector_odontologie','sector_optique','sector_accessoires','sector_monitorage','sector_instrumentation','sector_appareils','sector_humanitaire','sector_maintenances','sector_bras','sector_autres'];
+    checkboxFields.forEach(field => {
+      if (data[field] === 'Oui') {
+        const cb = document.querySelector(`input[name="${field}"]`);
+        if (cb) cb.checked = true;
+      }
+    });
+    // 5. Mises à jour des affichages
+    updateBoothInfo();
+    updateFinancialDisplay();
+    updateMealsTotal();
+    updateTerroirTotal();
+    updateGalaTotal();
+    updateAdPrice();
+    const btn = document.querySelector('#section6 .btn-primary');
+    if (btn) btn.innerText = '✓ Mettre à jour le formulaire';
+    setTimeout(() => overlay.classList.remove('active'), 500);
+  } catch (err) {
+    loadingError.textContent = "❌ Erreur lors du chargement des données.";
+    loadingError.style.display = 'block';
+    setTimeout(() => overlay.classList.remove('active'), 3000);
   }
 });
 if ('serviceWorker' in navigator) {
