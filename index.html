@@ -124,7 +124,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
 <div class="container">
   <div class="header">
     <div class="header-logo-wrapper"><img id="aambLogo" src="logo-aamb.png" alt="Logo AAMB"></div>
-    <h1>AAMB - JTB 2026 - Besançon v0.91</h1>
+    <h1>AAMB - JTB 2026 - Besançon v0.92</h1>
     <p class="subtitle">Formulaire d'Inscription Partenaire/Exposant</p>
   </div>
   <div class="form-container">
@@ -205,6 +205,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
         <h2 class="section-title">📍 Emplacements et Logistique</h2>
         <div class="sub-section">
           <div class="sub-section-title">Emplacements</div>
+          <div class="price-info">1 emplacement 3x2 m incluant 2 repas mercredi midi et 2 repas jeudi midi ainsi qu'1 soirée de gala.<br>2 emplacements 6x2 m incluant 4 repas mercredi midi et 4 repas jeudi midi ainsi que 2 soirées de gala.</div>
           <div class="form-group">
             <label class="required">Nombre d'emplacements contigus</label>
             <div class="select-with-price">
@@ -375,7 +376,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
         <h2 class="section-title">🍽️ Repas de midi et Soirées Dînatoires</h2>
         <div class="sub-section">
           <div class="sub-section-title">Repas de Midi</div>
-          <div class="price-info">Tarif : 36,00 € TTC/repas supplémentaire. La réservation d'1 emplacement comprend 2 repas le mercredi midi et 2 repas le jeudi midi. La réservation de 2 emplacements comprend 4 repas le mercredi midi et 4 repas le jeudi midi. Sans emplacement, aucun repas inclus.</div>
+          <div class="price-info">Tarif : 36,00 € TTC par repas supplémentaire</div>
           <div id="mealsIncludedInfo" class="price-info-red" style="display: none;"></div>
           <div class="form-group">
             <label>Repas inclus utilisés - mercredi midi</label>
@@ -405,7 +406,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
         </div>
         <div class="sub-section">
           <div class="sub-section-title">Soirée du Terroir du mercredi 18 novembre 2026</div>
-          <div class="price-info">Tarif : 33,00 € TTC/personne</div>
+          <div class="price-info">Tarif : 33,00 € TTC par soirée</div>
           <div class="form-group">
             <label>Nombre de repas souhaité pour la soirée terroir</label>
             <div class="dropdown-with-price">
@@ -418,6 +419,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
         </div>
         <div class="sub-section">
           <div class="sub-section-title">Soirée de Gala du jeudi 19 novembre 2026</div>
+          <div class="price-info">Tarif : 65,00 € TTC par soirée supplémentaire</div>
           <div class="form-group">
             <label>Nombre d'entrées gratuites utilisées</label>
             <select name="galaFreeEntries" id="galaFreeEntries" onchange="updateGalaInfo()">
@@ -619,15 +621,15 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
       <div class="success-message" id="successMessage">
         <div class="success-icon">✓</div>
         <h2>Merci pour votre participation !</h2>
-        <p>Les informations de votre société ont été enregistrées avec succès.</p>
-        <p style="margin-top: 20px;"><button type="button" class="btn-primary" onclick="location.reload()">Remplir un nouveau formulaire</button></p>
+        <p>Les informations de votre société ont été pré-enregistrées avec succès.</p>
+        <p style="margin-top: 15px; color: #666; font-size: 14px;">Si vous devez apporter des corrections, utilisez le lien « ✏️ Modifier mon formulaire » reçu par email.</p>
       </div>
     </form>
   </div>
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-T0R2vBccZLw12pF80yEhaEMXwjWZI0d9o6xb6q2Hs94V07eT6RzWsPZOOVoQzU7y/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby3SVsAsx5MsxWl0CGDep-E3MJ4MmKv5LbToP5x47ipdqCMRy6bdfgkB9K8QmodN3WZ/exec';
 const PRICE_BOOTH_1 = 1800;
 const PRICE_BOOTH_2 = 3600;
 const PRICE_MEAL = 36;
@@ -644,8 +646,6 @@ function initBadgesSelect() {
     select.appendChild(option);
   }
 }
-
-// ===== PERSONNES DYNAMIQUES =====
 let personCount = 0;
 function addPerson() {
   if (personCount >= MAX_PERSONS) { alert('Maximum ' + MAX_PERSONS + ' personnes.'); return; }
@@ -678,7 +678,6 @@ function reindexPersons() {
     group.querySelector('input[type="email"]').name = 'repEmail' + n;
   });
 }
-
 function getBoothCount() {
   const val = document.getElementById('boothSpaces').value;
   if (val === '0') return 0;
@@ -687,7 +686,6 @@ function getBoothCount() {
   return -1;
 }
 function formatPrice(amount) { return amount.toFixed(2).replace('.', ',') + ' € TTC'; }
-
 function updateBoothInfo() {
   const count = getBoothCount();
   const priceEl = document.getElementById('boothPrice');
